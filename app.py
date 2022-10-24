@@ -1,4 +1,3 @@
-import dash
 import dash_cytoscape as cyto
 from dash import html
 from dash import Dash
