@@ -1,0 +1,3 @@
+[submodule "DviCL"]
+	path = DviCL
+	url = https://github.com/Automorphism1/DviCL.git
