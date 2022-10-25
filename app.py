@@ -76,7 +76,7 @@ cyto_stylesheet = [
     # {'selector': '.center', 'style': {'color':'green', "background-color": "green" }},
     # {'selector': '.Real-Node', 'style': {'shape': 'circle'} },
     # {'selector': '.Fake-Node', 'style': {'shape': 'triangle'} },
-    {'selector': 'node', 'style': {'width':'data(width)', 'height':'data(height)','font-size': '8px','label': 'data(label)'} },
+    {'selector': 'node', 'style': {'width':'data(width)', 'height':'data(height)','font-size': '8px','label':None } },#'data(label)'
     {'selector': 'edge', 'style': {'width':'0.5px' } },
     
     # set styles for mouse hover on a node
@@ -124,7 +124,6 @@ def get_cyto_graph(file_name):
 
 def init_autotree_graph():
     #element_nodes, element_edges = get_autotree_elements(vertex_list)
-    element_nodes, element_edges = None, None
     new_cyg = cyto.Cytoscape(
         id='cy-component-autotree',
         layout={'name': 'cose'}, # spread cose
@@ -133,15 +132,28 @@ def init_autotree_graph():
         elements=[{'data': {'id': '0', 'label': '0', 'width': '0px', 'height': '0px'}, 'classes': 'node'}],#init a false node in order to avoid error
         minZoom=1e-2,
         maxZoom=1e3,
+        
     )
     return new_cyg
 
-autotree.DviCL('input.txt')# generate autotree
+autotree.DviCL('input3.txt')# generate autotree
 full_autotree = autotree.readfile_at()#read at.txt
-app = Dash(__name__, assets_ignore='./custom-script.js',external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = Dash(__name__, assets_ignore='./custom-script.js',external_stylesheets=[dbc.themes.PULSE])
 server = app.server
-cyto_graph, FULL_GRAPH = get_cyto_graph('./input.txt')
+cyto_graph, FULL_GRAPH = get_cyto_graph('./input3.txt')
 autotree_graph = init_autotree_graph()
+autotree_offcanvas = html.Div(
+    [
+        dbc.Offcanvas(
+            
+            id="offcanvas",
+            title="AutoTree Analyzer",
+            is_open=False,
+            backdrop=False,
+            style={'width':'66.5%'}
+        ),
+    ]
+)
 app.layout = dbc.Container(children=
                         [
                             #dbc.Navbar([
@@ -151,7 +163,7 @@ app.layout = dbc.Container(children=
                             #                    ])
                             #                ])
                             #            ]),
-                            dbc.Container([
+                            dbc.Container([autotree_offcanvas,
                                             dbc.Row
                                             ([
                                                 dbc.Col([
@@ -171,9 +183,9 @@ app.layout = dbc.Container(children=
                                                             dbc.Card
                                                             (
                                                                 [
-                                                                    dbc.CardHeader('Corresponding AutoTree'),
+                                                                    html.Div([html.P('Corresponding AutoTree',className='m-0 d-inline align-bottom'),
+                                                                              html.P('>>>', className='m-0 d-inline float-end text-secondary', id='autotree-entry',n_clicks=0)], className='card-header'),
                                                                     autotree_graph,
-                                                                    html.P(id='Autotree_output'),
                                                                 ],
                                                                 id='auto_tree',class_name='p-0 border-2', style={'height':'40vh','overflow':'hidden'}
                                                             )
@@ -196,7 +208,7 @@ app.layout = dbc.Container(children=
                                                                             html.Tbody([
                                                                                 html.Tr([html.Td("Node ID",className='w-25'),html.Td(id='cytoscape-tapNodeData-output')]),
                                                                                 
-                                                                                html.Tr([html.Td("Size",className='w-25'),html.Td(id='size-output')]),
+                                                                                html.Tr([html.Td("Autotree Size",className='w-25'),html.Td(id='size-output')]),
                                                                                 
                                                                                 html.Tr([html.Td("Vertices",className='w-25'),html.Td(id='vertex-output')]),
                                                                                 
@@ -210,7 +222,7 @@ app.layout = dbc.Container(children=
                                                                                 
                                                                                 html.Tr([html.Td("Signature",className='w-25'),html.Td(id='sig-output')]),
                                                                                 
-                                                                                html.Tr([html.Td("Depth",className='w-25'),html.Td(id='depth-output')])
+                                                                                html.Tr([html.Td("Depth",className='w-25'),html.Td(id='depth-output')]),
                                                                             ]),
                                                                             hover=True,bordered=True,striped=True,style={'width':'100.5%', 'margin-left':'-0.25%','margin-top':'-0.25%'}
                                                                         )
@@ -239,7 +251,8 @@ app.layout = dbc.Container(children=
                                                                             hover=True,bordered=True,striped=True,style={'width':'100.5%', 'margin-left':'-0.25%','margin-top':'-0.25%'}
                                                                         )
                                                                     ], class_name='mt-0 border-2 me-0 ms-0 be-0 bs-0')
-                                                                ],label='Multiple Selection')
+                                                                ],label='Multiple Selection'),
+                                                            dbc.Tab(label='SSM Analysis')
                                                             ])
 
                                                         ],class_name='mt-2 d-flex')
@@ -302,15 +315,24 @@ def update_autotree(data, elements, id, size, vertex, label, children_size, chil
         corr_trees = autotree.find_autotrees(full_autotree, selected_id) # all autotrees which have the selected node
         if len(corr_trees) != 0:#if has autotree
             # now we only deal with the first one(largest)
-            largest_tree = corr_trees[1]#TODO: normally this should be corr_trees[0], BUT in our example, the largest
-                                        #autotree is the full tree itself, so we change to 1 !!ONLY FOR THIS EXAMPLE!! for demonstration.
+            largest_tree = corr_trees[1]#TODO: More functionalities in autotree analyzer
             element_nodes, element_edges = get_autotree_elements(largest_tree['vertex_list'])
             #print(element_nodes + element_edges)
             print(largest_tree)
             return  element_nodes + element_edges, str(data['id']), largest_tree['size'], str(largest_tree['vertex_list']), str(largest_tree['label']), largest_tree['children_size'], str(largest_tree['children']), largest_tree['parent'], largest_tree['sig'], largest_tree['depth']
     return elements, id, size, vertex, label, children_size, children, parent, sig, depth
-            
-            
-        
+
+
+#autotree offcanvas
+@app.callback(
+    Output("offcanvas", "is_open"),
+    Input("autotree-entry", "n_clicks"),
+    [State("offcanvas", "is_open")],
+)
+def toggle_offcanvas(n1, is_open):
+    if n1:
+        return not is_open
+    return is_open
+   
 if __name__ == '__main__':
     app.run_server(debug=True)

@@ -49,3 +49,6 @@ def find_autotrees(full_tree, id):
             candidate_trees.append(tree)
     return candidate_trees
 
+for tree in readfile_at():
+    if tree['size']!='1' and int(tree['size'])<100:
+        print(tree)

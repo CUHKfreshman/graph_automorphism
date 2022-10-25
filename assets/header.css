@@ -1,3 +1,7 @@
 .tab-content{
     padding: 0!important;
 }
+
+#autotree-entry{
+    cursor: pointer;
+}
