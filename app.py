@@ -270,8 +270,8 @@ autotree_offcanvas = html.Div(
                         ], class_name='h-100 d-flex flex-wrap justify-content-between', width=6),
                         dbc.Col
                         ([
-                            dbc.Card([dbc.CardHeader('Parent #0'), dbc.CardBody(autotree_subgraph_parent)], class_name='w-100', style={'height':'42vh'}),
-                            dbc.Card([dbc.CardHeader('Child #4'), dbc.CardBody(autotree_subgraph_child)], class_name='w-100 align-self-end', style={'height':'42vh'})
+                            dbc.Card([dbc.CardHeader('Parent', id='parent-header'), dbc.CardBody(autotree_subgraph_parent)], class_name='w-100', style={'height':'42vh'}),
+                            dbc.Card([dbc.CardHeader('Child', id='child-header'), dbc.CardBody(autotree_subgraph_child)], class_name='w-100 align-self-end', style={'height':'42vh'})
                         ],width=6, class_name='h-100 d-flex flex-wrap justify-content-between')
                     ], class_name='mt-2 mb-2 ms-0 mb-0 w-100')
                 ,className='border border-2 h-100 d-flex')
@@ -313,7 +313,7 @@ app.layout = dbc.Container(children=
                                                             dbc.Card
                                                             (
                                                                 [
-                                                                    html.Div([html.P('Corresponding AutoTree Subgraph',className='m-0 d-inline align-bottom'),
+                                                                    html.Div([html.P('Corresponding AutoTree Subgraph',className='m-0 d-inline align-bottom', id='subgraph-header'),
                                                                               html.P('>>>', className='m-0 d-inline float-end text-secondary', id='autotree-entry',n_clicks=0)], className='card-header'),
                                                                     autotree_subgraph,
                                                                 ],
@@ -398,7 +398,7 @@ app.layout = dbc.Container(children=
 def update_stylesheet(NodeData):
     new_styles=[]
     if NodeData is not None:
-        print(NodeData)
+        #print(NodeData)
         new_styles =    [
             {
                 'selector': f'#{NodeData["id"]}',
@@ -438,7 +438,10 @@ def toggle_offcanvas(n1, is_open):
                 Output('cy-component-autotree-fullgraph', 'stylesheet'),
                 Output('cy-component-autotree-subgraph', 'stylesheet'),
                 Output('cy-component-autotree-subgraph-parent', 'stylesheet'),
-                Output('cy-component-autotree-subgraph-child', 'stylesheet')],
+                Output('cy-component-autotree-subgraph-child', 'stylesheet'),
+                Output('subgraph-header','children'),
+                Output('parent-header','children'),
+                Output('child-header','children'),],
                 [Input('cy-component', 'tapNodeData'),
                 Input('cy-component-autotree-fullgraph', 'tapNodeData'),
                 Input('children-output-pagination', 'active_page'),
@@ -459,20 +462,24 @@ def toggle_offcanvas(n1, is_open):
                 State('cy-component-autotree-fullgraph','stylesheet'),
                 State('cy-component-autotree-subgraph','stylesheet'),
                 State('cy-component-autotree-subgraph-parent','stylesheet'),
-                State('cy-component-autotree-subgraph-child','stylesheet')])
-def update_graphs_switcher(data_origraph, data_fullgraph, data_pagination, elements, elements_parent, elements_child, node_id, size, vertex, label, children_size, min_val,max_val, child_class_name, parent, sig, depth, stylesheet_fullgraph, stylesheet_subgraph, stylesheet_subgraph_parent, stylesheet_subgraph_child ):
+                State('cy-component-autotree-subgraph-child','stylesheet'),
+                State('subgraph-header','children'),
+                State('parent-header','children'),
+                State('child-header','children'),
+                ])
+def update_graphs_switcher(data_origraph, data_fullgraph, data_pagination, elements, elements_parent, elements_child, node_id, size, vertex, label, children_size, min_val,max_val, child_class_name, parent, sig, depth, stylesheet_fullgraph, stylesheet_subgraph, stylesheet_subgraph_parent, stylesheet_subgraph_child, subgraph_header, parent_header, child_header ):
     triggered_func = ctx.triggered_id
     print('triggered',triggered_func)
     if triggered_func == 'cy-component':
-        return update_graphs_by_origraph_single(data_origraph, child_class_name)
+        return update_graphs_by_origraph_single(data_origraph, elements_child, child_class_name, subgraph_header, parent_header, child_header)
     if triggered_func == 'cy-component-autotree-fullgraph':
-        return update_graphs_by_autotree_fullgraph(data_fullgraph,   node_id, child_class_name)
+        return update_graphs_by_autotree_fullgraph(data_fullgraph, elements_child, node_id, child_class_name, subgraph_header, parent_header, child_header)
     if triggered_func == 'children-output-pagination':
-        return update_child_graph_by_pagination(data_pagination, elements, elements_parent, elements_child, node_id, size, vertex, label, children_size, min_val,max_val, child_class_name,  parent, sig, depth, stylesheet_fullgraph, stylesheet_subgraph,stylesheet_subgraph_parent,  stylesheet_subgraph_child )
-    return elements, elements_parent, elements_child, node_id, size, vertex, label, children_size, min_val,max_val, child_class_name,  parent, sig, depth, stylesheet_fullgraph, stylesheet_subgraph, stylesheet_subgraph_parent, stylesheet_subgraph_child
+        return update_child_graph_by_pagination(data_pagination, elements, elements_parent,  node_id, size, vertex, label, children_size, min_val,max_val, child_class_name,  parent, sig, depth, stylesheet_fullgraph, stylesheet_subgraph,stylesheet_subgraph_parent,  stylesheet_subgraph_child , subgraph_header, parent_header, child_header)
+    return elements, elements_parent, elements_child, node_id, size, vertex, label, children_size, min_val,max_val, child_class_name,  parent, sig, depth, stylesheet_fullgraph, stylesheet_subgraph, stylesheet_subgraph_parent, stylesheet_subgraph_child, subgraph_header, parent_header, child_header
 
 # update when click the original graph node #tmp: (data, elements, elements_parent, elements_child, id, size, vertex, label, children_size, min_val,max_val,  child_class_name, parent, sig, depth)
-def update_graphs_by_origraph_single(data, child_class_name):
+def update_graphs_by_origraph_single(data, elements_child, child_class_name, subgraph_header, parent_header, child_header):
     if data:
         selected_id = str(data['id'])
         corr_trees = autotree.find_autotrees(full_autotree, selected_id) # all autotrees which have the selected node
@@ -481,7 +488,7 @@ def update_graphs_by_origraph_single(data, child_class_name):
             largest_tree = corr_trees[1]#TODO: More functionalities in autotree analyzer
             element_nodes, element_edges = get_autotree_subgraph_elements(largest_tree['vertex_list'])
             element_nodes_parent, element_edges_parent = get_autotree_subgraph_elements_by_id(largest_tree['parent'])
-            element_nodes_child, element_edges_child = get_autotree_subgraph_elements_by_id(largest_tree['children'][0])
+            #element_nodes_child, element_edges_child = get_autotree_subgraph_elements_by_id(largest_tree['children'][0])
             #print(element_nodes + element_edges)
             #print(largest_tree)
             
@@ -501,13 +508,15 @@ def update_graphs_by_origraph_single(data, child_class_name):
                 } for tree in corr_trees if tree['order'] != largest_tree['order']]
             new_styles_fullgraph.append({'selector': f'#{largest_tree["order"]}', 'style': {'background-color': 'red'}})
             if int(largest_tree['children'][0]) == -1:
+                largest_tree['children_size'] = '0'
                 child_class_name = 'mb-0 p-0 d-none'
             else:
                 child_class_name = 'mb-0 p-0'
-            return  element_nodes + element_edges,element_nodes_parent + element_edges_parent,element_nodes_child + element_edges_child , str(data['id']), largest_tree['size'], str(largest_tree['vertex_list']), str(largest_tree['label']), largest_tree['children_size'], int(largest_tree['children'][0]), int(largest_tree['children'][-1]),  child_class_name, largest_tree['parent'], largest_tree['sig'], largest_tree['depth'],  cyto_stylesheet + new_styles_fullgraph, cyto_stylesheet + new_styles_subgraph, cyto_stylesheet + new_styles_subgraph, cyto_stylesheet + new_styles_subgraph
+            subgraph_header, parent_header = f'Corresponding AutoTree Subgraph #{largest_tree["order"]}', f'Parent #{largest_tree["parent"]}'
+            return  element_nodes + element_edges,element_nodes_parent + element_edges_parent, elements_child , str(data['id']), largest_tree['size'], str(largest_tree['vertex_list']), str(largest_tree['label']), largest_tree['children_size'], int(largest_tree['children'][0]), int(largest_tree['children'][-1]),  child_class_name, largest_tree['parent'], largest_tree['sig'], largest_tree['depth'],  cyto_stylesheet + new_styles_fullgraph, cyto_stylesheet + new_styles_subgraph, cyto_stylesheet + new_styles_subgraph, cyto_stylesheet + new_styles_subgraph, subgraph_header, parent_header, child_header
     #return elements, elements_parent, elements_child, id, size, vertex, label, children_size, min_val,max_val,  child_class_name, parent, sig, depth, cyto_stylesheet, cyto_stylesheet, cyto_stylesheet, cyto_stylesheet
 
-def update_graphs_by_autotree_fullgraph(data,  node_id, child_class_name):
+def update_graphs_by_autotree_fullgraph(data, elements_child, node_id, child_class_name, subgraph_header, parent_header, child_header):
     if data:
         selected_id = str(data['id'])
         corr_trees = autotree.find_autotrees(full_autotree, node_id) # all autotrees which have the selected node
@@ -515,7 +524,7 @@ def update_graphs_by_autotree_fullgraph(data,  node_id, child_class_name):
         
         element_nodes, element_edges = get_autotree_subgraph_elements_by_id(selected_id)
         element_nodes_parent, element_edges_parent = get_autotree_subgraph_elements_by_id(new_tree['parent'])
-        element_nodes_child, element_edges_child = get_autotree_subgraph_elements_by_id(new_tree['children'][0])
+        #element_nodes_child, element_edges_child = get_autotree_subgraph_elements_by_id(new_tree['children'][0])
         new_styles_subgraph =    [
             {
                 'selector': f'#{node_id}',
@@ -532,15 +541,36 @@ def update_graphs_by_autotree_fullgraph(data,  node_id, child_class_name):
             } for tree in corr_trees if selected_id != tree['order']]
         new_styles_fullgraph.append({'selector': f'#{selected_id}', 'style': {'background-color': 'red'}})
         if int(new_tree['children'][0]) == -1:
+            new_tree['children_size'] = '0'
             child_class_name = 'mb-0 p-0 d-none'
         else:
             child_class_name = 'mb-0 p-0'
-        return  element_nodes + element_edges,element_nodes_parent + element_edges_parent,element_nodes_child + element_edges_child , node_id, new_tree['size'], str(new_tree['vertex_list']), str(new_tree['label']), new_tree['children_size'], int(new_tree['children'][0]), int(new_tree['children'][-1]), child_class_name, new_tree['parent'], new_tree['sig'], new_tree['depth'], cyto_stylesheet + new_styles_subgraph, cyto_stylesheet + new_styles_fullgraph, cyto_stylesheet + new_styles_subgraph, cyto_stylesheet + new_styles_subgraph
+        if new_tree['parent'] == '-1':
+            new_tree['parent'] = 'None'
+        subgraph_header, parent_header,child_header = f'Corresponding AutoTree Subgraph #{new_tree["order"]}', f'Parent #{new_tree["parent"]}', 'Child'
+        return  element_nodes + element_edges,element_nodes_parent + element_edges_parent,init_autotree_subgraph_child(), node_id, new_tree['size'], str(new_tree['vertex_list']), str(new_tree['label']), new_tree['children_size'], int(new_tree['children'][0]), int(new_tree['children'][-1]), child_class_name, new_tree['parent'], new_tree['sig'], new_tree['depth'],  cyto_stylesheet + new_styles_fullgraph, cyto_stylesheet + new_styles_subgraph,  cyto_stylesheet + new_styles_subgraph, cyto_stylesheet + new_styles_subgraph, subgraph_header, parent_header, child_header
 
-def update_child_graph_by_pagination(data, elements, elements_parent, elements_child, node_id, size, vertex, label, children_size, min_val,max_val, child_class_name,  parent, sig, depth, stylesheet_fullgraph, stylesheet_subgraph, stylesheet_subgraph_parent, stylesheet_subgraph_child ):
+def update_child_graph_by_pagination(data, elements, elements_parent, node_id, size, vertex, label, children_size, min_val,max_val, child_class_name,  parent, sig, depth, stylesheet_fullgraph, stylesheet_subgraph, stylesheet_subgraph_parent, stylesheet_subgraph_child, subgraph_header, parent_header, child_header ):
     if data:
         selected_id = str(data)
         element_nodes_child, element_edges_child = get_autotree_subgraph_elements_by_id(selected_id)
-    return elements, elements_parent, element_nodes_child + element_edges_child, node_id, size, vertex, label, children_size, min_val,max_val, child_class_name,  parent, sig, depth, stylesheet_fullgraph, stylesheet_subgraph, stylesheet_subgraph_parent, stylesheet_subgraph_child
+        corr_trees = autotree.find_autotrees(full_autotree, node_id) # all autotrees which have the selected node
+        for element in stylesheet_fullgraph:
+            if '#' in element['selector']:
+                if element['style']['background-color'] == 'red':
+                    red_chosen_node = element['selector'][1:]
+                    break
+        new_styles_fullgraph =    [
+            {
+                'selector': f'#{tree["order"]}',
+                'style': {
+                    'background-color': 'green'
+                }
+            } for tree in corr_trees if selected_id != tree['order'] and selected_id != red_chosen_node]
+        new_styles_fullgraph.append({'selector':f'#{red_chosen_node}', 'style':{'background-color': 'red'}})
+        new_styles_fullgraph.append({'selector': f'#{selected_id}', 'style': {'background-color': 'purple'}})
+        child_header = f'Child #{selected_id}'
+ 
+    return elements, elements_parent, element_nodes_child + element_edges_child, node_id, size, vertex, label, children_size, min_val,max_val, child_class_name,  parent, sig, depth,  cyto_stylesheet + new_styles_fullgraph, stylesheet_subgraph, stylesheet_subgraph_parent, stylesheet_subgraph_child, subgraph_header, parent_header, child_header
 if __name__ == '__main__':
     app.run_server(debug=True)
