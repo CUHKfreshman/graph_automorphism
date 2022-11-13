@@ -153,8 +153,8 @@ def get_autotree_fullgraph():
             'data': {
                 'id':tree['order'], 
                 'label': tree['order'],
-                'width': str(4 * int(tree['size'])) + 'px',
-                'height': str(4 * int(tree['size'])) + 'px',
+                'width': str(min(48, 4 * int(tree['size']))) + 'px',
+                'height': str(min(48, 4 * int(tree['size']))) + 'px',
             },
             'classes': 'node',
         }
@@ -260,10 +260,10 @@ autotree_offcanvas = html.Div(
                             #html.Div([html.P('>>>', className='text-start'),html.P('Parent #id', className='text-center'),html.P('>>>', className='text-end')],className="my-auto w-100 d-flex justify-content-between"),
                             dbc.Card
                             ([
-                                dbc.CardHeader('Full AutoTree'),
+                                dbc.CardHeader('Corresponding AutoTree Subgraph', id='subgraph-header'),
                                 dbc.CardBody
                                 ([
-                                    autotree_fullgraph,
+                                    autotree_subgraph,
                                 ])
                             ], class_name='h-75 align-self-center w-100'),
                             #html.Div([html.P('>>>', className='text-start'),html.P('Child #id', className='text-center'),html.P('>>>', className='text-end')],className="my-auto w-100 d-flex justify-content-between"),
@@ -304,7 +304,7 @@ app.layout = dbc.Container(children=
                                                             
                                                             #dji.Import(src="./custom-script.js")
                                                         ],
-                                                        id='cyto_div', class_name='border-3 p-0', style={"height":"95vh"},
+                                                        id='cyto_div', class_name='border-3 p-0', style={"height":"95.5vh"},
                                                     ),
                                                 ],width=8, class_name='p-2'),
                                                 dbc.Col([
@@ -313,9 +313,9 @@ app.layout = dbc.Container(children=
                                                             dbc.Card
                                                             (
                                                                 [
-                                                                    html.Div([html.P('Corresponding AutoTree Subgraph',className='m-0 d-inline align-bottom', id='subgraph-header'),
+                                                                    html.Div([html.P('Full AutoTree',className='m-0 d-inline align-bottom'),
                                                                               html.P('>>>', className='m-0 d-inline float-end text-secondary', id='autotree-entry',n_clicks=0)], className='card-header'),
-                                                                    autotree_subgraph,
+                                                                    autotree_fullgraph,
                                                                 ],
                                                                 id='auto_tree',class_name='p-0 border-2', style={'height':'40vh','overflow':'hidden'}
                                                             )
@@ -573,4 +573,4 @@ def update_child_graph_by_pagination(data, elements, elements_parent, node_id, s
  
     return elements, elements_parent, element_nodes_child + element_edges_child, node_id, size, vertex, label, children_size, min_val,max_val, child_class_name,  parent, sig, depth,  cyto_stylesheet + new_styles_fullgraph, stylesheet_subgraph, stylesheet_subgraph_parent, stylesheet_subgraph_child, subgraph_header, parent_header, child_header
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
