@@ -1,0 +1,12 @@
+{
+    "name": "sigma-example-template",
+    "version": "1.0.0",
+    "description": "A minimalist sigma usage example.",
+    "main": "biggraph.js",
+    "license": "MIT",
+    "dependencies": {
+      "graphology": "latest",
+      "sigma": "latest"
+    }
+  }
+  

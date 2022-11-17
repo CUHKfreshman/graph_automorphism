@@ -153,8 +153,8 @@ def get_autotree_fullgraph():
             'data': {
                 'id':tree['order'], 
                 'label': tree['order'],
-                'width': str(4 * int(tree['size'])) + 'px',
-                'height': str(4 * int(tree['size'])) + 'px',
+                'width': str(min(48, 4 * int(tree['size']))) + 'px',
+                'height': str(min(48, 4 * int(tree['size']))) + 'px',
             },
             'classes': 'node',
         }
@@ -242,7 +242,8 @@ def init_autotree_subgraph_child():
 inputfile = 'input.txt'
 autotree.DviCL(inputfile)# generate autotree
 full_autotree = autotree.readfile_at()#read at.txt
-app = Dash(__name__, assets_ignore='./custom-script.js',external_stylesheets=[dbc.themes.PULSE])
+external_scripts = None#['assets/sigma.js', 'assets/graphology.js', 'assets/sigma.min.js', 'assets/graphology-library.js', 'assets/graphology-library.min.js', ]
+app = Dash(__name__, assets_ignore='biggraph.js',external_stylesheets=[dbc.themes.PULSE], external_scripts=external_scripts)
 server = app.server
 cyto_graph, FULL_GRAPH = get_cyto_graph(inputfile)
 autotree_subgraph = init_autotree_subgraph()
@@ -260,10 +261,10 @@ autotree_offcanvas = html.Div(
                             #html.Div([html.P('>>>', className='text-start'),html.P('Parent #id', className='text-center'),html.P('>>>', className='text-end')],className="my-auto w-100 d-flex justify-content-between"),
                             dbc.Card
                             ([
-                                dbc.CardHeader('Full AutoTree'),
+                                dbc.CardHeader('Corresponding AutoTree Subgraph', id='subgraph-header'),
                                 dbc.CardBody
                                 ([
-                                    autotree_fullgraph,
+                                    autotree_subgraph,
                                 ])
                             ], class_name='h-75 align-self-center w-100'),
                             #html.Div([html.P('>>>', className='text-start'),html.P('Child #id', className='text-center'),html.P('>>>', className='text-end')],className="my-auto w-100 d-flex justify-content-between"),
@@ -300,11 +301,15 @@ app.layout = dbc.Container(children=
                                                     dbc.Card
                                                     (
                                                         [
-                                                            cyto_graph,
-                                                            
+                                                            #cyto_graph,
+                                                            #dji.Import(src='./graphology.js'),
+                                                            #dji.Import(src='./sigma.js'),
+                                                            #dji.Import(src='./sigma.min.js'),
+                                                            dji.Import(src='assets/biggraph.js'),
+                                                            html.Div(id='sigma-container', className='h-100 w-100'),
                                                             #dji.Import(src="./custom-script.js")
                                                         ],
-                                                        id='cyto_div', class_name='border-3 p-0', style={"height":"95vh"},
+                                                        id='cyto_div', class_name='border-3 p-0', style={"height":"95.5vh"},
                                                     ),
                                                 ],width=8, class_name='p-2'),
                                                 dbc.Col([
@@ -313,9 +318,9 @@ app.layout = dbc.Container(children=
                                                             dbc.Card
                                                             (
                                                                 [
-                                                                    html.Div([html.P('Corresponding AutoTree Subgraph',className='m-0 d-inline align-bottom', id='subgraph-header'),
+                                                                    html.Div([html.P('Full AutoTree',className='m-0 d-inline align-bottom'),
                                                                               html.P('>>>', className='m-0 d-inline float-end text-secondary', id='autotree-entry',n_clicks=0)], className='card-header'),
-                                                                    autotree_subgraph,
+                                                                    autotree_fullgraph,
                                                                 ],
                                                                 id='auto_tree',class_name='p-0 border-2', style={'height':'40vh','overflow':'hidden'}
                                                             )
@@ -324,6 +329,7 @@ app.layout = dbc.Container(children=
                                                             dbc.Tabs([
                                                                 dbc.Tab([
                                                                     dbc.Card([
+                                                                        dbc.Input(type='file',name='readfile',id='readfile'),
                                                                         #dbc.CardBody([
                                                                         #    dbc.Row([
                                                                         #            dbc.Col(dbc.Label("Current Node ID", html_for="current-node"),width=4),
@@ -342,7 +348,7 @@ app.layout = dbc.Container(children=
                                                                                 
                                                                                 html.Tr([html.Td("Vertices",className='w-25'),html.Td(id='vertex-output')]),
                                                                                 
-                                                                                html.Tr([html.Td("Labels",className='w-25'),html.Td(id='label-output')]),
+                                                                                #html.Tr([html.Td("Labels",className='w-25'),html.Td(id='label-output')]),
                                                                                 
                                                                                 html.Tr([html.Td("Children Size",className='w-25'),html.Td(id='childrensize-output')]),
                                                                                 
@@ -350,7 +356,7 @@ app.layout = dbc.Container(children=
                                                                                 
                                                                                 html.Tr([html.Td("Parent",className='w-25'),html.Td(id='parent-output')]),
                                                                                 
-                                                                                html.Tr([html.Td("Signature",className='w-25'),html.Td(id='sig-output')]),
+                                                                                #html.Tr([html.Td("Signature",className='w-25'),html.Td(id='sig-output')]),
                                                                                 
                                                                                 html.Tr([html.Td("Depth",className='w-25'),html.Td(id='depth-output')]),
                                                                             ]),
@@ -392,7 +398,7 @@ app.layout = dbc.Container(children=
                                         ],fluid=True, class_name='p-0 mt-3 ms-3 me-3 h-100 d-flex flex-sm-nowrap  align-items-center justify-content-center justify-content-lg-start ')
                         ],fluid=True,class_name='p-0 m-0', style={'min-height':'100vh','overflow':'hidden'}
     )
-
+'''
 @app.callback(Output('cy-component', 'stylesheet'),
               Input('cy-component', 'tapNodeData'))
 def update_stylesheet(NodeData):
@@ -408,7 +414,7 @@ def update_stylesheet(NodeData):
             }]
 
     return cyto_stylesheet + new_styles
-
+'''
 
 #autotree offcanvas
 @app.callback(
@@ -421,19 +427,24 @@ def toggle_offcanvas(n1, is_open):
         return not is_open
     return is_open
 
+@app.callback(Output('readfile',"value"),Input('readfile','value'))
+def print_it(data):
+    print(data)
+    return data
+
 @app.callback([ Output('cy-component-autotree-subgraph', 'elements'),
                 Output('cy-component-autotree-subgraph-parent', 'elements'),
                 Output('cy-component-autotree-subgraph-child', 'elements'),
                 Output('cytoscape-tapNodeData-output', 'children'),
                 Output('size-output','children'),
                 Output('vertex-output','children'),
-                Output('label-output','children'),
+                #Output('label-output','children'),
                 Output('childrensize-output','children'),
                 Output('children-output-pagination','min_value'),
                 Output('children-output-pagination','max_value'),
                 Output('children-output-pagination','class_name'),
                 Output('parent-output','children'),
-                Output('sig-output','children'),
+                #Output('sig-output','children'),
                 Output('depth-output','children'),
                 Output('cy-component-autotree-fullgraph', 'stylesheet'),
                 Output('cy-component-autotree-subgraph', 'stylesheet'),
@@ -442,7 +453,7 @@ def toggle_offcanvas(n1, is_open):
                 Output('subgraph-header','children'),
                 Output('parent-header','children'),
                 Output('child-header','children'),],
-                [Input('cy-component', 'tapNodeData'),
+                [#Input('cy-component', 'tapNodeData'),
                 Input('cy-component-autotree-fullgraph', 'tapNodeData'),
                 Input('children-output-pagination', 'active_page'),
                 State('cy-component-autotree-subgraph', 'elements'),
@@ -451,13 +462,13 @@ def toggle_offcanvas(n1, is_open):
                 State('cytoscape-tapNodeData-output', 'children'),
                 State('size-output','children'),
                 State('vertex-output','children'),
-                State('label-output','children'),
+                #State('label-output','children'),
                 State('childrensize-output','children'),
                 State('children-output-pagination','min_value'),
                 State('children-output-pagination','max_value'),
                 State('children-output-pagination','class_name'),
                 State('parent-output','children'),
-                State('sig-output','children'),
+                #State('sig-output','children'),
                 State('depth-output','children'),
                 State('cy-component-autotree-fullgraph','stylesheet'),
                 State('cy-component-autotree-subgraph','stylesheet'),
@@ -467,16 +478,17 @@ def toggle_offcanvas(n1, is_open):
                 State('parent-header','children'),
                 State('child-header','children'),
                 ])
-def update_graphs_switcher(data_origraph, data_fullgraph, data_pagination, elements, elements_parent, elements_child, node_id, size, vertex, label, children_size, min_val,max_val, child_class_name, parent, sig, depth, stylesheet_fullgraph, stylesheet_subgraph, stylesheet_subgraph_parent, stylesheet_subgraph_child, subgraph_header, parent_header, child_header ):
+#data_origraph, data_fullgraph, data_pagination, elements, elements_parent, elements_child, node_id, size, vertex, label, children_size, min_val,max_val, child_class_name, parent, sig, depth, stylesheet_fullgraph, stylesheet_subgraph, stylesheet_subgraph_parent, stylesheet_subgraph_child, subgraph_header, parent_header, child_header
+def update_graphs_switcher(data_fullgraph, data_pagination, elements, elements_parent, elements_child, node_id, size, vertex,  children_size, min_val,max_val, child_class_name, parent, depth, stylesheet_fullgraph, stylesheet_subgraph, stylesheet_subgraph_parent, stylesheet_subgraph_child, subgraph_header, parent_header, child_header ):
     triggered_func = ctx.triggered_id
     print('triggered',triggered_func)
-    if triggered_func == 'cy-component':
-        return update_graphs_by_origraph_single(data_origraph, elements_child, child_class_name, subgraph_header, parent_header, child_header)
+    #if triggered_func == 'cy-component':
+    #    return update_graphs_by_origraph_single(data_origraph, elements_child, child_class_name, subgraph_header, parent_header, child_header)
     if triggered_func == 'cy-component-autotree-fullgraph':
         return update_graphs_by_autotree_fullgraph(data_fullgraph, elements_child, node_id, child_class_name, subgraph_header, parent_header, child_header)
     if triggered_func == 'children-output-pagination':
-        return update_child_graph_by_pagination(data_pagination, elements, elements_parent,  node_id, size, vertex, label, children_size, min_val,max_val, child_class_name,  parent, sig, depth, stylesheet_fullgraph, stylesheet_subgraph,stylesheet_subgraph_parent,  stylesheet_subgraph_child , subgraph_header, parent_header, child_header)
-    return elements, elements_parent, elements_child, node_id, size, vertex, label, children_size, min_val,max_val, child_class_name,  parent, sig, depth, stylesheet_fullgraph, stylesheet_subgraph, stylesheet_subgraph_parent, stylesheet_subgraph_child, subgraph_header, parent_header, child_header
+        return update_child_graph_by_pagination(data_pagination, elements, elements_parent,  node_id, size, vertex,  children_size, min_val,max_val, child_class_name,  parent,  depth, stylesheet_fullgraph, stylesheet_subgraph,stylesheet_subgraph_parent,  stylesheet_subgraph_child , subgraph_header, parent_header, child_header)
+    return elements, elements_parent, elements_child, node_id, size, vertex,  children_size, min_val,max_val, child_class_name,  parent,  depth, stylesheet_fullgraph, stylesheet_subgraph, stylesheet_subgraph_parent, stylesheet_subgraph_child, subgraph_header, parent_header, child_header
 
 # update when click the original graph node #tmp: (data, elements, elements_parent, elements_child, id, size, vertex, label, children_size, min_val,max_val,  child_class_name, parent, sig, depth)
 def update_graphs_by_origraph_single(data, elements_child, child_class_name, subgraph_header, parent_header, child_header):
@@ -513,7 +525,7 @@ def update_graphs_by_origraph_single(data, elements_child, child_class_name, sub
             else:
                 child_class_name = 'mb-0 p-0'
             subgraph_header, parent_header = f'Corresponding AutoTree Subgraph #{largest_tree["order"]}', f'Parent #{largest_tree["parent"]}'
-            return  element_nodes + element_edges,element_nodes_parent + element_edges_parent, elements_child , str(data['id']), largest_tree['size'], str(largest_tree['vertex_list']), str(largest_tree['label']), largest_tree['children_size'], int(largest_tree['children'][0]), int(largest_tree['children'][-1]),  child_class_name, largest_tree['parent'], largest_tree['sig'], largest_tree['depth'],  cyto_stylesheet + new_styles_fullgraph, cyto_stylesheet + new_styles_subgraph, cyto_stylesheet + new_styles_subgraph, cyto_stylesheet + new_styles_subgraph, subgraph_header, parent_header, child_header
+            return  element_nodes + element_edges,element_nodes_parent + element_edges_parent, elements_child , str(data['id']), largest_tree['size'], str(largest_tree['vertex_list']), str(largest_tree['label']), largest_tree['children_size'], int(largest_tree['children'][0]), int(largest_tree['children'][-1]),  child_class_name, largest_tree['parent'],  largest_tree['depth'],  cyto_stylesheet + new_styles_fullgraph, cyto_stylesheet + new_styles_subgraph, cyto_stylesheet + new_styles_subgraph, cyto_stylesheet + new_styles_subgraph, subgraph_header, parent_header, child_header
     #return elements, elements_parent, elements_child, id, size, vertex, label, children_size, min_val,max_val,  child_class_name, parent, sig, depth, cyto_stylesheet, cyto_stylesheet, cyto_stylesheet, cyto_stylesheet
 
 def update_graphs_by_autotree_fullgraph(data, elements_child, node_id, child_class_name, subgraph_header, parent_header, child_header):
@@ -548,9 +560,9 @@ def update_graphs_by_autotree_fullgraph(data, elements_child, node_id, child_cla
         if new_tree['parent'] == '-1':
             new_tree['parent'] = 'None'
         subgraph_header, parent_header,child_header = f'Corresponding AutoTree Subgraph #{new_tree["order"]}', f'Parent #{new_tree["parent"]}', 'Child'
-        return  element_nodes + element_edges,element_nodes_parent + element_edges_parent,init_autotree_subgraph_child(), node_id, new_tree['size'], str(new_tree['vertex_list']), str(new_tree['label']), new_tree['children_size'], int(new_tree['children'][0]), int(new_tree['children'][-1]), child_class_name, new_tree['parent'], new_tree['sig'], new_tree['depth'],  cyto_stylesheet + new_styles_fullgraph, cyto_stylesheet + new_styles_subgraph,  cyto_stylesheet + new_styles_subgraph, cyto_stylesheet + new_styles_subgraph, subgraph_header, parent_header, child_header
+        return  element_nodes + element_edges,element_nodes_parent + element_edges_parent,init_autotree_subgraph_child(), node_id, new_tree['size'], str(new_tree['vertex_list']), str(new_tree['label']), new_tree['children_size'], int(new_tree['children'][0]), int(new_tree['children'][-1]), child_class_name, new_tree['parent'],  new_tree['depth'],  cyto_stylesheet + new_styles_fullgraph, cyto_stylesheet + new_styles_subgraph,  cyto_stylesheet + new_styles_subgraph, cyto_stylesheet + new_styles_subgraph, subgraph_header, parent_header, child_header
 
-def update_child_graph_by_pagination(data, elements, elements_parent, node_id, size, vertex, label, children_size, min_val,max_val, child_class_name,  parent, sig, depth, stylesheet_fullgraph, stylesheet_subgraph, stylesheet_subgraph_parent, stylesheet_subgraph_child, subgraph_header, parent_header, child_header ):
+def update_child_graph_by_pagination(data, elements, elements_parent, node_id, size, vertex, children_size, min_val,max_val, child_class_name,  parent,  depth, stylesheet_fullgraph, stylesheet_subgraph, stylesheet_subgraph_parent, stylesheet_subgraph_child, subgraph_header, parent_header, child_header ):
     if data:
         selected_id = str(data)
         element_nodes_child, element_edges_child = get_autotree_subgraph_elements_by_id(selected_id)
@@ -571,6 +583,6 @@ def update_child_graph_by_pagination(data, elements, elements_parent, node_id, s
         new_styles_fullgraph.append({'selector': f'#{selected_id}', 'style': {'background-color': 'purple'}})
         child_header = f'Child #{selected_id}'
  
-    return elements, elements_parent, element_nodes_child + element_edges_child, node_id, size, vertex, label, children_size, min_val,max_val, child_class_name,  parent, sig, depth,  cyto_stylesheet + new_styles_fullgraph, stylesheet_subgraph, stylesheet_subgraph_parent, stylesheet_subgraph_child, subgraph_header, parent_header, child_header
+    return elements, elements_parent, element_nodes_child + element_edges_child, node_id, size, vertex,  children_size, min_val,max_val, child_class_name,  parent, depth,  cyto_stylesheet + new_styles_fullgraph, stylesheet_subgraph, stylesheet_subgraph_parent, stylesheet_subgraph_child, subgraph_header, parent_header, child_header
 if __name__ == '__main__':
     app.run_server(debug=True)

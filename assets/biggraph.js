@@ -1,3 +1,4 @@
+/*
 alert('If you see this alert, then your custom JavaScript script has run!')
 
 
@@ -66,3 +67,29 @@ function init_callbacks(){
 // });
 
 init_callbacks()
+*/
+
+// DO NOT ACCEPT AN EXTRA EMPTY LINE AT THE END
+let file = document.getElementById("readfile");
+file.addEventListener("change", function () {
+    var reader = new FileReader();
+    reader.onload = function (progressEvent) {
+        console.log(this.result.split(/\s|\n/));
+        raw_txt = this.result.split(/\s|\n/);
+        render_graph(raw_txt);
+    };
+    reader.readAsText(this.files[0]);
+});
+function render_graph(raw_txt) {
+    const container = document.getElementById("sigma-container");
+    const graph = new graphology.Graph();
+    for (let i = 0; i < raw_txt[0]; i++) {
+        graph.addNode(i.toString(), { x: Math.random() * 10, y: Math.random() * 10, size: 1, label: i.toString(), color: "blue" });
+    }
+    for (let i = 2; i < raw_txt.length; i += 2) {
+        graph.addEdge(raw_txt[i], raw_txt[i + 1])
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const trenderer = new Sigma(graph, container);
+}
