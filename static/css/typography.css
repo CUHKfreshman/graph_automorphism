@@ -1,0 +1,13 @@
+@import './bootstrap.css';
+html,body{
+    height: 100vh;
+    overflow: hidden;
+}
+body{
+    min-height: 100vh;
+}
+/*
+.nav-tabs > li > a:hover {
+    background-color: silver;
+    color: white;
+}*/

@@ -16,7 +16,6 @@ import copy
  
 def comb(n,m):
     if m <= n:
-        
         a=factorial(n)/(factorial(n-m) * factorial(m))
     return a
  
@@ -32,12 +31,12 @@ class TreeNode():
         self.depth = None    
 
 def read_graph(file_name):
-    g_file = open(file_name, 'r')
-    node_num = int(g_file.readline())
-    edge_num = int(g_file.readline())
-    df = pd.read_csv(file_name, delimiter = " ", skiprows=2,header=None, names=['src','tar'])
-    g = nx.from_pandas_edgelist(df, "src", "tar")
-    return g,node_num,edge_num
+    with open(file_name, 'r') as g_file:
+        node_num = int(g_file.readline())
+        edge_num = int(g_file.readline())
+        df = pd.read_csv(file_name, delimiter = " ", skiprows=2,header=None, names=['src','tar'])
+        g = nx.from_pandas_edgelist(df, "src", "tar")
+        return g,node_num,edge_num
 
 def read_color(file_name):
     # for reading seed and color
@@ -135,7 +134,7 @@ def permute(ni,ni_,S_set, AutoTree):
     for idx in range(len(S_set)):
         S_set[idx] = d[S_set[idx]]
     return S_set
-def ssm(n,s,is_seed, AutoTree, Ans, Graph):
+def ssm(n,s,is_seed, AutoTree, Graph):
     nn = None
     tn = None
     # is_seed = np.zeros(nodenum)
@@ -168,10 +167,9 @@ def ssm(n,s,is_seed, AutoTree, Ans, Graph):
         #Ans.append(AutoTree[n].vertex_list)
        # AutoTree[n].vertex_list
         #print(AutoTree[n].vertex_list)
-        Ans.append(AutoTree[n].vertex_list)
         ans = [AutoTree[n].vertex_list]
     elif AutoTree[n].children[0] == -1:
-       # print("finally")
+        print("finally iso")
         Nq_Graph = Graph.subgraph(AutoTree[n].vertice_list)
        # print(AutoTree[n].vertice_list)
         Query_subgraph = Graph.subgraph(s.tolist())
@@ -191,7 +189,7 @@ def ssm(n,s,is_seed, AutoTree, Ans, Graph):
             # print("recursive seed",vs)
                 n_set.append(child)
                 cnt += 1
-                lst = ssm(child,vs,is_seed,AutoTree, Ans, Graph)
+                lst = ssm(child,vs,is_seed,AutoTree, Graph)
                 tmp.append(lst)
                 #Ans.append(lst)
             # print("SSM: return ","para",child,"  ",vs,"   ",lst)
@@ -225,20 +223,35 @@ def ssm(n,s,is_seed, AutoTree, Ans, Graph):
         queue = []
         queue.append([])
         for i in range(len(S_dict)):
+            S_dict[i] = sorted(S_dict[i])
+       # print("S_dict",S_dict)
+        for i in range(len(S_dict)):
             cand = S_dict[i]
             #print("cand",cand)
             for tmp in range(len(queue)):
                 s = queue[0]
                 queue.pop(0)
                 for tt in range(len(cand)):
+                    #print(cand)
                     #print(s+cand[tt])
                     a = list(set(s) & set(cand[tt]))
+                    
                     if len(a )!=0:
                         continue
                     queue.append(s+cand[tt])
                 #print(queue)
         for i in range(len(queue)):
             ans.append(queue[i])
+   # print("ans:",ans)
+    ans1 = []
+    hash_set = {}
+    for i in range(len(ans)):
+        if frozenset(ans[i]) in hash_set.keys():
+            continue
+        else:
+            hash_set[frozenset(ans[i])] = 1
+            ans1.append(ans[i])
+    ans = ans1
     search_queue = deque([])
     if r== 0:
         p= 0
@@ -277,6 +290,7 @@ def ssm(n,s,is_seed, AutoTree, Ans, Graph):
     #print("AutoMap",AutoMap)
     Final = []
     #print(ans)
+    #print("ans:",ans)
     for i in range(len(AutoMap[n])):
         for query in ans:
             Final.append(permute(n,AutoMap[n][i],query[:], AutoTree))
@@ -287,24 +301,16 @@ def get_is_seed(s, nodenum):
     for s_ in s:
         is_seed[s_] = 1
     return is_seed
-def enumerate_all(nodenum, AutoTree, Ans, Graph):
+def enumerate_all(nodenum, AutoTree,  Graph):
 
-    d = {v: ssm(0,[v],get_is_seed([v], nodenum), AutoTree, Ans, Graph) for v in AutoTree[0].vertex_list}
-    
+    d = {v: ssm(0,[v],get_is_seed([v], nodenum), AutoTree,  Graph) for v in AutoTree[0].vertex_list}
+    #print(d)
     queue = []
-    #TODO: check this Ans. it is only cleared in this local function, not global.
-    Ans = []
+    #print(list(Graph.neighbors(32)))
     whole_vertex = AutoTree[0].vertex_list
-    i = 0
-    #S_set = whole_vertex
-    queue = []
-    for v in d[whole_vertex[0]]:
-        if d[whole_vertex[0]] == 0:
-            continue
-        queue.append(v)
+   # print(whole_vertex[32])
 
-
-    return 
+    return d
 
 def print_children_vertice(nq, AutoTree):
     print('print_children_vertice')
@@ -322,35 +328,39 @@ def print_children_vertice(nq, AutoTree):
  app.py usage example: d = ssm_generator('./input.txt', [4, 5])
 '''
 def ssm_generator(filename, raw_seed_list):
-    S_set = []
-    Ans = []
+
     nodenum=0
-    edgenum=0
-    in_leaf = np.full(nodenum, -1)
-    depth = np.full(nodenum,-1)
-    max_depth=0
     Graph,nodenum,edgenum = read_graph(filename)
     AutoTree, SubTree, max_depth = read_AT("at.txt")
     color = read_color("color.txt")
-    seed,is_seed = read_seed(raw_seed_list, nodenum)
-    # print(seed,is_seed)
-    # Query_subgraph = Graph.subgraph(seed.tolist())
-    # GraphM = isomorphism.GraphMatcher(Graph,Query_subgraph)
-    # print("IsoDone!")
+    if len(raw_seed_list) > 0:
+        seed,is_seed = read_seed(raw_seed_list, nodenum)
+        # print(seed,is_seed)
+        # Query_subgraph = Graph.subgraph(seed.tolist())
+        # GraphM = isomorphism.GraphMatcher(Graph,Query_subgraph)
+        # print("IsoDone!")
 
-    # for i in GraphM.subgraph_monomorphisms_iter():
-    #     print(i)
-    enter = datetime.now()
-    d = ssm(0,seed,is_seed, AutoTree, Ans, Graph)
-    #enumerate_all(nodenum, AutoTree, Ans, Graph)
-    print(d)
-    exit = datetime.now()
-    interval = exit-enter
-    print(f'ssm time used: {interval}')
-    # print(d)
-    return d
-def main1():
-    ssm_generator('./case2.txt')
+        # for i in GraphM.subgraph_monomorphisms_iter():
+        #     print(i)
+        enter = datetime.now()
+        #all_dict = enumerate_all(nodenum,AutoTree,Graph)
+        d = ssm(0,seed,is_seed, AutoTree, Graph)
+        exit = datetime.now()
+        interval = exit-enter
+        print(f'ssm time used: {interval}')
+        # print(d)
+        return  d
+    else:
+        enter = datetime.now()
+        all_dict = enumerate_all(nodenum,AutoTree,Graph)
+        exit = datetime.now()
+        interval = exit-enter
+        print(f'enum time used: {interval}')
+        return all_dict
+        
+def main():
+    ssm_generator('./usrfile.txt',[1])
+    #enumerate_all()
     '''
     Ans = []
     AutoTree=[]
@@ -380,7 +390,7 @@ def main1():
     print(f'time used: {interval}')
     # print(d)
     '''
-
+#main1()
 ##print(np.loadtxt('seed.txt'))
 #print(np.array([4, 5]))
 #print(type(np.loadtxt('seed.txt')),np.loadtxt('seed1t.txt').shape ==(), np.array(np.loadtxt('seed.txt')) )

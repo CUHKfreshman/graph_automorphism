@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100vh;">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--<link rel="stylesheet" type="text/css" href="{{url_for('static',filename='base.css')}}">-->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/typography.css') }}">
+    <title>Graph Automorphism</title>
+</head>
+
+<body style="height:100vh; overflow:hidden; min-height:100vh">
+    <div class="container-fluid p-0 m-0" style='min-height:100vh; overflow:hidden'>
+        <div
+            class='container-fluid p-0 mt-3 ms-3 me-3 h-100 d-flex flex-sm-nowrap  align-items-center justify-content-center justify-content-lg-start '>
+            <div class='row w-100 flex-sm-nowrap'>
+                <div class='col col-8'>
+                    <div class='card border-3 p-0' style="height:95.5vh">
+                        <div class='h-100 w-100' id='sigma-container'>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col me-3 d-flex flex-column ">
+                    <div class="row">
+                        <div class="card p-0 text-center">
+                            <div class="card-header">Upload Your Graph</div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item bg-light">
+                                    <input type="file" name="readfile" class="form-control mt-1 mb-1" id="readfile"
+                                        value="u">
+                                </li>
+                                <li class="list-group-item">
+                                    <table class="table table-hover table-striped table-bordered  mb-1 mt-1">
+                                        <tr>
+                                            <td class="w-25 ">Node ID</td>
+                                            <td id="node-id"></td>
+                                        </tr>
+                                        <tr class="">
+                                            <td class="w-25">Nodes</td>
+                                            <td id="nodenum"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="w-25">Edges</td>
+                                            <td id="edgenum"></td>
+                                        </tr>
+                                    </table>
+                                </li>
+                            </ul>
+
+
+                            <!--<table class="table table-hover table-striped table-bordered rounded">
+                                <tr><td class="w-25">Node ID</td><td id="node-id"></td></tr>
+                                <tr class=""><td class="w-25">Nodes</td><td id="nodenum"></td></tr>
+                                <tr><td class="w-25">Edges</td><td id="edgenum"></td></tr>
+                            </table>-->
+
+
+                        </div>
+                        <!--
+                    <div class="row">
+                        <div class="card p-0 border-2" style="height: 40vh; overflow:hidden">
+                            <div class="card-header">
+                                <p class="m-0 d-inline align-bottom">Full AutoTree</p>
+                                <p class="m-0 d-inline float-end text-secondary">>>></p>
+                            </div>
+                        </div>
+                    </div>
+                    -->
+                        <!--
+                    <div class="row">
+                        <div class="tabs">
+                            <div class="tab">
+                                <div class="card">
+                                    <table class="table table-hover table-striped table-bordered">
+                                        <tr><td class="w-25">Node ID</td><td id="node-id"></td></tr>
+                                        <tr><td class="w-25">Graph Size</td><td id="graph-size"></td></tr>
+                                        <tr><td class="w-25">Vertices</td><td id="vertices"></td></tr>
+                                        <tr><td class="w-25">Depth</td><td id="depth"></td></tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    -->
+                    </div>
+                    <div class="row flex-fill mt-2">
+                        <div class="card p-0" style="border-top:0">
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-tabs  bg-light rounded-top border-bottom" id="ssm-or-at-tabs" role="tablist">
+                                <li class="nav-item w-50" role="presentation">
+                                    <button class="nav-link active w-100 border-top" style="border-left: 0;" id="ssm-entry-tab" data-bs-toggle="tab"
+                                        data-bs-target="#ssm-entry" type="button" role="tab" aria-controls="ssm-entry"
+                                        aria-selected="true">SSM Analysis</button>
+                                </li>
+                                <li class="nav-item w-50 " role="presentation">
+                                    <button class="nav-link w-100 border-top border-right" style="border-right: 0;" id="autotree-entry-tab" data-bs-toggle="tab"
+                                        data-bs-target="#autotree-entry" type="button" role="tab" aria-controls="autotree-entry"
+                                        aria-selected="false">Autotree Analysis</button>
+                                </li>
+                            </ul>
+
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="ssm-entry" role="tabpanel" aria-labelledby="ssm-entry-tab"
+                                    tabindex="0">
+
+                                    <div class="w-75 h-25 border position-absolute top-50 start-50 translate-middle">
+                                        <button type='button' class="btn btn-outline-primary position-absolute top-50 start-50 translate-middle" id="ssm-start-btn">Start Analysis</button>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" style='overflow:hidden' id="autotree-entry" role="tabpanel" aria-labelledby="autotree-entry-tab"
+                                    tabindex="0">
+                                        <div class="w-75 h-25 border position-absolute top-50 start-50 translate-middle">
+                                        <button type='button' class="btn btn-outline-primary position-absolute top-50 start-50 translate-middle" id="autotree-start-btn"  data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">AutoTree Entry</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="offcanvas offcanvas-start" style='width:66.3%' data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="offcanvasScrollingLabel">AutoTree Analyzer</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+          <div class="border border-2 h-100 d-flex">
+            <div class='row mt-2 mb-2 ms-0 mb-0 w-100'>
+                <div class='col col-6 h-100 d-flex flex-wrap justify-content-between'>
+                    <div class='card h-75 align-self-center w-100'>
+                        <div class='card-header'>Corresponding AutoTree Subgraph</div>
+                        <div class='card-body'></div>
+                    </div>
+                </div>
+                <div class='col col-6 h-100 d-flex flex-wrap justify-content-between'>
+                    <div class='card align-self-center w-100' style='height:42vh'>
+                        <div class='card-header'>Parent</div>
+                        <div class='card-body'></div>
+                    </div>
+                    <div class='card align-self-center w-100' style='height:42vh'>
+                        <div class='card-header'>Child</div>
+                        <div class='card-body'></div>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+</body>
+<footer>
+    <script src="{{url_for('static', filename='js/graphology.js')}}"></script>
+    <script src="{{url_for('static', filename='js/bootstrap.js')}}"></script>
+    <script src="{{url_for('static', filename='js/graphology-library.js')}}"></script>
+    <script src="{{url_for('static', filename='js/sigma.js')}}"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="{{url_for('static', filename='js/effects.js')}}"></script>
+    <!--<script src="{{url_for('static', filename='js/sigma.layout.forceAtlas2.min.js')}}" defer></script>-->
+    <script src="{{url_for('static', filename='js/biggraph.js')}}" defer></script>
+</footer>
+
+</html>

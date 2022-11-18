@@ -1,12 +1,18 @@
-import dash_cytoscape as cyto
-from dash import html, Dash, ctx, Dash
-import networkx as nx
-import pandas as pd
-from dash.dependencies import Input, Output, State
-import dash_bootstrap_components as dbc
-import dash_defer_js_import as dji
+#import dash_cytoscape as cyto
+#from dash import html, Dash, ctx, Dash
+#import networkx as nx
+#import pandas as pd
+#from dash.dependencies import Input, Output, State
+#import dash_bootstrap_components as dbc
+#import dash_defer_js_import as dji
+#import autotree
+from math import ceil
+from flask import Flask, render_template, request
+import json
+import ssm
 import autotree
-
+app = Flask(__name__, template_folder='templates', static_folder="static", static_url_path='/static')
+'''
 cyto_stylesheet = [
     # {'selector': '.TP', 'style': {'color':'red',"background-color": "red", }},
     # {'selector': '.FP', 'style': {'color':'lightblue', "background-color": "blue" }},
@@ -399,6 +405,7 @@ app.layout = dbc.Container(children=
                         ],fluid=True,class_name='p-0 m-0', style={'min-height':'100vh','overflow':'hidden'}
     )
 '''
+'''
 @app.callback(Output('cy-component', 'stylesheet'),
               Input('cy-component', 'tapNodeData'))
 def update_stylesheet(NodeData):
@@ -414,6 +421,7 @@ def update_stylesheet(NodeData):
             }]
 
     return cyto_stylesheet + new_styles
+'''
 '''
 
 #autotree offcanvas
@@ -586,3 +594,20 @@ def update_child_graph_by_pagination(data, elements, elements_parent, node_id, s
     return elements, elements_parent, element_nodes_child + element_edges_child, node_id, size, vertex,  children_size, min_val,max_val, child_class_name,  parent, depth,  cyto_stylesheet + new_styles_fullgraph, stylesheet_subgraph, stylesheet_subgraph_parent, stylesheet_subgraph_child, subgraph_header, parent_header, child_header
 if __name__ == '__main__':
     app.run_server(debug=True)
+'''
+ssm_all_dict= {}
+@app.route('/',methods=['GET','POST'])
+def mainpage():
+    return render_template('index.html')
+@app.route('/upload', methods = ['POST'])
+def get_post_javascript_data():
+    jsdata = json.loads(request.get_data().decode('utf-8'))
+    listdata = list(jsdata['raw_txt'])
+    with open('usrfile.txt', 'w') as f:
+        f.write(jsdata['file'])
+    autotree.DviCL('./usrfile.txt')
+    ssm_all_dict = ssm.ssm_generator('usrfile.txt',[])
+    print(ssm_all_dict)
+    return json.dumps(ssm_all_dict)
+if __name__ == "__main__":
+    app.run(port=8050, debug=True)
