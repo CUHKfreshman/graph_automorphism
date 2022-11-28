@@ -137,6 +137,7 @@ def permute(ni,ni_,S_set, AutoTree):
 def ssm(n,s,is_seed, AutoTree, Graph):
     nn = None
     tn = None
+    #print('one ssm')
     # is_seed = np.zeros(nodenum)
     # for s in seed:
     #     is_seed[s] = 1
@@ -295,6 +296,7 @@ def ssm(n,s,is_seed, AutoTree, Graph):
         for query in ans:
             Final.append(permute(n,AutoMap[n][i],query[:], AutoTree))
     #print("Final: nq",n," ",Final)
+    
     return Final
 def get_is_seed(s, nodenum):
     is_seed = np.zeros(nodenum)
@@ -328,7 +330,6 @@ def print_children_vertice(nq, AutoTree):
  app.py usage example: d = ssm_generator('./input.txt', [4, 5])
 '''
 def ssm_generator(filename, raw_seed_list):
-
     nodenum=0
     Graph,nodenum,edgenum = read_graph(filename)
     AutoTree, SubTree, max_depth = read_AT("at.txt")
@@ -359,7 +360,7 @@ def ssm_generator(filename, raw_seed_list):
         return all_dict
         
 def main():
-    ssm_generator('./usrfile.txt',[1])
+    ssm_generator('./usrfile.txt',[])
     #enumerate_all()
     '''
     Ans = []
@@ -396,3 +397,4 @@ def main():
 #print(type(np.loadtxt('seed.txt')),np.loadtxt('seed1t.txt').shape ==(), np.array(np.loadtxt('seed.txt')) )
 #print(np.array([1]).shape == ())
 #print(np.loadtxt('seed1t.txt'))
+#main()

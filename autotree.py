@@ -23,22 +23,24 @@ depth:          8
 total: 8 lines
 '''
 def readfile_at():
-    full_tree = []
-    corr_name = ['size', 'vertex_list', 'label', 'children_size', 'children', 'parent', 'sig', 'depth']
+    full_tree = {}
+    corr_name = ['size', 'vertex_list', 'label','edge_num', 'edges', 'children_size', 'children', 'parent', 'sig', 'depth']
     canonical_order = 0
     with open('at.txt','r') as f:
         i = 1 # start from the first line
         tmp_tree = {} #tree to be read
         for line in f:
-            if i in (2, 3, 5):
+            if i in (2, 3, 7):
                 tmp_tree[corr_name[i - 1]] = line.split()   ####!!!!!!!!!important: they are all string, not int
                 tmp_tree[corr_name[i - 1]] = [str(n) for n in sorted(int(n) for n in tmp_tree[corr_name[i - 1]])]
+            elif i == 5:
+                tmp_tree[corr_name[i - 1]] = line.split()
             else:
                 tmp_tree[corr_name[i - 1]] = line.rstrip()
-                if i == 8:
+                if i == 10:
                     tmp_tree['order'] = str(canonical_order)
                     canonical_order += 1
-                    full_tree.append(tmp_tree)
+                    full_tree[canonical_order] = tmp_tree
                     tmp_tree = {}
                     i = 1
                     continue
@@ -55,4 +57,4 @@ def find_autotrees(full_tree, id):
 
 if __name__ == "__main__":
     a = readfile_at()
-    print(a[1])
+    print(a)

@@ -18,7 +18,7 @@
             <div class='row w-100 flex-sm-nowrap'>
                 <div class='col col-8'>
                     <div class='card border-3 p-0' style="height:95.5vh">
-                        <div class='h-100 w-100' id='sigma-container'>
+                        <div class='h-100 w-100' id='orig-fullgraph-container'>
                         </div>
                     </div>
                 </div>
@@ -108,13 +108,21 @@
                                     tabindex="0">
 
                                     <div class="w-75 h-25 border position-absolute top-50 start-50 translate-middle">
-                                        <button type='button' class="btn btn-outline-primary position-absolute top-50 start-50 translate-middle" id="ssm-start-btn">Start Analysis</button>
+                                        <!--<button type='button' class="btn btn-outline-primary position-absolute top-50 start-50 translate-middle" id="ssm-start-btn">Start Analysis</button>-->
+                                        <button class="btn btn-outline-primary position-absolute top-50 start-50 translate-middle" type="button" disabled>
+                                            <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                            Waiting...
+                                          </button>
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" style='overflow:hidden' id="autotree-entry" role="tabpanel" aria-labelledby="autotree-entry-tab"
                                     tabindex="0">
                                         <div class="w-75 h-25 border position-absolute top-50 start-50 translate-middle">
-                                        <button type='button' class="btn btn-outline-primary position-absolute top-50 start-50 translate-middle" id="autotree-start-btn"  data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">AutoTree Entry</button>
+                                        <!--<button type='button' class="btn btn-outline-primary position-absolute top-50 start-50 translate-middle" id="autotree-start-btn"  data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">AutoTree Entry</button>-->
+                                        <button  class="btn btn-outline-primary position-absolute top-50 start-50 translate-middle" id="autotree-start-btn"  data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling" type="button" disabled>
+                                            <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                                            Waiting...
+                                          </button>
                                     </div>
                                 </div>
                             </div>

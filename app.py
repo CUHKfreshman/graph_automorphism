@@ -312,7 +312,7 @@ app.layout = dbc.Container(children=
                                                             #dji.Import(src='./sigma.js'),
                                                             #dji.Import(src='./sigma.min.js'),
                                                             dji.Import(src='assets/biggraph.js'),
-                                                            html.Div(id='sigma-container', className='h-100 w-100'),
+                                                            html.Div(id='orig-fullgraph-container', className='h-100 w-100'),
                                                             #dji.Import(src="./custom-script.js")
                                                         ],
                                                         id='cyto_div', class_name='border-3 p-0', style={"height":"95.5vh"},
@@ -606,8 +606,12 @@ def get_post_javascript_data():
     with open('usrfile.txt', 'w') as f:
         f.write(jsdata['file'])
     autotree.DviCL('./usrfile.txt')
+    full_autotree = autotree.readfile_at()
     ssm_all_dict = ssm.ssm_generator('usrfile.txt',[])
+    print(full_autotree)
+    print('----')
     print(ssm_all_dict)
-    return json.dumps(ssm_all_dict)
+    packed_data = {0:full_autotree, 1:ssm_all_dict}
+    return json.dumps(packed_data)
 if __name__ == "__main__":
     app.run(port=8050, debug=True)
