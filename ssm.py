@@ -34,7 +34,7 @@ def read_graph(file_name):
     with open(file_name, 'r') as g_file:
         node_num = int(g_file.readline())
         edge_num = int(g_file.readline())
-        df = pd.read_csv(file_name, delimiter = " ", skiprows=2,header=None, names=['src','tar'])
+        df = pd.read_csv(file_name, sep = "\s+|\t+|\s+\t+|\t+\s+", skiprows=2,header=None, names=['src','tar'])
         g = nx.from_pandas_edgelist(df, "src", "tar")
         return g,node_num,edge_num
 
@@ -359,8 +359,11 @@ def ssm_generator(filename, raw_seed_list):
         print(f'enum time used: {interval}')
         return all_dict
         
-def main():
-    ssm_generator('./usrfile.txt',[])
+if __name__ == "__main__":
+    result = ssm_generator('usrfile.txt',[])
+    print(result)
+    with open('tempssm.txt', 'w') as f:
+        f.write(str(result))
     #enumerate_all()
     '''
     Ans = []
