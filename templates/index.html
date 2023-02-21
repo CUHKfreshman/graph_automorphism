@@ -150,17 +150,23 @@
                             <!-- Nav tabs -->
                             <ul class="nav nav-tabs  bg-light rounded-top border-bottom" id="ssm-or-at-tabs"
                                 role="tablist">
-                                <li class="nav-item w-50" role="presentation">
+                                <li class="nav-item " role="presentation" style="width: 33%">
                                     <button class="nav-link active w-100 border-top" style="border-left: 0;"
                                         id="ssm-entry-tab" data-bs-toggle="tab" data-bs-target="#ssm-entry"
                                         type="button" role="tab" aria-controls="ssm-entry" aria-selected="true">SSM
-                                        Analysis</button>
+                                        </button>
                                 </li>
-                                <li class="nav-item w-50 " role="presentation">
+                                <li class="nav-item  " role="presentation" style="width: 33%">
                                     <button class="nav-link w-100 border-top border-right" style="border-right: 0;"
                                         id="autotree-entry-tab" data-bs-toggle="tab" data-bs-target="#autotree-entry"
                                         type="button" role="tab" aria-controls="autotree-entry"
-                                        aria-selected="false">Autotree Analysis</button>
+                                        aria-selected="false">Autotree</button>
+                                </li>
+                                <li class="nav-item  " role="presentation" style="width: 33%">
+                                    <button class="nav-link w-100 border-top border-right" style="border-right: 0;"
+                                        id="im-entry-tab" data-bs-toggle="tab" data-bs-target="#im-entry"
+                                        type="button" role="tab" aria-controls="im-entry"
+                                        aria-selected="false">IM</button>
                                 </li>
                             </ul>
 
@@ -256,6 +262,21 @@
                                         </div>
                                     </div>
                                 </div>-->
+                                </div>
+                                <div class="tab-pane h-100 fade" style='overflow:hidden' id="im-entry" role="tabpanel"
+                                    aria-labelledby="im-entry-tab" tabindex="0">
+                                    
+                                    <div class="w-75 h-25 border position-absolute top-50 start-50 translate-middle">
+                                        <button
+                                            class="btn btn-outline-primary position-absolute top-50 start-50 translate-middle"
+                                            id="im-start-btn" data-bs-toggle="offcanvas"
+                                            data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling"
+                                            type="button" disabled>
+                                            <span class="spinner-grow spinner-grow-sm" role="status"
+                                                aria-hidden="true"></span>
+                                            Waiting...
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
