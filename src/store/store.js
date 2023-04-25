@@ -22,10 +22,12 @@ export const useOrigFullGraphStore = defineStore("origFullGraphStore", {
     imSelectedRounds: [],
     ssmAllDict: {},
     imAllDict: {},
+    imDistributionDict: {},
     atEnabled: false,
     ssmEnabled: false,
     origEnabled: true,
     imEnabled: false,
+    kNeighborEnabled: false,
     // layout options
     origFullGraphConfig: {
       nodeColor: "#3c4bbc",
@@ -113,8 +115,9 @@ export const useOrigFullGraphStore = defineStore("origFullGraphStore", {
               this.selectedNode = node.id;
               //TODO: add a condition
               //handle KNeighbor
-              this.kNeighborStore.kNeighborCreate();
-
+              if (this.kNeighborEnabled) {
+                this.kNeighborStore.kNeighborCreate();
+              }
               console.log("selectedNode", this.selectedNode);
 
 
@@ -273,6 +276,8 @@ export const useOrigFullGraphStore = defineStore("origFullGraphStore", {
     imColormapCreate(data, isNewData, isGradient) {
       if (isNewData) {
         this.imAllDict = data;
+        this.imDistributionDict = Object.values(this.imAllDict).map(array => array.length);
+        console.log("imDistributionDict", this.imDistributionDict);
       }
       // from red to yellow, we only modify the middle content in hex color environment
       //let start_color = 0; //ff0000
@@ -282,20 +287,20 @@ export const useOrigFullGraphStore = defineStore("origFullGraphStore", {
       //var colormap_html = '';
       //var colorarray = ["#012030", "#13678A", "#45C4B0", "#9AEBA3", "#DAFDBA", "#F2EBEB"];
       //var colorarray = ["#BF1F94", "#5503A6", "#3C038C", "#F29F05", "#F25D27", "#F2EBEB"];
-      var colorarray = ["#0554F2", "#05F2F2", "#F2B705", "#F28705", "#F20505", "#F2EBEB"];
+      //var colorarray = ["#0554F2", "#05F2F2", "#F2B705", "#F28705", "#F20505", "#F2EBEB"];
       //var colorarray = ["#F77148", "#D64C3E", "#ED516D", "#D63EA6", "#E648F7", "#F2EBEB"];
       //var colorarray = ["#f7c58b", "#593718", "#A65729", "#8C281F", "#0D0D0D", "#F2EBEB"];
       Object.entries(this.imAllDict).forEach(([round, value]) => {
         let colorLR = ["#ff0000", "#ffffcc"];
         let color = "#ff0000"; // begin
-        if (value.length > 1) {
+        if (value.length > 0) {
           if (isGradient) {
             color = this.curvedColorHex(colorLR, round, 0, maxRoundNum, "linear");
             //color = colorarray[round];
           }
           else {
-            //color = "#" + (Math.random() * 1145141919810).toString(16).substring(0, 6);
-            color = colorarray[round]; // just a good try made by pilot, very cool, record here: round % colorarray.length
+            color = "#" + (Math.random() * 1145141919810).toString(16).substring(0, 6);
+            //color = colorarray[round]; // 3rd round % colorarray.length
           }
           this.imRoundColorDict[round] = color;
           /*
@@ -407,6 +412,7 @@ export const useKNeighborStore = defineStore("kNeighborStore", {
   state: () => ({
     origFullGraphStore: useOrigFullGraphStore(),
     kNeighbor: undefined,
+    kValue: 1,
     kNeighborConfig: null,
     kNeighborCanvas: undefined,
     kNeighborSelectedNode: null,
@@ -447,43 +453,10 @@ export const useKNeighborStore = defineStore("kNeighborStore", {
           //node, i, pos, event
           onClick: (node, i) => {
             if (node && i !== undefined) {
-              this.selectedNode = node;
-              if (this.origEnabled) {
-                this.origFullGraph.selectNodeByIndex(i, true);
-                this.origFullGraph.zoomToNodeByIndex(i);
-              }
-              else if (this.ssmEnabled) {
-                // First, select the initial node
-                // const initialNode = node.id;
-                const pairNodesArray = this.ssmAllDict[node.id].flat().flat(); // format:[[a], [b]]=>[a,b,]
-                ////console.log("pairNodesArray", pairNodesArray)
-                // Now, let's get the adjacent nodes of each of the adjacent nodes
-                const rawAdjacentNodesArray = [];
-                pairNodesArray.forEach(val => {
-                  const thisID = val.toString();
-                  const tmpNodes = this.origFullGraph.getAdjacentNodes(thisID);
-
-                  rawAdjacentNodesArray.push(...tmpNodes);
-                });
-                ////console.log("rawAdjacentNodesArray", rawAdjacentNodesArray);
-                const distinctAdjacentNodesArray = Array.from(new Set(rawAdjacentNodesArray.map(obj => obj.id.toString())));
-                ////console.log("distinctAdjacentNodesArray", distinctAdjacentNodesArray)
-                // Finally, we can select all of the nodes we want
-                const rawAllNodesArray = [
-                  ...pairNodesArray,
-                  ...distinctAdjacentNodesArray,
-                ];
-                const distinctAllNodesArray = Array.from(new Set(rawAllNodesArray.map(val => val.toString())));
-                ////console.log("distinctAllNodesArray", distinctAllNodesArray)
-                this.origFullGraph.selectNodesByIds(distinctAllNodesArray);
-                this.origFullGraph.zoomToNodeByIndex(i);
-              }
-              else if (this.imEnabled) {
-                this.origFullGraph.selectNodeByIndex(i, true);
-                this.origFullGraph.zoomToNodeByIndex(i);
-              }
+                this.kNeighbor.selectNodeByIndex(i, true);
+                this.kNeighbor.zoomToNodeByIndex(i);
             } else {
-              this.origFullGraph.unselectNodes();
+              this.kNeighbor.unselectNodes();
             }
             //console.log("Clicked node: ", node);
           },
@@ -547,8 +520,8 @@ export const useKNeighborStore = defineStore("kNeighborStore", {
 
       return distinctAllNodesArray;
     },
-    kNeighborUpdate(k) {
-      let selectedNodeNeighbors = this.getKNeighbor(this.origFullGraphStore.selectedNode, k);
+    kNeighborUpdate() {
+      let selectedNodeNeighbors = this.getKNeighbor(this.origFullGraphStore.selectedNode, this.kValue);
       //console.log("Updating kNeighbor");
       const filteredConnectionsArray = this.origFullGraphStore.edgelist.filter(connection => {
         return (
@@ -567,7 +540,7 @@ export const useKNeighborStore = defineStore("kNeighborStore", {
       this.kNeighborRender();
     },
     kNeighborRender() {
-      console.log("rendering", this.origFullGraphStore.origEnabled, this.origFullGraphStore.ssmEnabled, this.origFullGraphStore.imEnabled);
+      console.log("rendering KNeighbor");
       if (this.origFullGraphStore.origEnabled)
         this.kNeighborConfig.nodeColor = (node) => {
           return node.id == this.origFullGraphStore.selectedNode ? "#1dff08" : this.origFullGraphStore.origColormap[parseInt(node.id)];
@@ -583,9 +556,23 @@ export const useKNeighborStore = defineStore("kNeighborStore", {
       this.kNeighborConfig.linkColor = "#666666"; //isblack? #666666 : #e0e0e0
       //this.toggleView("orig");
 
-      this.kNeighbor.setConfig(this.kNeighborConfig);
+      //this.kNeighbor.setConfig(this.kNeighborConfig);
       this.kNeighbor.start();
       this.kNeighbor.zoomToNodeById(this.origFullGraphStore.selectedNode, undefined, 3);
+    },
+    kNeighborColorMapRender() {
+      if (this.origFullGraphStore.origEnabled)
+        this.kNeighborConfig.nodeColor = (node) => {
+          return node.id == this.origFullGraphStore.selectedNode ? "#1dff08" : this.origFullGraphStore.origColormap[parseInt(node.id)];
+        };
+      else if (this.origFullGraphStore.ssmEnabled)
+        this.kNeighborConfig.nodeColor = (node) => {
+          return this.origFullGraphStore.ssmColormap[parseInt(node.id)];
+        };
+      else if (this.origFullGraphStore.imEnabled)
+        this.kNeighborConfig.nodeColor = (node) => {
+          return this.origFullGraphStore.imColormap[parseInt(node.id)];
+        };
     }
   },
 });
@@ -595,6 +582,7 @@ export const useAutoTreeStore = defineStore("autoTreeStore", {
     origFullGraphStore: useOrigFullGraphStore(),
     autoTree: null,
     autoTreeGraph: null,
+    
     autoTreeCanvas: null,
     autoTreeConfig: null,
     autoTreeNodeList: [],
@@ -658,43 +646,16 @@ export const useAutoTreeStore = defineStore("autoTreeStore", {
           //node, i, pos, event
           onClick: (node, i) => {
             if (node && i !== undefined) {
-              this.selectedNode = node;
-              if (this.origEnabled) {
-                this.origFullGraph.selectNodeByIndex(i, true);
-                this.origFullGraph.zoomToNodeByIndex(i);
-              }
-              else if (this.ssmEnabled) {
-                // First, select the initial node
-                // const initialNode = node.id;
-                const pairNodesArray = this.ssmAllDict[node.id].flat().flat(); // format:[[a], [b]]=>[a,b,]
-                ////console.log("pairNodesArray", pairNodesArray)
-                // Now, let's get the adjacent nodes of each of the adjacent nodes
-                const rawAdjacentNodesArray = [];
-                pairNodesArray.forEach(val => {
-                  const thisID = val.toString();
-                  const tmpNodes = this.origFullGraph.getAdjacentNodes(thisID);
+              console.log("Clicked cell: ", node, i);
+              console.log(this.autoTree[parseInt(node.id)]['vertex_list']);
+                this.autoTreeGraph.selectNodeByIndex(i, true);
+                this.autoTreeGraph.zoomToNodeByIndex(i);
+                // index = order + 1
+                this.origFullGraphStore.origFullGraph.selectNodesByIds(this.autoTree[parseInt(node.id) + 1]['vertex_list']);
+                this.origFullGraphStore.origFullGraph.fitViewByNodeIds(this.autoTree[parseInt(node.id) + 1]['vertex_list']);
 
-                  rawAdjacentNodesArray.push(...tmpNodes);
-                });
-                ////console.log("rawAdjacentNodesArray", rawAdjacentNodesArray);
-                const distinctAdjacentNodesArray = Array.from(new Set(rawAdjacentNodesArray.map(obj => obj.id.toString())));
-                ////console.log("distinctAdjacentNodesArray", distinctAdjacentNodesArray)
-                // Finally, we can select all of the nodes we want
-                const rawAllNodesArray = [
-                  ...pairNodesArray,
-                  ...distinctAdjacentNodesArray,
-                ];
-                const distinctAllNodesArray = Array.from(new Set(rawAllNodesArray.map(val => val.toString())));
-                ////console.log("distinctAllNodesArray", distinctAllNodesArray)
-                this.origFullGraph.selectNodesByIds(distinctAllNodesArray);
-                this.origFullGraph.zoomToNodeByIndex(i);
-              }
-              else if (this.imEnabled) {
-                this.origFullGraph.selectNodeByIndex(i, true);
-                this.origFullGraph.zoomToNodeByIndex(i);
-              }
             } else {
-              this.origFullGraph.unselectNodes();
+              this.autoTreeGraph.unselectNodes();
             }
             //console.log("Clicked node: ", node);
           },
@@ -708,7 +669,163 @@ export const useAutoTreeStore = defineStore("autoTreeStore", {
       }), this.autoTreeEdgeList.map(item => Object.assign({}, item)));
       this.autoTreeGraph.start();
 
+    },
+    asteroidDestroy() {
+
     }
   }
 
+});
+export const useCustomizedIMStore = defineStore("customizedIMStore", {
+  state: () => ({
+    origFullGraphStore: useOrigFullGraphStore(),
+    hasReceived: false,
+    useOrig: false,
+    imAllDict: {},
+    imDistributionDict: {},
+    imRoundColorDict: {},
+    imSelectedRounds: [],
+    imColormap: [],
+    customizedIM: null,
+    customizedIMCanvas: null,
+    customizedIMConfig: null,
+    customizedIMNodeList: [],
+    customizedIMEdgeList: [],
+  }),
+  actions: {
+    customizedIMCreate() {
+      //console.log("creating full graph");
+      const initconfig = {
+        //backgroundColor: "#FFFFFF",
+        nodeSize: 4,            //4
+        nodeColor: "#4B5BBF",
+        nodeGreyoutOpacity: 0.1,
+        linkWidth: 0.1,
+        linkColor: "#666666", //#5F74C2 is default Cosmos color. #666666 is black theme, #e0e0e0 is white theme
+        linkArrows: false,
+        linkGreyoutOpacity: 0,
+        simulation: {
+          linkDistance: 1,
+          linkSpring: 0.3,
+          repulsion: 1,
+          gravity: 0.25,
+          friction: 0.85,
+        },
+        events: {
+          //node, i, pos, event
+          onClick: (node, i) => {
+            if (node && i !== undefined) {
+                this.customizedIM.selectNodeByIndex(i, true);
+                this.customizedIM.zoomToNodeByIndex(i);
+            } else {
+              this.customizedIM.unselectNodes();
+            }
+            //console.log("Clicked node: ", node);
+          },
+        },
+      };
+      // create graph
+      this.customizedIMConfig = initconfig;
+      this.customizedIM = new Graph(this.customizedIMCanvas, this.customizedIMConfig);
+      this.customizedIM.setData(this.origFullGraphStore.nodelist, this.origFullGraphStore.edgelist);
+      // render by degree initially
+      const degreeArray = this.customizedIM.graph.degree;
+      //console.log('deg');
+      //console.log(degreeArray);
+      //console.log(this.nodelist);
+      const minDegree = Math.min(...degreeArray);
+      const maxDegree = Math.max(...degreeArray);
+      //color
+      // 1. Create an array of indices sorted based on the corresponding id in nodelist
+      this.customizedIMConfig.nodeSize = (node) => {
+        // Find the index of the node.id in the sorted nodelist using sortedIndices
+        return (this.origFullGraphStore.origDegreeDict[parseInt(node.id)] - minDegree) / (maxDegree - minDegree) * 5 + 1;
+      };
+      this.imColormapRender();
+      this.customizedIM.fitView();
+
+    },
+    imColormapCreate(data, isNewData, isGradient) {
+      if (isNewData) {
+        this.imAllDict = data;
+        this.imDistributionDict = Object.values(this.imAllDict).map(array => array.length);
+
+      }
+      let maxRoundNum = Object.keys(this.imAllDict).length;
+      Object.entries(this.imAllDict).forEach(([round, value]) => {
+        let colorLR = ["#ff0000", "#ffffcc"];
+        let color = "#ff0000"; // begin
+        if (value.length > 0) {
+          if (isGradient) {
+            color = this.origFullGraphStore.curvedColorHex(colorLR, round, 0, maxRoundNum, "linear");
+            //color = colorarray[round];
+          }
+          else {
+            color = "#" + (Math.random() * 1145141919810).toString(16).substring(0, 6);
+            //color = colorarray[round]; // 3rd round % colorarray.length
+          }
+          this.imRoundColorDict[round] = color;
+          /*
+
+          let color = '#ff0000'; // #ff0000 to #ffff00
+          if (value.length > 1) {
+            if (key != 0) {
+              color = '#ff' + (endColor - (roundNum - key) * 25).toString(16).substring(0, 2) + '00';
+            }*/
+          /*colormap_html += `<li class="list-group-item d-flex align-items-center">
+                <span class="badge rounded-pill me-3" style="background-color:`+ color.substring(0, 7) + `">` + key + `</span>
+                <span class="fw-bold">Round `+ key + `</span>
+              </li>`*/
+        }
+        //assign color to each node
+        for (const val of value) {
+          this.imColormap[val] = color;
+        }
+      });
+      //console.log("imColormap", this.imColormap);
+    },
+    imColormapRender() {
+      const roundDiffCalculator = (colorA, colorB) => {
+        // get key value of colorA and colorB from this.imRoundColorDict
+        let colorAKey = Object.keys(this.imRoundColorDict).find(
+          (key) => this.imRoundColorDict[key] === colorA
+        );
+        let colorBKey = Object.keys(this.imRoundColorDict).find(
+          (key) => this.imRoundColorDict[key] === colorB
+        );
+        // return the smaller one if their roundNum diff is 1, if same, return "Same", else return "None"
+        let roundDiff = colorAKey - colorBKey;
+        if (Math.abs(roundDiff) <= 1) {
+          return roundDiff === 0 ? "Same" : roundDiff < 0 ? colorA : colorB;
+        } else {
+          return "None";
+        }
+      };
+      this.customizedIMConfig.nodeColor = (node) => {
+        return this.imColormap[parseInt(node.id)];
+      };
+      this.customizedIMConfig.linkColor = (link) => {
+        let src = parseInt(link.source);
+        let tar = parseInt(link.target);
+        if (Object.prototype.hasOwnProperty.call(this.imColormap, src) && Object.prototype.hasOwnProperty.call(this.imColormap, tar)) {
+          let result = roundDiffCalculator(this.imColormap[src], this.imColormap[tar]);
+          return result === "Same" ? "#666666" : result;
+        }
+        else {
+          return "#666666";
+        }
+      };
+      //this.toggleView("im");
+    },
+    imColormapRoundRender(roundNum, isAdd) {
+      //// no , change to select ids using selectids(imAllDict[round])
+      this.imSelectedRounds = isAdd ? [...this.imSelectedRounds, roundNum] : this.imSelectedRounds.filter((item) => item !== roundNum);
+      let allNodesToBeSelected = [];
+      for (const round of this.imSelectedRounds) {
+        allNodesToBeSelected = [...allNodesToBeSelected, ...this.imAllDict[round].map(num => num.toString())];
+      }
+      this.customizedIM.unselectNodes();
+      this.customizedIM.selectNodesByIds(allNodesToBeSelected);
+    },
+  }
 });

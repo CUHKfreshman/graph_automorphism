@@ -14,7 +14,7 @@ If debugging is required, run the following commands in different terminals
 ```
 redis-server
 yarn dev
-python3 app.py
+python3 ./flask/app.py
 ```
 
 ## Project development
@@ -22,9 +22,9 @@ python3 app.py
 ### Current status
 1. Basic graph analyzer:
     1. Graph rendering: Done
-    2. Metrics report: Not yet (Choosing layout)
+    2. Metrics report: Not yet
     3. Layout Options: Done
-    4. Modular Self-Assembling UI: Done (But may need to modify)
+    4. Modular Self-Assembling UI: Done 
 2. SSM graph analyzer:
     1. Basic color mapping: Done
     2. Metrics report: Not yet
@@ -32,14 +32,14 @@ python3 app.py
 3. AutoTree Analyzer:
     1. AutoTree graph rendering: Done
     2. Metrics report: Not yet
-    3. Modified node-wise operations: Not yet
+    3. Modified node-wise operations: Partial (lack destroy asteroid)
 4. IM graph analyzer:
    1. Basic color mapping: Done
    2. Metrics report: Not yet
    3. Modified node-wise operations: Not yet
    4. Step-by-step visualization: Done
-   5. K-neighbor visualization: K button not assigned
-   6. Two seed set comparison: Not yet
+   5. K-neighbor visualization: Done
+   6. Customizable seed set & prob: Done
 
 ### Remark
 For different node-wise operations, should use different entries rather than overriding.

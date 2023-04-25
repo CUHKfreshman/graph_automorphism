@@ -27,7 +27,7 @@ def readfile_at():
     full_tree = {}
     corr_name = ['size', 'vertex_list', 'label','edge_num', 'edges', 'children_size', 'children', 'parent', 'sig', 'depth']
     canonical_order = 0
-    with open('./flask/at.txt','r') as f: 
+    with open('./at.txt','r') as f:  
         i = 1 # start from the first line
         tmp_tree = {} #tree to be read
         for line in f:

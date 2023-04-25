@@ -5,7 +5,7 @@
     style="height: 100vh; overflow: hidden"
     no-padding
   >
-    <toolbar />
+    <toolbar @addComponent="addComponent" @removeComponent="removeComponent" />
     <v-container
       fluid
       class="pa-0 mt-0 h-100 d-flex flex-sm-nowrap align-center justify-center h-100"
@@ -29,48 +29,46 @@
           class="pa-1 d-flex flex-row justify-content-evenly align-items-center"
           ref="editableAreaContainer"
         >
+        <div class="h-100 w-100 p-0 m-0 grid-container">
           <div
-            class="h-100 w-100 p-0 m-0 rounded d-flex flex-column justify-content-evenly align-items-center"
+            v-for="(component, index) in components"
+            :key="index"
+            :class="[
+              'p-1 rounded d-flex flex-column justify-content-evenly align-items-center',
+              `grid-row-${component.rowSpan}`,
+              `grid-col-${component.colSpan}`,
+            ]"
+            :style="`border: 0.1rem #6c757d dashed`"
           >
-
-            <div
-              class="h-50 w-100 p-1 rounded d-flex flex-column justify-content-evenly align-items-center"
-              style="border: 0.1rem #6c757d dashed"
-            >
-              <metricsReportComponent />
-            </div>
-
-            <div
-              class="h-50 w-100 p-1 mt-1 rounded d-flex flex-column justify-content-evenly align-items-center"
-              style="border: 0.1rem #6c757d dashed"
-            >
-              <kNeighborComponent />
-            </div>
-
-          </div>
-          <div
-            class="h-100 w-100 p-0 m-0 ms-1 rounded d-flex flex-column justify-content-evenly align-items-center"
-          >
-
-            <div
-              class="h-50 w-100 p-1 rounded d-flex flex-column justify-content-evenly align-items-center"
-              style="border: 0.1rem #6c757d dashed"
-            >
-              <autoTreeComponent />
-            </div>
-
-            <div
-              class="h-50 w-100 p-1 mt-1 rounded d-flex flex-column justify-content-evenly align-items-center"
-              style="border: 0.1rem #6c757d dashed"
-            >
-              <degreeDistComponent />
-            </div>
-
+          <div class="component-wrapper">
+            <component :is="component.component" />
           </div>
 
+<!--            <v-btn small color="primary" @click="changeSize(index)">
+              Toggle Size
+            </v-btn>
+            <v-btn small color="error" @click="removeComponent(index)">
+              Remove
+            </v-btn>-->
+
+          </div>
+        </div>
         </v-col>
       </v-row>
     </v-container>
+    <v-snackbar v-model="noSpaceSnackbar">
+      Not enough Space (Maximum: 2X2)!
+
+      <template v-slot:actions>
+        <v-btn
+          color="pink"
+          variant="text"
+          @click="noSpaceSnackbar = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 
 <!--<v-icon size="3rem" color="#6c757d"
@@ -88,7 +86,7 @@
 
 </template>
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed, nextTick } from "vue";
 import toolbar from "./tools/toolbar.vue";
 import metricsReportComponent from "./tools/metricsReportComponent.vue";
 import origFullGraphComponent from "./graphs/origFullGraphComponent.vue";
@@ -99,59 +97,112 @@ import { useOrigFullGraphStore } from "@/store/store";
 const origFullGraphStore = useOrigFullGraphStore();
 // frontend effects related
 const fullgraphExtendableDiv = ref(null);
-//const showDemoDiv = ref(false);
-//const demoDivStyle = ref({});
-//const demoDivClass = ref("");
-//const isMouseInsideArea = ref(false);
-const gridConfig = ref([
-  {
-    cols: 6,
-    classes: "pa-1 h-100 expand-transition",
-    items: [
-      {
-        component: "kNeighborComponent",
-        classes: "h-50 w-100 p-1 rounded d-flex flex-column justify-content-evenly align-items-center",
-        styles: {
-          border: "0.1rem #6c757d dashed"
-        }
-      },
-      {
-        component: "autoTreeComponent",
-        classes: "h-50 w-100 p-0  mt-1  rounded d-flex flex-column justify-content-evenly align-items-center",
-        styles: {
-          border: "0.1rem #6c757d dashed"
-        }
-      },
-    ]
-  },
-  {
-    cols: 6,
-    classes: "pa-1 d-flex flex-row justify-content-evenly align-items-center",
-    items: [
-      {
-        component: "metricsReportComponent",
-        classes: "h-50 w-100 p-1 rounded d-flex flex-column justify-content-evenly align-items-center",
-        styles: {
-          border: "0.1rem #6c757d dashed"
-        }
-      },
-      {
-        component: "degreeDistComponent",
-        classes: "h-50 w-100  mt-1 p-1 rounded d-flex flex-column justify-content-evenly align-items-center",
-        styles: {
-          border: "0.1rem #6c757d dashed"
-        }
-      },
-      // Add other components similarly
-    ]
-  },
-  // Add other columns similarly
-]);
-onMounted(() => {});
+const noSpaceSnackbar = ref(false);
+
+const components = ref([]);
+const componentMapping = {
+  'Metrics Report': metricsReportComponent,
+  'AutoTree': autoTreeComponent,
+  'K-Neighbor': kNeighborComponent,
+  'Degree Distribution': degreeDistComponent
+};
+const findNextAvailablePosition = () => {
+  let positions = [];
+  for (let row = 1; row <= 2; row++) {
+    for (let col = 1; col <= 2; col++) {
+      positions.push({ row, col });
+    }
+  }
+
+  for (const position of positions) {
+    const occupied = components.value.some(
+      (component) =>
+        component.row === position.row && component.col === position.col
+    );
+
+    if (!occupied) {
+      return position;
+    }
+  }
+  return null;
+};
+
+const addComponent = (name,rowSpan,colSpan) => {
+  //["K-Neighbor", "AutoTree", "Metrics Report","Degree Distribution"]
+  console.log("emit received",name);
+  if(canAddComponent.value){
+    components.value.push({
+      component: componentMapping[name],
+      name: name,
+      rowSpan: rowSpan,
+      colSpan: colSpan,
+    });
+  }
+  else{
+    noSpaceSnackbar.value = true;
+    console.log(components.value)
+  }
+};
+
+const removeComponent = (name) => {
+  const index = components.value.findIndex((c) => c.name === name);
+  components.value.splice(index, 1);
+};
+
+const canAddComponent = computed(() => {
+  let totalRowSpan = 0;
+  let totalColSpan = 0;
+  for (const component of components.value) {
+    totalRowSpan += component.rowSpan;
+    totalColSpan += component.colSpan;
+  }
+  return totalRowSpan < 4 && totalColSpan < 4;
+});
 </script>
 
 <style scoped>
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 0.5rem;
+  height: 100%;
+  width: 100%;
+}
+.grid-container > div {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+.component-wrapper {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+.grid-row-1 {
+  grid-row: span 1;
+}
+
+.grid-row-2 {
+  grid-row: span 2;
+}
+
+.grid-col-1 {
+  grid-column: span 1;
+}
+
+.grid-col-2 {
+  grid-column: span 2;
+}
+
+
+
+
+
 /* transition for expanding full graph */
+
 .expand-transition {
   transition: all 0.1s ease;
 }

@@ -1,9 +1,9 @@
 <template>
-  <div class="h-100 ma-0 pa-0" ref="kNeighborContainer" style="position: relative">
+  <div class="h-100 ma-0 pa-0" ref="customizedIMContainer" style="position: relative">
     <div class="text-center text-overline" style="position: absolute; top: 4.5%; left: 50%; transform: translate(-50%, -50%);">
-      K Neighbor
+      Customized IM
     </div>
-    <canvas ref="kNeighborCanvas" class="h-100 w-100" />
+    <canvas ref="customizedIMCanvas" class="h-100 w-100" />
     <!--    <v-btn
     icon
     style="
@@ -27,11 +27,11 @@
 </template>
 <script setup>
 import { ref, watch, nextTick, onMounted } from "vue";
-import { useKNeighborStore } from "@/store/store.js";
-const KNeighborStore = useKNeighborStore();
+import { useCustomizedIMStore } from "@/store/store.js";
+const customizedIMStore = useCustomizedIMStore();
 // ref of dom elements for k neighbor
-const kNeighborCanvas = ref(null);
-const kNeighborContainer = ref(null); /*
+const customizedIMCanvas = ref(null);
+const customizedIMContainer = ref(null); /*
 watch(
  origFullGraphStore.selectedNode,
   (node) => {
@@ -53,6 +53,6 @@ watch(
 );*/
 onMounted(async () => {
   await nextTick();
-  KNeighborStore.kNeighborCanvas = kNeighborCanvas.value;
+  customizedIMStore.customizedIMCanvas = customizedIMCanvas.value;
 });
 </script>

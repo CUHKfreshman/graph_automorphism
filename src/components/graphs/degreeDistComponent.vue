@@ -93,17 +93,14 @@ const degreeDistCreate =() =>{
         '<span style="font-size:10px">Degree {point.key}</span><br><table>',
       footerFormat: "</table>",
       shared: true,
-    } /*
+    },
         legend: {
-            align: 'left',
-            x: 80,
-            verticalAlign: 'top',
-            y: 80,
-            floating: true,
-            backgroundColor:
-                Highcharts.defaultOptions.legend.backgroundColor || // theme
-                'rgba(255,255,255,0.25)'
-        },*/,
+            floating: false,
+            backgroundColor: "#212121",
+            itemStyle: {
+              color: "#f5f5f5"
+            }
+        },
     series: [
       {
         name: "SSM",
@@ -155,7 +152,7 @@ onMounted(async () => {
 <template>
   <div class="h-100 ma-0 pa-0" >
     <v-card class="h-100 w-100 flex-fill border-0" style="border-radius: 0">
-      <v-card-title class="text-center border-1" style="border-radius: 0"
+      <v-card-title class="text-center border-1 text-overline py-0" style="border-radius: 0"
         >Degree Distribution</v-card-title
       >
       <v-card-text class="p-0 m-0 w-100 h-100" id="degreeDistContainerParent">

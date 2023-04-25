@@ -60,17 +60,17 @@
               <div class="m-0 p-0 w-100 d-flex flex-row justify-space-between">
                 <!--show list button-->
                 <v-btn class="btn btn-lg border border-1" color="success" dark>
-                  <v-icon size="x-large">mdi-open-in-new</v-icon>
+                  <v-icon size="x-large" icon="mdi-open-in-new"></v-icon>
                 </v-btn>
                 <v-btn
                   class="btn btn-lg border border-1"
                   color="secondary"
                   dark
                 >
-                  <v-icon size="x-large">mdi-view-list</v-icon>
+                  <v-icon size="x-large" icon="mdi-view-list"></v-icon>
                 </v-btn>
                 <v-btn class="btn btn-lg border border-1" color="red" dark>
-                  <v-icon size="x-large">mdi-trash-can-outline</v-icon>
+                  <v-icon size="x-large" icon="mdi-trash-can-outline"></v-icon>
                 </v-btn>
               </div>
             </v-card-actions>
@@ -85,17 +85,21 @@
       <v-card-subtitle>A Massive Graph Visualization System</v-card-subtitle>
       <v-list lines="one" class="text-left text-large-overline">
         <v-list-item> </v-list-item>
-        <v-list-item>
-          <p>Our system aims to do this and that;</p>
+        <v-list-item class="text-body-1">
+          <p>Lorem ipsum dolor sit amet, no nam oblique veritus. Commune scaevola imperdiet nec ut, sed euismod convenire principes at. </p>
+          <p>Est et nobis iisque percipit, an vim zril disputando voluptatibus, vix an salutandi sententiae.</p>
           <p>
             We apply
             <a href="https://cosmograph.app/" class="fst-italic">Cosmograph</a>
             as our visualization framework;
           </p>
           <p>
-            We have many features, including full graph visualization, AutoTree,
-            SSM, and IM analysis;
+            Our graph visualization modules includes AutoTree, Symmetric Subgraph Matching, and Influence Maximization.
           </p>
+          <br>
+          <v-divider></v-divider>
+          <br>
+          <br>
           <p>Upload a graph file to get started!</p>
         </v-list-item>
         <v-list-item

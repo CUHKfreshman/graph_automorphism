@@ -2,9 +2,10 @@
 import { ref } from "vue";
 import welcomePage from "../components/welcomePage.vue";
 import vizPage from "../components/vizPage.vue";
-import { useOrigFullGraphStore, useAutoTreeStore } from "@/store/store";
+import { useOrigFullGraphStore, useAutoTreeStore, useCustomizedIMStore } from "@/store/store";
 const origFullGraphStore = useOrigFullGraphStore();
 const autoTreeStore = useAutoTreeStore();
+const customizedIMStore = useCustomizedIMStore();
 const showWelcomePage = ref(true);
 /*
 const nodelist = ref([]);
@@ -56,6 +57,17 @@ const handleData = (resp) => {
     case "IMData":
       console.log("IM received:", resp.data);
       origFullGraphStore.imColormapCreate(resp.data, true, true);
+      break;
+    case "customizedIMData":
+      console.log("customized IM received:", resp.data);
+      customizedIMStore.hasReceived = true;
+      if(customizedIMStore.useOrig){
+        origFullGraphStore.imColormapCreate(resp.data, true, true);
+      }
+      else{
+        customizedIMStore.imColormapCreate(resp.data, true, true);
+      }
+
       break;
     default:
       console.log("Unhandled response type", resp.type);

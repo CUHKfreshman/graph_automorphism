@@ -1,5 +1,8 @@
 <template>
-  <div class="h-100 ma-0 pa-0" ref="autoTreeContainer">
+  <div class="h-100 ma-0 pa-0" ref="autoTreeContainer" style="position: relative">
+    <div class="text-center text-overline" style="position: absolute; top: 4.5%; left: 50%; transform: translate(-50%, -50%);">
+      AutoTree
+    </div>
     <canvas ref="autoTreeCanvas" class="h-100 w-100" />
     <!--    <v-btn
     icon

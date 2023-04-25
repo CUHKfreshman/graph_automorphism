@@ -18,7 +18,7 @@
         >
           <v-card
             class="h-100 border-secondary"
-            style="overflow: hidden; border-width: 0.1rem !important"
+            style="overflow: hidden; border-width: 0.08rem !important"
           >
             <origFullGraphComponent />
           </v-card>
@@ -29,7 +29,7 @@
           class="pa-1 d-flex flex-row justify-content-evenly align-items-center"
           ref="editableAreaContainer"
         >
-        <div class="h-100 w-100 p-0 m-0 grid-container">
+        <div class="h-100 w-100 p-0 m-0 grid-container" v-if="hasWindow">
           <div
             v-for="(component, index) in components"
             :key="index"
@@ -38,8 +38,9 @@
               `grid-row-${component.rowSpan}`,
               `grid-col-${component.colSpan}`,
             ]"
-            :style="`border: 0.1rem #6c757d dashed`"
-          >
+            :style="`border: 0.08rem #6c757d dashed`"
+          ><!--
+            :style="`border: 0.1rem #6c757d dashed`"-->
           <div class="component-wrapper">
             <component :is="component.component" />
           </div>
@@ -53,6 +54,13 @@
 
           </div>
         </div>
+        <v-card style="border: 0.1rem #6c757d" class="h-100 w-100 pa-0 ma-0 " v-else>
+            <v-skeleton-loader type="image" class=""></v-skeleton-loader>
+            <v-skeleton-loader type="image" class=""></v-skeleton-loader>
+            <v-skeleton-loader type="image" class=""></v-skeleton-loader>
+            <v-skeleton-loader type="image" class=""></v-skeleton-loader>
+            <v-skeleton-loader type="image" class=""></v-skeleton-loader>
+        </v-card>
         </v-col>
       </v-row>
     </v-container>
@@ -73,9 +81,10 @@
 
 </template>
 <script setup>
-import { ref, onMounted, computed, nextTick } from "vue";
+import { ref, } from "vue";
 import toolbar from "./tools/toolbar.vue";
 import metricsReportComponent from "./tools/metricsReportComponent.vue";
+import customizedIMComponent from "./graphs/customizedIMComponent.vue";
 import origFullGraphComponent from "./graphs/origFullGraphComponent.vue";
 import degreeDistComponent from "./graphs/degreeDistComponent.vue";
 import autoTreeComponent from "./graphs/autoTreeComponent.vue";
@@ -84,6 +93,7 @@ import { useOrigFullGraphStore } from "@/store/store";
 const origFullGraphStore = useOrigFullGraphStore();
 // frontend effects related
 const fullgraphExtendableDiv = ref(null);
+const hasWindow = ref(false);
 //const showDemoDiv = ref(false);
 //const demoDivStyle = ref({});
 //const demoDivClass = ref("");
@@ -140,10 +150,12 @@ const componentMapping = {
   'Metrics Report': metricsReportComponent,
   'AutoTree': autoTreeComponent,
   'K-Neighbor': kNeighborComponent,
-  'Degree Distribution': degreeDistComponent
+  'Degree Distribution': degreeDistComponent,
+  'Customized IM': customizedIMComponent
 };
 const addComponent = (name,rowSpan,colSpan) => {
   //["K-Neighbor", "AutoTree", "Metrics Report","Degree Distribution"]
+  hasWindow.value = true;
   console.log("emit received",name);
     components.value.push({
       component: componentMapping[name],
@@ -151,38 +163,17 @@ const addComponent = (name,rowSpan,colSpan) => {
       rowSpan: rowSpan,
       colSpan: colSpan,
     });
+
 };
 
 const removeComponent = (name) => {
   const index = components.value.findIndex((c) => c.name === name);
   components.value.splice(index, 1);
-};
-
-const changeSize = (index) => {
-  const component = components.value[index];
-  if (component.rowSpan === 1 && component.colSpan === 1) {
-    component.rowSpan = 1;
-    component.colSpan = 2;
-  } else {
-    component.rowSpan = 1;
-    component.colSpan = 1;
-  }/*
-  if(component.name=="degreeDistComponent"){
-    console.log("reflowing");
-    nextTick(()=>{
-      Highcharts.charts[0].reflow();
-    })
-
-  }*/
-};
-
-const canAddComponent = computed(() => {
-  let totalArea = 0;
-  for (const component of components.value) {
-    totalArea += component.rowSpan * component.colSpan;
+  if (components.value.length === 0) {
+    hasWindow.value = false;
   }
-  return totalArea < 4;
-});
+};
+
 </script>
 
 <style scoped>

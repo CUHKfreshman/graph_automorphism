@@ -164,23 +164,14 @@
             <v-expansion-panel-text
               ><v-btn
                 ref="atRenderBtn"
+                realCol="1"
+                realRow="1"
                 color="secondary"
                 block
                 @click="createATGraph"
                 append-icon="mdi-graph-outline"
                 >Generate AutoTree</v-btn
               >
-              <v-scroll-x-transition>
-                <v-btn
-              ref="atDestroyBtn"
-              color="warning"
-              block
-              @click="asteroidDestroy"
-              append-icon="mdi-delete"
-              v-show="autoTreeCreated"
-              >Destroy Asteroid</v-btn
-            >
-              </v-scroll-x-transition>
               <v-snackbar v-model="autoTreeSnackbar">
                 AutoTree window has not been initialized!
 
@@ -329,7 +320,6 @@
                     <v-col
                       class="d-flex flex-column justify-center align-start"
                     >
-
                       <v-row
                         v-for="(
                           color, round
@@ -338,7 +328,7 @@
                         :style="{ color: color }"
                         class="w-100"
                       >
-                        <v-col col="12" sm="6" class="pa-0"><v-switch
+                        <v-col col="12" sm="8" class="pa-0"><v-switch
                           v-model="showRounds[round]"
                           :label="'Round ' + round"
                           :color="color"
@@ -347,19 +337,19 @@
                           @change="showRoundHandler(round)"
                         ></v-switch></v-col>
                         <v-col
-                        col="12" sm="4" class="pa-0 text-center d-flex justify-center align-center text-body-1"><span>{{origFullGraphStore.imDistributionDict[round]}}</span></v-col>
-                        <v-col col="12" sm="2" class="pa-0 text-center d-flex justify-center align-center text-body-1"  v-if="customizedIMStore.imDistributionDict !== null">
-                          <span>{{customizedIMStore.imDistributionDict[round]}}</span>
-                        </v-col>
+                        col="12" sm="2" class="pa-0"><p > {{origFullGraphStore.imDistributionDict[round]}}</p></v-col>
+                        <v-col col="12" sm="2" class="pa-0"><p  v-if="customizedIMStore.imDistributionDict !== null">
+                          {{customizedIMStore.imDistributionDict[round]}}
+                        </p></v-col>
 
 
                       </v-row>
                       <v-row class="w-100">
-                        <v-col col="12" sm="6" class="pa-0 text-subtitle-1">
-                          SUM
+                        <v-col col="12" sm="8" class="pa-0">
+
                         </v-col>
-                        <v-col col="12" sm="4" class="pa-0 text-center d-flex justify-center align-center text-body-1"><span>{{Object.values(origFullGraphStore.imDistributionDict).reduce((a, b) => a + b, 0)}}</span></v-col>
-                        <v-col col="12" sm="2" class="pa-0 text-center d-flex justify-center align-center text-body-1"><span>{{Object.values(customizedIMStore.imDistributionDict).reduce((a, b) => a + b, 0)}}</span></v-col>
+                        <v-col col="12" sm="2" class="pa-0">{{Object.values(origFullGraphStore.imDistributionDict).reduce((a, b) => a + b, 0)}}</v-col>
+                        <v-col col="12" sm="2" class="pa-0">{{Object.values(customizedIMStore.imDistributionDict).reduce((a, b) => a + b, 0)}}</v-col>
                       </v-row>
                     </v-col>
                   </v-expansion-panel-text>
@@ -528,8 +518,6 @@ const removeComponentEmit = () => {
     emit("removeComponent", windowSelected.value);
     if (windowSelected.value == "K-Neighbor") {
       origFullGraphStore.kNeighborEnabled = false;
-    } else if (windowSelected.value == 'AutoTree'){
-      autoTreeCreated.value = false;
     }
   } else {
     noWindowSnackbar.value = true;
@@ -733,19 +721,13 @@ const minusKValue = () => {
   }
 };
 //// autoTree graph creator
-const autoTreeCreated = ref(false);
 const createATGraph = () => {
   const index = addedWindowNameList.value.indexOf("AutoTree");
   if (index > -1) {
-    autoTreeCreated.value = true;
     autoTreeStore.autoTreeCreate();
   } else {
     autoTreeSnackbar.value = true;
   }
-};
-// destroy autoTree asteroid
-const asteroidDestroy = () => {
-  autoTreeStore.asteroidDestroy();
 };
 //// kneighbor k val watcher
 watch(

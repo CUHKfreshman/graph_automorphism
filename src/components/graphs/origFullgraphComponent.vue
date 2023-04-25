@@ -14,11 +14,11 @@
       "
       @click="expandFullgraphTransition"
     >
-      <v-icon style="font-size: 1rem" v-if="store.expandFullgraph"
-        >mdi-chevron-double-left</v-icon
+      <v-icon icon="mdi-chevron-double-left" style="font-size: 1rem" v-if="store.expandFullgraph"
+        ></v-icon
       >
 
-      <v-icon style="font-size: 1rem" v-else>mdi-chevron-double-right</v-icon>
+      <v-icon icon="mdi-chevron-double-right" style="font-size: 1rem" v-else></v-icon>
     </v-btn>
   </div>
 </template>
@@ -38,18 +38,7 @@ const expandFullgraphTransition = () => {
   store.expandFullgraph = !store.expandFullgraph;
   store.origFullGraph.fitView();
 };
-// watch for changes in full graph config
-watch(
-  store.origFullGraphConfig,
-  () => {
-    //console.log(origFullGraphConfig changed");
-    //console.log(store.origFullGraph);
-    store.origFullGraph.setConfig(store.origFullGraphConfig);
-    store.origFullGraph.start();
-    //OrigFullGraph.fitView();
-  },
-  { deep: true }
-);
+
 /*
 watch(
   store.origFullGraph,

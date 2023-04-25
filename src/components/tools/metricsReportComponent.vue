@@ -4,11 +4,11 @@
     class="h-100 border-3 p-0 overflow-hidden"
     style="height: 95.5vh"
   >
-    <v-card-title class="text-center">Metrics Report</v-card-title>
+    <v-card-title class="text-center text-overline py-0">Metrics Report</v-card-title>
     <v-card-text
       class="p-0 h-100 d-flex flex-column align-items-center justify-content-center justify-content-lg-start"
     >
-      <v-table class="mb-0">
+      <v-table density="compact" class="mb-0">
         <tbody>
           <tr>
             <td class="border-1 border-end">Nodes</td>

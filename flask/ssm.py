@@ -340,11 +340,12 @@ def IC(Networkx_Graph,Seed_Set,Probability,Num_of_Simulations):
     print(spread)
     return Ans_dict
     #return(np.mean(spread))
-def get_IM():
-    graph,_,__ = read_graph('./usrfile.txt')# change to usrfile.txt 
+def get_IM(seed_set, prob):
+    print('getting IM...', seed_set, prob)
+    graph,_,__ = read_graph('./flask/usrfile.txt')# change to usrfile.txt 
     #seed_set = [107,3437,0,686,348,1684,1912,3980,698,21,916,688,1085,2661,3442,360,25,2664,3506,2665,1918,355,3448,23,1960,577,2690,924,3443,573,1914,3473,2670,3500,9,3982,3468,705,901,2669,24,353,2724,3455,908,17,897,3465,3479,3446,2663,857,917,2668,4,1923,1988,707,3438,896,921,7,2667,2672,2933,14,1936,687,369,13,1917,990,2712,1,2679,3460,944,2799,198,3488,3499,3439,354,2696,8,3478,689,2700,932,576,579,956,694,1919,2715,3458,363,961,3490,955]
-    seed_set = [1]
-    return IC(graph, seed_set, 0.2, 1) #TODO: let user select prob
+    #seed_set = [1]
+    return IC(graph, seed_set, prob, 1) #TODO: let user select prob
     
 def print_children_vertice(nq, AutoTree):
     print('print_children_vertice')
