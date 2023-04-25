@@ -5,6 +5,8 @@
     "useDefineForClassFields": true,
     "allowSyntheticDefaultImports": true,
     "composite": true,
+    //"allowJs": true,
+    //"checkJs": false,
     "module": "esnext",
     "moduleResolution": "node",
     "strict": true,
@@ -26,6 +28,5 @@
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "vite.config.ts"
-  ]
+    "vite.config.ts", "src/store/store.js"],
 }

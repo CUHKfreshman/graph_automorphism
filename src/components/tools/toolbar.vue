@@ -2,7 +2,7 @@
   <!--draggable tool bar-->
   <v-card
     class="d-flex flex-column flex-nowrap position-absolute bg-light user-select-none overflow-y-hidden w-auto"
-    style="left=50%; z-index:10;cursor: pointer; max-height:50vh;"
+    style="left=50%; z-index:10;cursor: pointer; max-height:90vh;"
   >
     <v-card-title ref="draggableDiv">
       <v-icon large>mdi-drag-horizontal</v-icon>
@@ -17,30 +17,123 @@
     <v-card-text class="overflow-y-auto">
       <v-window v-model="toolbarOverallTab">
         <v-window-item value="basic">
-          <v-btn ref="MetricsReportBtn" realCol="1" realRow="1" color="primary"
-            >Metrics Report</v-btn
-          >
-          <v-btn ref="DegreeDistBtn" realCol="1" realRow="1" color="primary"
-            >Degree Distribution</v-btn
-          >
-          <v-btn ref="ssmRenderBtn" realCol="1" realRow="1" color="primary" @click="origFullgraphStore.ssmColormapRender"
-            >SSM</v-btn
+            <v-form v-model="valid">
+              <v-container>
+                <v-select
+                :items="windowNameList"
+                v-model="windowSelected"
+                label="Select Window"
+              ></v-select>
+              <v-row>
+                <v-col
+                  cols="12"
+                  md="6"
+                >
+                <v-select
+                :items="[1,2]"
+                v-model="colWidthSelected"
+                label="Column Width"
+              ></v-select>
+                </v-col>
+
+                <v-col
+                  cols="12"
+                  md="6"
+                >
+                <v-select
+                :items="[1,2]"
+                v-model="rowHeightSelected"
+                label="Row Height"
+              ></v-select>
+                </v-col>
+              </v-row>
+
+              </v-container>
+            </v-form>
+            <v-btn color="success" class="w-50" realCol="1" realRow="1" @click="addComponentEmit()">Add</v-btn>
+            <v-btn color="red" class="w-50" realCol="1" realRow="1" @click="removeComponentEmit()">Delete</v-btn>
+          <v-btn
+            ref="origRenderBtn"
+            realCol="1"
+            realRow="1"
+            color="primary"
+            @click="origFullGraphStore.origColormapRender"
+            >Render Basic</v-btn
           >
         </v-window-item>
-        <v-window-item value="AutoTree"> at</v-window-item>
-        <v-window-item value="SSM"> ss</v-window-item>
-        <v-window-item value="IM">im </v-window-item>
+        <v-window-item value="AutoTree">
+          <v-btn
+            ref="atRenderBtn"
+            realCol="1"
+            realRow="1"
+            color="primary"
+            @click="autoTreeStore.autoTreeCreate"
+            >Render AT</v-btn>
+        </v-window-item>
+        <v-window-item value="SSM">
+          <v-btn
+            ref="ssmRenderBtn"
+            realCol="1"
+            realRow="1"
+            color="primary"
+            @click="origFullGraphStore.ssmColormapRender"
+            >Render SSM</v-btn
+          ></v-window-item
+        >
+        <v-window-item value="IM">
+          <v-btn
+            ref="imRenderBtn"
+            realCol="1"
+            realRow="1"
+            color="primary"
+            @click="origFullGraphStore.imColormapRender"
+            >Render IM</v-btn
+          >
+          <v-btn
+            ref="imRenderBtn"
+            realCol="1"
+            realRow="1"
+            color="primary"
+            @click="origFullGraphStore.imColormapCreate(null, false, false)"
+            >Random Color</v-btn
+          >
+          <v-col>
+            <v-row
+              v-for="(color, round) in origFullGraphStore.imRoundColorDict"
+              :key="round"
+              :style="{'color':color}"
+            >
+              <v-switch
+                v-model="showRounds[round]"
+                :label="'Round ' + round"
+                :color="color"
+                hide-details
+                inset
+                @change="
+                  () =>
+                    origFullGraphStore.imColormapRoundRender(
+                      round,
+                      showRounds[round]
+                    )
+                "
+              ></v-switch>
+            </v-row>
+          </v-col>
+        </v-window-item>
         <v-window-item value="layout">
           <v-card>
             <v-card-text>
+              <v-select
+                :items="configItems"
+                v-model="configType"
+                label="Select Config Type"
+              ></v-select>
               <div class="text-caption">Repulsion</div>
               <v-slider
                 min="0"
                 max="2"
                 step="0.05"
-                v-model="
-                  origFullgraphStore.origFullgraphConfig.simulation.repulsion
-                "
+                v-model="interfaceConfig.simulation.repulsion"
                 thumb-label
               ></v-slider>
 
@@ -49,24 +142,19 @@
                 min="0.3"
                 max="2"
                 step="0.05"
-                v-model="
-                  origFullgraphStore.origFullgraphConfig.simulation
-                    .repulsionTheta
-                "
+                v-model="interfaceConfig.simulation.repulsionTheta"
                 thumb-label
               ></v-slider>
               <!--
                   <div class="text-caption">Repulsion Quadtree Levels</div>
-                  <v-slider min="5" max="12" step="1" v-model="origFullgraphConfig.simulation.repulsionQuadtreeLevels" thumb-label></v-slider>
+                  <v-slider min="5" max="12" step="1" v-model="origFullGraphConfig.simulation.repulsionQuadtreeLevels" thumb-label></v-slider>
                   -->
               <div class="text-caption">Link Spring</div>
               <v-slider
                 min="0"
                 max="2"
                 step="0.05"
-                v-model="
-                  origFullgraphStore.origFullgraphConfig.simulation.linkSpring
-                "
+                v-model="interfaceConfig.simulation.linkSpring"
                 thumb-label
               ></v-slider>
 
@@ -75,9 +163,7 @@
                 min="1"
                 max="20"
                 step="0.5"
-                v-model="
-                  origFullgraphStore.origFullgraphConfig.simulation.linkDistance
-                "
+                v-model="interfaceConfig.simulation.linkDistance"
                 thumb-label
               ></v-slider>
 
@@ -86,8 +172,7 @@
               </div>
               <v-range-slider
                 v-model="
-                  origFullgraphStore.origFullgraphConfig.simulation
-                    .linkDistRandomVariationRange
+                  interfaceConfig.simulation.linkDistRandomVariationRange
                 "
                 min="0.8"
                 max="2.0"
@@ -100,9 +185,7 @@
                 min="0"
                 max="1"
                 step="0.01"
-                v-model="
-                  origFullgraphStore.origFullgraphConfig.simulation.gravity
-                "
+                v-model="interfaceConfig.simulation.gravity"
                 thumb-label
               ></v-slider>
 
@@ -111,9 +194,7 @@
                 min="0"
                 max="1"
                 step="0.01"
-                v-model="
-                  origFullgraphStore.origFullgraphConfig.simulation.center
-                "
+                v-model="interfaceConfig.simulation.center"
                 thumb-label
               ></v-slider>
 
@@ -122,9 +203,7 @@
                 min="0.8"
                 max="1"
                 step="0.01"
-                v-model="
-                  origFullgraphStore.origFullgraphConfig.simulation.friction
-                "
+                v-model="interfaceConfig.simulation.friction"
                 thumb-label
               ></v-slider>
 
@@ -133,9 +212,7 @@
                 min="100"
                 max="10000"
                 step="100"
-                v-model="
-                  origFullgraphStore.origFullgraphConfig.simulation.decay
-                "
+                v-model="interfaceConfig.simulation.decay"
                 thumb-label
               ></v-slider>
 
@@ -144,10 +221,7 @@
                 min="0"
                 max="5"
                 step="0.1"
-                v-model="
-                  origFullgraphStore.origFullgraphConfig.simulation
-                    .repulsionFromMouse
-                "
+                v-model="interfaceConfig.simulation.repulsionFromMouse"
                 thumb-label
               ></v-slider>
             </v-card-text>
@@ -165,16 +239,43 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted, watch } from "vue";
-import { useOrigFullgraphStore } from "@/store/app.ts";
-const origFullgraphStore = useOrigFullgraphStore();
+import { ref, onMounted, watch, reactive, computed } from "vue";
+import { useOrigFullGraphStore, useKNeighborStore, useAutoTreeStore } from "@/store/store.js";
+const emit = defineEmits(['addComponent', 'removeComponent']);
+const addComponentEmit = () => {
+  console.log("addComponent",name);
+  emit("addComponent", windowSelected.value, rowHeightSelected.value, colWidthSelected.value);
+};
+const removeComponentEmit = () => {
+  console.log("removeComponent",name);
+  emit("removeComponent", windowSelected.value);
+};
+const origFullGraphStore = useOrigFullGraphStore();
+const autoTreeStore = useAutoTreeStore();
+const kNeighborStore = useKNeighborStore();
 const toolbarOverallTab = ref("basic");
 const draggingElement = ref(null);
 const buttonDragging = ref(false);
-
+const windowNameList = ref(["K-Neighbor", "AutoTree", "Metrics Report","Degree Distribution"]);
+const windowSelected = ref("K-Neighbor");
+const rowHeightSelected = ref(1);
+const colWidthSelected = ref(1);
 // ref dom elements for draggable div
 // the value of ref is different in this case. It is the proxy of dom, so we need $el to get the real dom
 const draggableDiv = ref(null);
+// im round helper
+const showRounds = ref({});
+watch(
+  origFullGraphStore.imRoundColorDict,
+  (newDict) => {
+    for (const round in newDict) {
+      if (!Object.prototype.hasOwnProperty.call(showRounds.value, round)) {
+        showRounds.value[round] = false;
+      }
+    }
+  },
+  { deep: true }
+);
 // functions
 // a helper function to show effects when drag toolbar
 const makeToolBarDraggable = () => {
@@ -228,6 +329,36 @@ const makeToolBarDraggable = () => {
   });
 };
 
+const configType = ref("origFullGraph");
+const configs = reactive({
+  origFullGraph: origFullGraphStore.origFullGraphConfig,
+  kNeighbor: kNeighborStore.kNeighborConfig,
+});
+const configItems = ref(Object.keys(configs));
+
+const interfaceConfig = computed(() => configs[configType.value]);
+
+watch(
+  () => configType.value,
+  (newValue) => {
+    if (newValue === "kNeighbor") {
+      // ... code to switch to kNeighborConfig
+    } else {
+      // ... code to switch toorigFullGraphConfig
+    }
+  }
+);
+watch(
+  () => kNeighborStore.kNeighborConfig,
+  (newConfig) => {
+    console.log("kNeighborConfig changed", newConfig);
+    configs.kNeighbor = newConfig;
+    kNeighborStore.kNeighbor.setConfig(newConfig);
+    kNeighborStore.kNeighbor.start();
+  },
+  { deep: true }
+);
+
 // a helper function to show effects when click buttons in toolbar, currently not used
 /*
 const makeButtonDraggable = (refName) => {
@@ -277,7 +408,8 @@ const makeButtonDraggable = (refName) => {
         document.removeEventListener("mouseup", stopDragging);
     }
 };*/
-watch(origFullgraphStore.ssm_all_dict, () => {});
+//TODO
+
 onMounted(() => {
   makeToolBarDraggable();
 });

@@ -183,14 +183,14 @@
 <script setup>
 /*
 
-const showFirstChild = ref(true);
+const showWelcomePage = ref(true);
 const nodelist = ref([]);
 const edgelist = ref([]);
 */
 import { ref } from "vue";
-import { useOrigFullgraphStore } from '@/store/app.ts';
+import { useOrigFullGraphStore } from "@/store/store.js";
 
-const store = useOrigFullgraphStore();
+const store = useOrigFullGraphStore();
 // emit
 const emit = defineEmits([
   "toggle-child",
@@ -199,11 +199,10 @@ const emit = defineEmits([
   "concurrent-data-listener",
 ]);
 defineProps({
-  showFirstChild: {
+  showWelcomePage: {
     type: Boolean,
     default: true,
   },
-
 });
 
 const posts = ref({
@@ -225,7 +224,7 @@ const posts = ref({
 
 /*
 const emitList = () => {
-  console.log('emit list');
+  //console.log('emit list');
   emit('node-list', 'edge-list');
 }*/
 
@@ -238,7 +237,7 @@ const uploadNewFile = async (name, fileList, fileLen) => {
 
   reader.onload = async (event) => {
     let [nodenum, edgenum, ...edges] = event.target.result.split(/\s|\n/); //array destruction
-    console.log(nodenum, edgenum, edges);
+    //console.log(nodenum, edgenum, edges);
     let newnodelist = [...new Set(edges)].map((num) => ({ id: num })); //remove duplicate elements
 
     let newedgelist = edges
@@ -248,17 +247,17 @@ const uploadNewFile = async (name, fileList, fileLen) => {
     //emit("update-node-list", newnodelist);
     //emit("update-edge-list", newedgelist);
     emit("concurrent-data-listener", edges);
-    console.log("store");
-    console.log(store);
+    //console.log("store");
+    //console.log(store);
     store.setNodelist(newnodelist);
     store.setEdgelist(newedgelist);
     //emitList();
-    console.log("Going to Viz...");
+    //console.log("Going to Viz...");
     emit("toggle-child");
   };
 
   reader.onerror = (event) => {
-    console.log("error: " + event.target.error);
+    //console.log("error: " + event.target.error);
     return;
   };
 
@@ -281,8 +280,8 @@ const uploadNewFile = async (name, fileList, fileLen) => {
     async searchUser(user){
       UserService.searchUser(user).then(resp =>
       {
-        console.log('resp.data')
-        console.log(resp.data[0])
+        //console.log('resp.data')
+        //console.log(resp.data[0])
         if(resp.data.length>0)
         {
           //Store current user information in local storage

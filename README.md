@@ -22,23 +22,23 @@ python3 app.py
 ### Current status
 1. Basic graph analyzer:
     1. Graph rendering: Done
-    2. Metrics report: Not yet (Choosing library)
+    2. Metrics report: Not yet (Choosing layout)
     3. Layout Options: Done
-    4. Modular Self-Assembling UI: Not yet (Should be done after all setup)
+    4. Modular Self-Assembling UI: Done (But may need to modify)
 2. SSM graph analyzer:
     1. Basic color mapping: Done
     2. Metrics report: Not yet
     3. Modified node-wise operations: Not yet
 3. AutoTree Analyzer:
-    1. AutoTree graph rendering: Not yet
+    1. AutoTree graph rendering: Done
     2. Metrics report: Not yet
     3. Modified node-wise operations: Not yet
 4. IM graph analyzer:
-   1. Basic color mapping: Not yet
+   1. Basic color mapping: Done
    2. Metrics report: Not yet
    3. Modified node-wise operations: Not yet
-   4. Step-by-step visualization: Not yet
-   5. K-neighbor visualization: Not yet
+   4. Step-by-step visualization: Done
+   5. K-neighbor visualization: K button not assigned
    6. Two seed set comparison: Not yet
 
 ### Remark

@@ -1,6 +1,6 @@
 <template>
-  <div class="h-100 ma-0 pa-0" ref="origFullgraphContainer">
-    <canvas ref="origFullgraphCanvas" class="h-100 w-100" />
+  <div class="h-100 ma-0 pa-0" ref="origFullGraphContainer">
+    <canvas ref="origFullGraphCanvas" class="h-100 w-100" />
     <v-btn
       icon
       style="
@@ -24,45 +24,45 @@
 </template>
 <script setup>
 import { ref, watch, onMounted, nextTick } from "vue";
-import { useOrigFullgraphStore } from "@/store/app.ts";
-const store = useOrigFullgraphStore();
-console.log("store");
-console.log(store);
+import { useOrigFullGraphStore } from "@/store/store.js";
+const store = useOrigFullGraphStore();
+//console.log("store");
+//console.log(store);
 // ref of dom elements for orig fullgraph
-const origFullgraphCanvas = ref(null);
-const origFullgraphContainer = ref(null);
+const origFullGraphCanvas = ref(null);
+const origFullGraphContainer = ref(null);
 // create full graph
 // reactive orig fullgraph
 //function
 const expandFullgraphTransition = () => {
   store.expandFullgraph = !store.expandFullgraph;
-  store.origFullgraph.fitView();
+  store.origFullGraph.fitView();
 };
 // watch for changes in full graph config
 watch(
-  store.origFullgraphConfig,
+  store.origFullGraphConfig,
   () => {
-    console.log("origFullgraphConfig changed");
-    console.log(store.origFullgraph);
-    store.origFullgraph.setConfig(store.origFullgraphConfig);
-    store.origFullgraph.start();
-    //origFullgraph.fitView();
+    //console.log(origFullGraphConfig changed");
+    //console.log(store.origFullGraph);
+    store.origFullGraph.setConfig(store.origFullGraphConfig);
+    store.origFullGraph.start();
+    //OrigFullGraph.fitView();
   },
   { deep: true }
 );
 /*
 watch(
-  store.origFullgraph,
+  store.origFullGraph,
   (g) => {
-    console.log("origFullgraph changed");
-    console.log(g);
+    //console.log(origFullGraph changed");
+    //console.log(g);
   },
   { deep: true }
 );*/
 onMounted(async () => {
   await nextTick();
-  if (origFullgraphContainer.value.clientWidth) {
-    store.origFullgraphCreate(origFullgraphCanvas.value);
+  if (origFullGraphContainer.value.clientWidth) {
+    store.origFullGraphCreate(origFullGraphCanvas.value);
   }
 });
 </script>
