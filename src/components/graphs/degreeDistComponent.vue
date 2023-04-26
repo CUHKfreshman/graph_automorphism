@@ -1,24 +1,27 @@
 <script setup>
-import { Graph } from "graphology";
 import Highcharts from "highcharts";
-import highchartsTheme from 'highcharts/themes/grid-light';
-import { ref, watch, nextTick, onMounted, watchEffect  } from "vue";
+import highchartsTheme from "highcharts/themes/grid-light";
+import { ref, watch, nextTick, onMounted } from "vue";
 import { useOrigFullGraphStore } from "@/store/store.js";
 import Accessibility from 'highcharts/modules/accessibility';
 import exporting from 'highcharts/modules/exporting';
 import exportData from 'highcharts/modules/export-data';
 import fullscreen from 'highcharts/modules/full-screen';
-import offlineExporting from 'highcharts/modules/offline-exporting';exporting(Highcharts);
+import offlineExporting from 'highcharts/modules/offline-exporting';
 /*
 exportData(Highcharts);
 offlineExporting(Highcharts);
 fullscreen(Highcharts);
 Accessibility(Highcharts);
 */
-
+// dirty method. Use built in support in future.
+exporting(Highcharts);
+Accessibility(Highcharts);
+exportData(Highcharts);
+fullscreen(Highcharts);
+offlineExporting(Highcharts);
 highchartsTheme(Highcharts);
 const origFullGraphStore = useOrigFullGraphStore();
-const degreeDistContainerParent = ref(null);
 /*
 Highcharts.setOptions({ // Apply to all charts
     chart: {
@@ -35,9 +38,14 @@ Highcharts.setOptions({ // Apply to all charts
         }
     }
 });*/
-var chart = null;
-const degreeDistCreate =() =>{
-  chart = Highcharts.chart("degreeDistContainer", {
+const chart = ref(null);
+const hasMounted = ref(false);
+const degreeDistCreate = () => {
+  if (chart.value !== null) {
+    console.log("destroying chart");
+    chart.value.destroy();
+  }
+  chart.value = Highcharts.chart("degreeDistContainer", {
     credits: {
       enabled: false,
     },
@@ -94,13 +102,13 @@ const degreeDistCreate =() =>{
       footerFormat: "</table>",
       shared: true,
     },
-        legend: {
-            floating: false,
-            backgroundColor: "#212121",
-            itemStyle: {
-              color: "#f5f5f5"
-            }
-        },
+    legend: {
+      floating: false,
+      backgroundColor: "#212121",
+      itemStyle: {
+        color: "#f5f5f5",
+      },
+    },
     series: [
       {
         name: "SSM",
@@ -118,20 +126,30 @@ const degreeDistCreate =() =>{
         //}
       },
     ],
-  exporting: {
-    buttons: {
-      contextButton: {
-        x: -15, // move the button 10 pixels to the left
-        y: -7, // move the button 10 pixels down
-        symbol: "menu",
-        theme:{
-          fill: '#a0a0a0',
-        }
-      }
-    }
-  }
+    exporting: {
+      buttons: {
+        contextButton: {
+          x: -15, // move the button 10 pixels to the left
+          y: -7, // move the button 10 pixels down
+          symbol: "menu",
+          theme: {
+            fill: "#a0a0a0",
+          },
+        },
+      },
+    },
   });
-}
+};
+watch(
+  () => origFullGraphStore.hasAnalyzedSSM,
+  (newVal) => {
+    console.log("hasAnalyzedSSM changed", newVal);
+    if (newVal && hasMounted.value) {
+      degreeDistCreate();
+    }
+  },
+  { immediate: true }
+);
 /*
   degreeDistContainerParent.value.addEventListener('resize', () => {
   //document.getElementById("degreeDistContainer").style.width = '100%';
@@ -140,6 +158,7 @@ const degreeDistCreate =() =>{
 onMounted(async () => {
   await nextTick();
   degreeDistCreate();
+  hasMounted.value = true;
   /*
   const resizeObserver = new ResizeObserver(() => {
     console.log('resizeing');
@@ -150,20 +169,22 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <div class="h-100 ma-0 pa-0" >
+  <div class="h-100 ma-0 pa-0">
     <v-card class="h-100 w-100 flex-fill border-0" style="border-radius: 0">
-      <v-card-title class="text-center border-1 text-overline py-0" style="border-radius: 0"
+      <v-card-title
+        class="text-center border-1 text-overline py-0"
+        style="border-radius: 0"
         >Degree Distribution</v-card-title
       >
-      <v-card-text class="p-0 m-0 w-100 h-100" id="degreeDistContainerParent">
+      <!--dirty method. use built-in for vue in future. not time for now-->
+      <v-card-text class=" w-100 h-100">
         <v-container
-        fluid
-          class="p-0 m-0 w-100 h-100"
+          fluid
+          class=" w-100 h-100"
           id="degreeDistContainer"
         ></v-container>
       </v-card-text>
     </v-card>
   </div>
 </template>
-<style scoped>
-</style>
+<style scoped></style>

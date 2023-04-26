@@ -14,7 +14,8 @@
     >
       <!--posts container-->
       <v-card-title class="fs-4 fw-bold">HISTORY DATA</v-card-title>
-      <v-card-text class="p-0 d-flex justify-content-center h-100 w-100">
+      <v-card-text class="h-100 w-100">
+        <p class="text  text-grey-darken-1"> History data is saved under flask folder.</p>
         <v-list
           class="col border-0 list-group list-group-flush d-flex flex-column card w-100"
         >
@@ -86,34 +87,37 @@
       <v-list lines="one" class="text-left text-large-overline">
         <v-list-item> </v-list-item>
         <v-list-item class="text-body-1">
-          <p>Lorem ipsum dolor sit amet, no nam oblique veritus. Commune scaevola imperdiet nec ut, sed euismod convenire principes at. </p>
-          <p>Est et nobis iisque percipit, an vim zril disputando voluptatibus, vix an salutandi sententiae.</p>
           <p>
-            We apply
-            <a href="https://cosmograph.app/" class="fst-italic">Cosmograph</a>
-            as our visualization framework;
+            This is the <a href="https://cosmograph.app/" class="text-decoration-underline">Cosmos</a> branch V1.0 of AutoViz, offering full feature support.
           </p>
           <p>
-            Our graph visualization modules includes AutoTree, Symmetric Subgraph Matching, and Influence Maximization.
+            Autoviz is an advanced graph visualization system for massive network visualization and analytics.
+
           </p>
-          <br>
-          <v-divider></v-divider>
-          <br>
-          <br>
-          <p>Upload a graph file to get started!</p>
+          <p>
+            In addition to basic graph analysis, AutoViz also integrates specialized modules dedicated to AutoTree, Symmetric
+            Subgraph Matching, and Influence Maximization.
+          </p>
+          <p>
+            This application is the culmination of the FTEC undergraduate final year project, <span class="font-italic"> Graph Automorphism over Social Network</span>, conducted at The Chinese University of Hong Kong.
+          </p>
+          <p>
+            It is developed by GENG Yihan, WANG Kunyu, and LIU Ziqi, under the supervision of Prof. YU Xu Jeffrey.
+
+          </p>
+          <v-divider class="mt-2"></v-divider>
+          <br />
+          <p class="text-overline text-left">Upload a file to get started!</p>
+          <v-progress-linear
+            indeterminate
+            color="grey-lighten-1"
+            :height="1"
+          ></v-progress-linear>
         </v-list-item>
-        <v-list-item
-          ><!--
-      <v-btn class="btn btn-outline-dark btn-lg mb-2" style="border-radius: 0rem;">
-        Upload a new graph for analysis
-        <v-icon class="bi bi-box-arrow-in-up-right"></v-icon>      <input id="file-upload" type="file" style="display: none;"
-        @change="uploadNewFile($event.target.name, $event.target.files, $event.target.files.length)" />
-      </v-btn>
-      <v-btn color="primary" @click="openFileInput()">Upload File</v-btn>-->
+        <v-list-item>
           <v-file-input
             ref="fileInput"
-            label="Upload a new graph file"
-            accept="*"
+            label="Upload File"
             @change="
               uploadNewFile(
                 $event.target.name,
@@ -122,79 +126,22 @@
               )
             "
             :multiple="false"
-            :show-size="true"
-            :show-type="true"
+            show-size
+            show-type
+            accept=".txt, .csv, .tsv"
           ></v-file-input
           ><!--:disabled="uploading"-->
         </v-list-item>
-        <!--
-    <v-list-item class="list-group-item bg-light border-0 mt-2 ms-0 p-0 align-self-start d-flex flex-row flex-fill align-items-center justify-content-center w-100">
-      <v-carousel class="carousel carousel-dark h-100 slide" data-bs-ride="false">
-        <v-carousel-indicators>
-          <v-carousel-indicator v-for="(i) in 3" :key="i" :target="`#carouselCaptions1_${i}`"
-            :active="i===1"></v-carousel-indicator>
-        </v-carousel-indicators>
-        <v-carousel-items>
-          <v-carousel-item :id="`carouselCaptions1_${i}`" v-for="(i) in 3" :key="i" :active="i===1">
-            <v-img src="../assets/login_background.jpg" class="d-block" height="100%" width="100%" alt="..."></v-img>
-            <v-carousel-caption>
-              <h5>First slide label</h5>
-              <p>Some representative placeholder content for the first slide.</p>
-            </v-carousel-caption>
-          </v-carousel-item>
-        </v-carousel-items>
-        <v-carousel-control-prev class="carousel-control-prev" data-bs-target="#carouselCaptions1"
-          data-bs-slide="prev">
-          <v-icon class="carousel-control-prev-icon"></v-icon>
-          <span class="visually-hidden">Previous</span>
-        </v-carousel-control-prev>
-        <v-carousel-control-next class="carousel-control-next" data-bs-target="#carouselCaptions1"
-          data-bs-slide="next">
-          <v-icon class="carousel-control-next-icon"></v-icon>
-          <span class="visually-hidden">Next</span>
-        </v-carousel-control-next>
-      </v-carousel>
-      <v-carousel class="carousel carousel-dark h-100 slide ms-3" data-bs-ride="false">
-        <v-carousel-indicators>
-          <v-carousel-indicator v-for="(i) in 3" :key="i" :target="`#carouselCaptions_${i}`" :active="i===1">
-          </v-carousel-indicator>
-        </v-carousel-indicators>
-        <v-carousel-items>
-<v-carousel-item :id="`carouselCaptions_${i}`" v-for="(i) in 3" :key="i" :active="i===1">
-<v-img src="../assets/login_background.jpg" class="d-block" height="100%" width="100%" alt="..."></v-img>
-<v-carousel-caption>
-<h5>First slide label</h5>
-<p>Some representative placeholder content for the first slide.</p>
-</v-carousel-caption>
-</v-carousel-item>
-</v-carousel-items>
-<v-carousel-control-prev class="carousel-control-prev" data-bs-target="#carouselCaptions" data-bs-slide="prev">
-<v-icon class="carousel-control-prev-icon"></v-icon>
-<span class="visually-hidden">Previous</span>
-</v-carousel-control-prev>
-<v-carousel-control-next class="carousel-control-next" data-bs-target="#carouselCaptions" data-bs-slide="next">
-<v-icon class="carousel-control-next-icon"></v-icon>
-<span class="visually-hidden">Next</span>
-</v-carousel-control-next>
-</v-carousel>
-</v-list-item>-->
       </v-list>
-      <!--<button type="button" class="btn btn-primary" @click="emitToggleChild()">Emit Home</button>-->
     </v-card>
   </v-container>
 </template>
 
 <script setup>
-/*
-
-const showWelcomePage = ref(true);
-const nodelist = ref([]);
-const edgelist = ref([]);
-*/
 import { ref } from "vue";
 import { useOrigFullGraphStore } from "@/store/store.js";
 
-const store = useOrigFullGraphStore();
+const origFullGraphStore = useOrigFullGraphStore();
 // emit
 const emit = defineEmits([
   "toggle-child",
@@ -208,7 +155,8 @@ defineProps({
     default: true,
   },
 });
-
+const posts=ref({})
+/*
 const posts = ref({
   0: {
     _id: 0,
@@ -225,13 +173,13 @@ const posts = ref({
     time: "21/3/2022",
   },
 });
-
+*/
 /*
 const emitList = () => {
   //console.log('emit list');
   emit('node-list', 'edge-list');
 }*/
-
+//const isUploading = ref(false);
 const uploadNewFile = async (name, fileList, fileLen) => {
   if (fileLen != 1) {
     return;
@@ -240,21 +188,19 @@ const uploadNewFile = async (name, fileList, fileLen) => {
   var reader = new FileReader();
 
   reader.onload = async (event) => {
-    let [nodenum, edgenum, ...edges] = event.target.result.split(/\s|\n/); //array destruction
+    emit("concurrent-data-listener", event.target.result);
+    let [nodeNum, edgeNum, ...edges] = event.target.result.split(/\s|\n/); //array destruction
     //console.log(nodenum, edgenum, edges);
-    let newnodelist = [...new Set(edges)].map((num) => ({ id: num })); //remove duplicate elements
+    let nodeList = [...new Set(edges)].map((num) => ({ id: num })); //remove duplicate elements
 
-    let newedgelist = edges
+    let edgeList = edges
       .map((el, i, arr) => (i % 2 === 0 ? arr.slice(i, i + 2) : null)) // group every two elements
       .filter((el) => el) // remove null elements
       .map((subArr) => ({ source: subArr[0], target: subArr[1] })); // transform sub-arrays into objects with source and target properties
-    //emit("update-node-list", newnodelist);
-    //emit("update-edge-list", newedgelist);
-    emit("concurrent-data-listener", edges);
+
     //console.log("store");
     //console.log(store);
-    store.setNodelist(newnodelist);
-    store.setEdgelist(newedgelist);
+    origFullGraphStore.initData(nodeNum, edgeNum, nodeList, edgeList);
     //emitList();
     //console.log("Going to Viz...");
     emit("toggle-child");

@@ -29,47 +29,45 @@
           class="pa-1 d-flex flex-row justify-content-evenly align-items-center"
           ref="editableAreaContainer"
         >
-        <div class="h-100 w-100 p-0 m-0 grid-container" v-if="hasWindow">
-          <div
-            v-for="(component, index) in components"
-            :key="index"
-            :class="[
-              'p-1 rounded d-flex flex-column justify-content-evenly align-items-center',
-              `grid-row-${component.rowSpan}`,
-              `grid-col-${component.colSpan}`,
-            ]"
-            :style="`border: 0.08rem #6c757d dashed`"
-          ><!--
+          <div class="h-100 w-100 p-0 m-0 grid-container" v-if="hasWindow">
+            <div
+              v-for="(component, index) in components"
+              :key="index"
+              :class="[
+                'p-1 rounded d-flex flex-column justify-content-evenly align-items-center',
+                `grid-row-${component.rowSpan}`,
+                `grid-col-${component.colSpan}`,
+              ]"
+            >
+              <!--
             :style="`border: 0.1rem #6c757d dashed`"-->
-          <div class="component-wrapper">
-            <component :is="component.component" />
-          </div>
-
-<!--            <v-btn small color="primary" @click="changeSize(index)">
+              <v-card class="component-wrapper">
+                <component :is="component.component" />
+              </v-card>
+              <!--            <v-btn small color="primary" @click="changeSize(index)">
               Toggle Size
             </v-btn>
             <v-btn small color="error" @click="removeComponent(index)">
               Remove
             </v-btn>-->
-
+            </div>
           </div>
-        </div>
-        <v-card style="border: 0.1rem #6c757d" class="h-100 w-100 pa-0 ma-0 " v-else>
-            <v-skeleton-loader type="image" class=""></v-skeleton-loader>
-            <v-skeleton-loader type="image" class=""></v-skeleton-loader>
-            <v-skeleton-loader type="image" class=""></v-skeleton-loader>
-            <v-skeleton-loader type="image" class=""></v-skeleton-loader>
-            <v-skeleton-loader type="image" class=""></v-skeleton-loader>
-        </v-card>
+          <v-card
+            style="border: 0.1rem #6c757d"
+            class="h-100 w-100 pa-0 ma-0"
+            v-else
+          >
+            <v-skeleton-loader type="image"></v-skeleton-loader>
+          </v-card>
         </v-col>
       </v-row>
     </v-container>
   </v-container>
 
-<!--<v-icon size="3rem" color="#6c757d"
+  <!--<v-icon size="3rem" color="#6c757d"
                 >mdi-plus-circle-outline</v-icon
               >-->
-              <!--
+  <!--
 
           <div
             class="card position-absolute bg-dark"
@@ -78,10 +76,9 @@
             ref="demo-div"
             v-if="showDemoDiv"
           ></div>-->
-
 </template>
 <script setup>
-import { ref, } from "vue";
+import { ref } from "vue";
 import toolbar from "./tools/toolbar.vue";
 import metricsReportComponent from "./tools/metricsReportComponent.vue";
 import customizedIMComponent from "./graphs/customizedIMComponent.vue";
@@ -147,23 +144,22 @@ onMounted(() => {});*/
 
 const components = ref([]);
 const componentMapping = {
-  'Metrics Report': metricsReportComponent,
-  'AutoTree': autoTreeComponent,
-  'K-Neighbor': kNeighborComponent,
-  'Degree Distribution': degreeDistComponent,
-  'Customized IM': customizedIMComponent
+  "Metrics Report": metricsReportComponent,
+  AutoTree: autoTreeComponent,
+  "K Neighbor": kNeighborComponent,
+  "Degree Distribution": degreeDistComponent,
+  "Customized IM": customizedIMComponent,
 };
-const addComponent = (name,rowSpan,colSpan) => {
-  //["K-Neighbor", "AutoTree", "Metrics Report","Degree Distribution"]
+const addComponent = (name, rowSpan, colSpan) => {
+  //["K Neighbor", "AutoTree", "Metrics Report","Degree Distribution"]
   hasWindow.value = true;
-  console.log("emit received",name);
-    components.value.push({
-      component: componentMapping[name],
-      name: name,
-      rowSpan: rowSpan,
-      colSpan: colSpan,
-    });
-
+  console.log("emit received", name);
+  components.value.push({
+    component: componentMapping[name],
+    name: name,
+    rowSpan: rowSpan,
+    colSpan: colSpan,
+  });
 };
 
 const removeComponent = (name) => {
@@ -173,11 +169,9 @@ const removeComponent = (name) => {
     hasWindow.value = false;
   }
 };
-
 </script>
 
 <style scoped>
-
 .grid-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -212,10 +206,6 @@ const removeComponent = (name) => {
 .grid-col-2 {
   grid-column: span 2;
 }
-
-
-
-
 
 /* transition for expanding full graph */
 

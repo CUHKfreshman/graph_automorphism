@@ -1,8 +1,8 @@
 <template>
   <!--draggable tool bar-->
   <v-card
-    class="d-flex flex-column flex-nowrap position-absolute bg-light user-select-none overflow-y-hidden"
-    style="left=50%; z-index:10;cursor: pointer; max-height:90vh; max-width: 50vh"
+    class="d-flex flex-column flex-nowrap position-absolute bg-light user-select-none overflow-y-hidden not-selectable"
+    style="z-index: 99; cursor: pointer; max-height: 90vh; max-width: 50vh"
     :class="[collapsed ? 'rounded-0  bg-grey-darken-2' : 'bg-light']"
   >
     <v-card-title
@@ -28,10 +28,11 @@
     <v-fade-transition>
       <v-card-text class="overflow-y-auto pa-1" v-show="!collapsed">
         <v-expansion-panels variant="accordion">
+          <!--windows-->
           <v-expansion-panel>
             <v-expansion-panel-title>Windows</v-expansion-panel-title>
             <v-expansion-panel-text>
-              <v-form v-model="valid">
+              <v-form>
                 <v-container class="pa-0">
                   <v-select
                     :items="windowNameList"
@@ -113,6 +114,7 @@
               </v-snackbar>
             </v-expansion-panel-text>
           </v-expansion-panel>
+          <!--basic-->
           <v-expansion-panel>
             <v-expansion-panel-title>Basic</v-expansion-panel-title>
             <v-expansion-panel-text>
@@ -123,9 +125,53 @@
                 @click="renderOrigColormap"
                 append-icon="mdi-palette"
                 >Render Basic</v-btn
-              ></v-expansion-panel-text
-            >
+              >
+              <v-table class="w-100 h-100 text-no-wrap " density="compact" hover>
+                <thead>
+                  <tr class="bg-grey-darken-4">
+                    <th class="w-50">METRIC</th>
+                    <th class=" ">VALUE</th>
+                  </tr>
+                </thead>
+                <tbody class="">
+                  <tr>
+                    <td class="w-50">Nodes</td>
+                    <td v-if="origFullGraphStore.hasAnalyzedOrig">
+                      {{ origFullGraphStore.nodeNum }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="w-50">Edges</td>
+                    <td v-if="origFullGraphStore.hasAnalyzedOrig">
+                      {{ origFullGraphStore.edgeNum }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="w-50">Avg Degree</td>
+                    <td v-if="origFullGraphStore.hasAnalyzedOrig">
+                      {{
+                        origFullGraphStore.avgDegree.toString().substring(0, 12)
+                      }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="w-50">Max Degree</td>
+                    <td v-if="origFullGraphStore.hasAnalyzedOrig">
+                      {{ origFullGraphStore.maxDegree }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="w-50">Density</td>
+                    <td v-if="origFullGraphStore.hasAnalyzedOrig">
+                      {{ graphologyStore.density.toString().substring(0, 12) }}
+                    </td>
+                  </tr>
+
+                </tbody>
+              </v-table>
+            </v-expansion-panel-text>
           </v-expansion-panel>
+          <!--k neighbor-->
           <v-expansion-panel>
             <v-expansion-panel-title>K Neighbor</v-expansion-panel-title>
             <v-expansion-panel-text>
@@ -144,6 +190,65 @@
                   </v-icon>
                 </template>
               </v-text-field>
+              <v-table class="w-100 h-100 text-no-wrap " density="compact" hover>
+                <thead>
+                  <tr class="bg-grey-darken-4">
+                    <th class="w-50">METRIC</th>
+                    <th class=" ">VALUE</th>
+                  </tr>
+                </thead>
+                <tbody class="">
+                  <tr>
+                    <td class="w-50">Node ID</td>
+                    <td>{{
+                      origFullGraphStore.selectedNode === undefined
+                      ? ''
+                      : origFullGraphStore.selectedNode}}</td>
+                  </tr>
+                  <tr>
+                    <td class="w-50">K-Neighbor Num</td>
+                    <td>{{
+                        kNeighborStore.kNeighborNum === 0
+                        ? ''
+                        : kNeighborStore.kNeighborNum - 1
+                      }}</td>
+                  </tr>
+                  <tr>
+                    <td class="w-50">Degree</td>
+                    <td>{{
+                        Object.keys(origFullGraphStore.selectedNodeStats).length === 0
+                        ? ''
+                        : origFullGraphStore.selectedNodeStats.degree
+                            .toString()
+                      }}</td>
+                  </tr>
+                  <tr>
+                    <td class="w-50">Degree Centrality</td>
+                    <td>
+                      {{
+                        Object.keys(origFullGraphStore.selectedNodeStats).length === 0
+                        ? ''
+                        : origFullGraphStore.selectedNodeStats.degreeCentrality
+                            .toString()
+                            .substring(0, 12)
+                      }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="w-50">Pagerank</td>
+                    <td>
+                      {{
+                        Object.keys(origFullGraphStore.selectedNodeStats).length === 0
+                        ? ''
+                        : origFullGraphStore.selectedNodeStats.pagerank
+                            .toString()
+                            .substring(0, 12)
+                      }}
+                    </td>
+                  </tr>
+
+                </tbody>
+              </v-table>
               <v-snackbar v-model="kNeighborValueSnackbar">
                 K value must be positive!
 
@@ -159,7 +264,8 @@
               </v-snackbar>
             </v-expansion-panel-text>
           </v-expansion-panel>
-          <v-expansion-panel>
+          <!--autotree-->
+          <v-expansion-panel :disabled="!autoTreeStore.hasReceivedAutoTree">
             <v-expansion-panel-title>AutoTree</v-expansion-panel-title>
             <v-expansion-panel-text
               ><v-btn
@@ -170,16 +276,19 @@
                 append-icon="mdi-graph-outline"
                 >Generate AutoTree</v-btn
               >
+              <v-divider
+              v-show="autoTreeCreated" :thickness="2" class="mt-2 mb-2" color="white"></v-divider>
               <v-scroll-x-transition>
                 <v-btn
-              ref="atDestroyBtn"
-              color="warning"
-              block
-              @click="asteroidDestroy"
-              append-icon="mdi-delete"
-              v-show="autoTreeCreated"
-              >Destroy Asteroid</v-btn
-            >
+                  ref="atDestroyBtn"
+                  :color="asteroidDestroyed ? 'grey-darken-3' : 'warning'"
+                  block
+                  @click="asteroidDestroy"
+                  append-icon="mdi-delete"
+                  v-show="autoTreeCreated"
+                  :disabled="asteroidDestroyed"
+                  >Destroy Asteroid</v-btn
+                >
               </v-scroll-x-transition>
               <v-snackbar v-model="autoTreeSnackbar">
                 AutoTree window has not been initialized!
@@ -196,7 +305,8 @@
               </v-snackbar>
             </v-expansion-panel-text>
           </v-expansion-panel>
-          <v-expansion-panel>
+          <!--ssm-->
+          <v-expansion-panel :disabled="!origFullGraphStore.hasReceivedSSM">
             <v-expansion-panel-title>SSM</v-expansion-panel-title>
             <v-expansion-panel-text>
               <v-btn
@@ -208,10 +318,48 @@
                 @click="renderSSMColormap"
                 append-icon="mdi-palette"
                 >Render SSM</v-btn
-              ></v-expansion-panel-text
+              >
+
+      <v-table class="w-100 h-100 text-no-wrap " density="compact" hover>
+        <thead>
+          <tr class="bg-grey-darken-4">
+            <th class="w-50">METRIC</th>
+            <th class=" ">VALUE</th>
+          </tr>
+        </thead>
+        <tbody class="">
+          <!--ssm stats-->
+          <tr>
+            <td class="w-50">
+              Non-Singular Count
+            </td>
+            <td>
+              {{ origFullGraphStore.ssmNonSingularCount === 0 ? '' : origFullGraphStore.ssmNonSingularCount }}
+            </td>
+          </tr>
+          <tr>
+            <td class="w-50">
+              Avg Degree
+            </td>
+            <td>
+              {{ origFullGraphStore.ssmAvgDegree === 0 ? '' : origFullGraphStore.ssmAvgDegree.toFixed(12).toString().substring(0,6) }}
+            </td>
+          </tr>
+          <tr>
+            <td class="w-50">
+              Max Degree
+            </td>
+            <td>
+              {{ origFullGraphStore.ssmMaxDegree === 0 ? '' : origFullGraphStore.ssmMaxDegree }}
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
+              </v-expansion-panel-text
             >
           </v-expansion-panel>
-          <v-expansion-panel>
+          <!--im-->
+          <v-expansion-panel :disabled="!origFullGraphStore.hasReceivedIM">
             <v-expansion-panel-title>IM</v-expansion-panel-title>
             <v-expansion-panel-text>
               <v-expansion-panels variant="accordion">
@@ -223,7 +371,7 @@
                   append-icon="mdi-palette"
                   >Render IM</v-btn
                 >
-                <v-expansion-panel>
+                <v-expansion-panel elevation="19">
                   <v-expansion-panel-title>
                     Customized Rendering
                   </v-expansion-panel-title>
@@ -297,9 +445,9 @@
                     </v-snackbar>
                   </v-expansion-panel-text>
                 </v-expansion-panel>
-                <v-expansion-panel>
+                <v-expansion-panel elevation="19">
                   <v-expansion-panel-title>
-                    Stepped Visualization
+                    Stepwise Visualization
                   </v-expansion-panel-title>
                   <v-expansion-panel-text>
                     <v-btn
@@ -309,57 +457,145 @@
                       block
                       color="primary"
                       append-icon="mdi-palette-swatch-variant"
-                      @click="
-                        randomColorGenerator();
-                      "
+                      @click="randomColorGenerator()"
                       >Random Color</v-btn
                     >
                     <v-row>
                       <v-checkbox
-                      v-model="selectedIMGraph"
-                      label="Original"
-                      value="Original"
-                    ></v-checkbox>
-                    <v-checkbox
-                      v-model="selectedIMGraph"
-                      label="Competitor"
-                      value="Competitor"
-                    ></v-checkbox>
+                        v-model="selectedIMGraph"
+                        label="Original"
+                        value="Original"
+                      ></v-checkbox>
+                      <v-checkbox
+                        v-model="selectedIMGraph"
+                        label="Competitor"
+                        value="Competitor"
+                      ></v-checkbox>
                     </v-row>
                     <v-col
                       class="d-flex flex-column justify-center align-start"
                     >
-
                       <v-row
-                        v-for="(
-                          color, round
-                        ) in currentimRoundColorDict"
+                        v-for="(color, round) in currentimRoundColorDict"
                         :key="round"
                         :style="{ color: color }"
                         class="w-100"
                       >
-                        <v-col col="12" sm="6" class="pa-0"><v-switch
-                          v-model="showRounds[round]"
-                          :label="'Round ' + round"
-                          :color="color"
-                          hide-details
-                          inset
-                          @change="showRoundHandler(round)"
-                        ></v-switch></v-col>
+                        <v-divider></v-divider>
+                        <v-col col="12" sm="6" class="pa-0"
+                          ><v-switch
+                            v-model="showRounds[round]"
+                            :label="'Round ' + round"
+                            :color="color"
+                            hide-details
+                            inset
+                            @change="showRoundHandler(round)"
+                          ></v-switch
+                        ></v-col>
                         <v-col
-                        col="12" sm="4" class="pa-0 text-center d-flex justify-center align-center text-body-1"><span>{{origFullGraphStore.imDistributionDict[round]}}</span></v-col>
-                        <v-col col="12" sm="2" class="pa-0 text-center d-flex justify-center align-center text-body-1"  v-if="customizedIMStore.imDistributionDict !== null">
-                          <span>{{customizedIMStore.imDistributionDict[round]}}</span>
+                          col="12"
+                          sm="4"
+                          class="pa-0 text-center d-flex justify-center align-center text-body-1"
+                          ><span>{{
+                            origFullGraphStore.imDistributionDict[round]
+                          }}</span></v-col
+                        >
+                        <v-col
+                          col="12"
+                          sm="2"
+                          class="pa-0 text-center d-flex justify-center align-center text-body-1"
+                          v-if="customizedIMStore.imDistributionDict !== null"
+                        >
+                          <span>{{
+                            customizedIMStore.imDistributionDict[round]
+                          }}</span>
                         </v-col>
-
-
                       </v-row>
                       <v-row class="w-100">
-                        <v-col col="12" sm="6" class="pa-0 text-subtitle-1">
+                        <v-divider></v-divider>
+                        <v-col col="12" sm="6" class="pa-2 text-subtitle-1">
                           SUM
                         </v-col>
-                        <v-col col="12" sm="4" class="pa-0 text-center d-flex justify-center align-center text-body-1"><span>{{Object.values(origFullGraphStore.imDistributionDict).reduce((a, b) => a + b, 0)}}</span></v-col>
-                        <v-col col="12" sm="2" class="pa-0 text-center d-flex justify-center align-center text-body-1"><span>{{Object.values(customizedIMStore.imDistributionDict).reduce((a, b) => a + b, 0)}}</span></v-col>
+                        <v-col
+                          col="12"
+                          sm="4"
+                          class="pa-0 text-center d-flex justify-center align-center text-body-1"
+                          ><span>{{
+                            Object.values(
+                              origFullGraphStore.imDistributionDict
+                            ).reduce((a, b) => a + b, 0)
+                          }}</span></v-col
+                        >
+                        <v-col
+                          col="12"
+                          sm="2"
+                          class="pa-0 text-center d-flex justify-center align-center text-body-1"
+                          ><span>{{
+                            Object.keys(customizedIMStore.imDistributionDict).length == 0 ? '' :
+                            Object.values(
+                              customizedIMStore.imDistributionDict
+                            ).reduce((a, b) => a + b, 0)
+                          }}</span></v-col
+                        >
+                      </v-row>
+                      <v-row class="w-100">
+                        <v-divider></v-divider>
+                        <v-col col="12" sm="6" class="pa-2 text-subtitle-1">
+                          EFFICIENCY
+                        </v-col>
+                        <v-col
+                          col="12"
+                          sm="4"
+                          class="pa-0 text-center d-flex justify-center align-center text-body-1"
+                          ><span>{{
+                            (Object.values(
+                              origFullGraphStore.imDistributionDict
+                            ).reduce((a, b) => a + b, 0) / Object.keys(origFullGraphStore.imDistributionDict).length).toString().substring(0,5)
+                          }}</span></v-col
+                        >
+                        <v-col
+                          col="12"
+                          sm="2"
+                          class="pa-0 text-center d-flex justify-center align-center text-body-1"
+                          ><span>{{
+                            Object.keys(customizedIMStore.imDistributionDict).length == 0 ? '' :
+                            (Object.values(
+                              customizedIMStore.imDistributionDict
+                            ).reduce((a, b) => a + b, 0) / Object.keys(customizedIMStore.imDistributionDict).length).toString().substring(0,5)
+                          }}</span></v-col
+                        >
+                      </v-row>
+                      <v-row class="w-100">
+                        <v-divider></v-divider>
+                        <v-col col="12" sm="6" class="pa-2 text-subtitle-1">
+                          COVERAGE
+                        </v-col>
+                        <v-col
+                          col="12"
+                          sm="4"
+                          class="pa-0 text-center d-flex justify-center align-center text-body-1"
+                          ><span>{{
+                            formatPercentage(Object.values(
+                              origFullGraphStore.imDistributionDict
+                            ).reduce((a, b) => a + b, 0) / origFullGraphStore.nodeNum)
+                          }}</span></v-col
+                        >
+                        <v-col
+                          col="12"
+                          sm="2"
+                          class="pa-0 text-center d-flex justify-center align-center text-body-1"
+                          ><span>{{
+                            Object.keys(customizedIMStore.imDistributionDict).length == 0 ? '' :
+                            formatPercentage(Object.values(
+                              customizedIMStore.imDistributionDict
+                            ).reduce((a, b) => a + b, 0) / origFullGraphStore.nodeNum)
+                          }}</span></v-col
+                        >
+                      </v-row>
+                      <v-row class="w-100">
+                        <v-btn @click="clearShowRounds" color="red" block>
+                          Clear Selections
+                        </v-btn>
                       </v-row>
                     </v-col>
                   </v-expansion-panel-text>
@@ -492,7 +728,16 @@ import {
   useKNeighborStore,
   useAutoTreeStore,
   useCustomizedIMStore,
+  useGraphologyStore,
 } from "@/store/store.js";
+//handle leading zeros
+ const formatPercentage = (number) => {
+      const percentage = Number(number.toFixed(5).toString().substring(2, 4));
+      if (percentage === 0) {
+      return '0%';
+    }
+      return percentage.toString().replace(/^0+/, '') + '%';
+    }
 //handle collapse toolbar
 const showRightClickTooltip = ref(false);
 const collapsed = ref(false);
@@ -510,13 +755,17 @@ const addComponentEmit = () => {
     hasWindowSnackbar.value = true;
   } else {
     addedWindowNameList.value.push(windowSelected.value);
+    if ((windowSelected.value !== "Degree Distribution") && (windowSelected.value !== "Metrics Report")) {
+      addedConfigs[windowSelected.value] = true;
+      configItems.value = Object.keys(addedConfigs);
+    }
     emit(
       "addComponent",
       windowSelected.value,
       rowHeightSelected.value,
       colWidthSelected.value
     );
-    if (windowSelected.value == "K-Neighbor") {
+    if (windowSelected.value == "K Neighbor") {
       origFullGraphStore.kNeighborEnabled = true;
     }
   }
@@ -525,11 +774,18 @@ const removeComponentEmit = () => {
   const index = addedWindowNameList.value.indexOf(windowSelected.value);
   if (index > -1) {
     addedWindowNameList.value.splice(index, 1);
+
+    if ((windowSelected.value !== "Degree Distribution") && (windowSelected.value !== "Metrics Report")) {
+      delete addedConfigs[windowSelected.value];
+      configItems.value = Object.keys(addedConfigs);
+    }
     emit("removeComponent", windowSelected.value);
-    if (windowSelected.value == "K-Neighbor") {
+    if (windowSelected.value == "K Neighbor") {
       origFullGraphStore.kNeighborEnabled = false;
-    } else if (windowSelected.value == 'AutoTree'){
+    } else if (windowSelected.value == "AutoTree") {
       autoTreeCreated.value = false;
+    } else if (windowSelected.value == "CustomizedIM") {
+      customizedIMStore.customizedIM = null;
     }
   } else {
     noWindowSnackbar.value = true;
@@ -540,6 +796,7 @@ const origFullGraphStore = useOrigFullGraphStore();
 const autoTreeStore = useAutoTreeStore();
 const kNeighborStore = useKNeighborStore();
 const customizedIMStore = useCustomizedIMStore();
+const graphologyStore = useGraphologyStore();
 //// snackbars
 const autoTreeSnackbar = ref(false);
 const customizedIMSnackbar = ref(false);
@@ -606,27 +863,40 @@ const makeToolBarDraggable = () => {
 };
 //// window adder
 const windowNameList = ref([
-  "K-Neighbor",
+  "K Neighbor",
   "AutoTree",
   "Metrics Report",
   "Degree Distribution",
   "Customized IM",
 ]);
 const addedWindowNameList = ref([]);
-const windowSelected = ref("K-Neighbor");
+const windowSelected = ref("K Neighbor");
 const rowHeightSelected = ref(1);
 const colWidthSelected = ref(1);
 
 //// config for layout target switch
-const configType = ref("origFullGraph");
+
+const configType = ref("Original Graph");
 const configs = reactive({
   origFullGraph: origFullGraphStore.origFullGraphConfig,
+  autoTree: autoTreeStore.autoTreeConfig,
   kNeighbor: kNeighborStore.kNeighborConfig,
   customizedIM: customizedIMStore.customizedIMConfig,
 });
-const configItems = ref(Object.keys(configs));
+const addedConfigs = reactive({ "Original Graph": true });
+const configItems = ref(Object.keys(addedConfigs));
 
-const interfaceConfig = computed(() => configs[configType.value]);
+const interfaceConfig = computed(() => {
+  let type = "origFullGraph";
+  if (configType.value == "K Neighbor") {
+    type = "kNeighbor";
+  } else if (configType.value == "AutoTree") {
+    type = "autoTree";
+  } else if (configType.value == "Customized IM") {
+    type = "customizedIM";
+  }
+  return configs[type];
+});
 const isRenderColorMap = ref(false);
 const renderOrigColormap = () => {
   isRenderColorMap.value = true;
@@ -683,7 +953,7 @@ watch(
       origFullGraphStore.origFullGraph.start();
     } else {
       //update k neighbor if exist
-      const index = addedWindowNameList.value.indexOf("K-Neighbor");
+      const index = addedWindowNameList.value.indexOf("K Neighbor");
       if (index > -1) {
         kNeighborStore.kNeighborColorMapRender();
       }
@@ -702,6 +972,20 @@ watch(
     kNeighborStore.kNeighbor.setConfig(newConfig);
     if (!isRenderColorMap.value) {
       kNeighborStore.kNeighbor.start();
+    }
+    isRenderColorMap.value = false;
+  },
+  { deep: true }
+);
+//// watch autoTree config
+watch(
+  () => autoTreeStore.autoTreeConfig,
+  (newConfig) => {
+    //console.log("autoTreeConfig changed", newConfig);
+    configs.autoTree = autoTreeStore.autoTreeConfig;
+    autoTreeStore.autoTree.setConfig(newConfig);
+    if (!isRenderColorMap.value) {
+      autoTreeStore.autoTree.start();
     }
     isRenderColorMap.value = false;
   },
@@ -734,6 +1018,7 @@ const minusKValue = () => {
 };
 //// autoTree graph creator
 const autoTreeCreated = ref(false);
+const asteroidDestroyed = ref(false);
 const createATGraph = () => {
   const index = addedWindowNameList.value.indexOf("AutoTree");
   if (index > -1) {
@@ -745,13 +1030,14 @@ const createATGraph = () => {
 };
 // destroy autoTree asteroid
 const asteroidDestroy = () => {
+  asteroidDestroyed.value = true;
   autoTreeStore.asteroidDestroy();
 };
 //// kneighbor k val watcher
 watch(
   () => kNeighborStore.kValue, //TODOlno, use store instead. or solve the problem of new k
   (newVal) => {
-    const index = addedWindowNameList.value.indexOf("K-Neighbor");
+    const index = addedWindowNameList.value.indexOf("K Neighbor");
     if (index > -1) {
       kNeighborStore.kNeighborUpdate(newVal);
     }
@@ -762,23 +1048,32 @@ watch(
 //// im round shower helper
 const selectedIMGraph = ref(["Original"]);
 const showRounds = ref({});
-const showRoundHandler = (round, ) => {
-  if(selectedIMGraph.value.includes("Original")){
+const clearShowRounds = () => {
+  for (const round in Object.keys(currentimRoundColorDict.value)) {
+    showRounds.value[round] = false;
+    showRoundHandler(round);
+  }
+  if (selectedIMGraph.value.includes("Original")) {
+    origFullGraphStore.origFullGraph.unselectNodes();
+  }
+  if (selectedIMGraph.value.includes("Competitor")) {
+    customizedIMStore.customizedIM.unselectNodes();
+  }
+};
+const showRoundHandler = (round) => {
+  if (selectedIMGraph.value.includes("Original")) {
     origFullGraphStore.imColormapRoundRender(round, showRounds.value[round]);
   }
-  if(selectedIMGraph.value.includes("Competitor")){
+  if (selectedIMGraph.value.includes("Competitor")) {
     customizedIMStore.imColormapRoundRender(round, showRounds.value[round]);
   }
-
-}
+};
 const randomColorGenerator = () => {
-  if(addedWindowNameList.value.includes("Customized IM")){
+  if (addedWindowNameList.value.includes("Customized IM")) {
     customizedIMStore.imColormapCreate(null, false, false);
   }
-    origFullGraphStore.imColormapCreate(null, false, false);
-
-
-}
+  origFullGraphStore.imColormapCreate(null, false, false);
+};
 const currentimRoundColorDict = computed(() => {
   const origDict = origFullGraphStore.imRoundColorDict;
   const customDict = customizedIMStore.imRoundColorDict;
@@ -786,7 +1081,11 @@ const currentimRoundColorDict = computed(() => {
   const getMaxKey = (dict) => Math.max(...Object.keys(dict).map(Number));
   const origMaxKey = getMaxKey(origDict);
   const customMaxKey = getMaxKey(customDict);
-  console.log(origMaxKey, customMaxKey, customMaxKey > origMaxKey ? customDict : origDict)
+  console.log(
+    origMaxKey,
+    customMaxKey,
+    customMaxKey > origMaxKey ? customDict : origDict
+  );
   // Return the dictionary with the larger max key
   return customMaxKey > origMaxKey ? customDict : origDict;
 });
@@ -801,11 +1100,12 @@ watch(
     }
   },
   { deep: true }
-);  console.log()
+);
+console.log();
 /// IM customized render
 const selectedNodesForIM = ref([]);
 const selectedNodesForIMFallbackSnackbar = ref(false);
-const spreadProbability = ref(0.2);
+const spreadProbability = ref(20);
 //// check node validaty (rely on bug to perform input twice for deletion. Actually a tricky case but I don have the time to check logic)
 watch(selectedNodesForIM, (newVal, oldVal) => {
   // if delete
@@ -813,6 +1113,7 @@ watch(selectedNodesForIM, (newVal, oldVal) => {
     return;
   }
   const newNode = newVal[newVal.length - 1];
+  /*
   let oldSize = oldVal.length;
   if (oldSize > 0) {
     if (oldVal.includes(newNode)) {
@@ -821,12 +1122,12 @@ watch(selectedNodesForIM, (newVal, oldVal) => {
       selectedNodesForIM.value = oldVal;
       return;
     }
-  }
+  }*/
 
   let found = false;
   // this method is for [1, 3, 4, 5] kind of array. if [1, 2, 3] then ok just check maximum
-  for (let i = 0; i < origFullGraphStore.nodelist.length; i++) {
-    const item = origFullGraphStore.nodelist[i];
+  for (let i = 0; i < origFullGraphStore.nodeList.length; i++) {
+    const item = origFullGraphStore.nodeList[i];
     //console.log(item);
     if (item.id === newNode) {
       found = true;
@@ -839,10 +1140,21 @@ watch(selectedNodesForIM, (newVal, oldVal) => {
     selectedNodesForIM.value = oldVal;
   }
 });
+watch(
+  () => origFullGraphStore.selectedNode,
+  (newVal) => {
+    if (newVal!==undefined) {
+      if(selectedNodesForIM.value.includes(newVal)){
+        return;
+      }
+      selectedNodesForIM.value.push(newVal);
+    }
+  }
+);
 //// deal with server im result check
 const customizedIMSubmit = async () => {
   customizedIMStore.hasReceived = false;
-  if (selectedNodesForIM.value.length < 1 || spreadProbability.value <= 0) {
+  if (selectedNodesForIM.value.length < 1 || spreadProbability.value <= 0 || spreadProbability.value > 100) {
     selectedNodesForIMFallbackSnackbar.value = true;
     return;
   }
@@ -900,5 +1212,15 @@ onMounted(() => {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+/* handle seletable*/
+.not-selectable {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 </style>

@@ -7,25 +7,10 @@ const origFullGraphStore = useOrigFullGraphStore();
 const autoTreeStore = useAutoTreeStore();
 const customizedIMStore = useCustomizedIMStore();
 const showWelcomePage = ref(true);
-/*
-const nodelist = ref([]);
-const edgelist = ref([]);
-*/
 // to toggle between login and viz page
 const toggleChild = () => {
   showWelcomePage.value = !showWelcomePage.value;
 };
-/*
-const updateNodeList = (newnodeList) => {
-  //console.log("Updated nodeList:");
-  //console.log(newnodeList);
-  nodelist.value = newnodeList;
-};
-
-const updateEdgeList = (edgeList) => {
-  edgelist.value = edgeList;
-};
-*/
 // This function is used to poll the server for new data, and then handle the data.
 // The function is called long polling because it will keep polling the server until it gets a response, and then it will poll the server again.
 
@@ -34,7 +19,8 @@ const longPolling = async () => {
     //console.log("Long polling...");
     const response = await fetch("http://localhost:4000/poll");
     const data = await response.json();
-    handleData(data);
+    handleData(data);    // Wait for seconds before making the next request
+    //await new Promise(resolve => setTimeout(resolve, 6000));
     longPolling();
   } catch (error) {
     console.error("Long polling error:", error);
@@ -49,14 +35,17 @@ const handleData = (resp) => {
     case "AutoTreeData":
       console.log("AT received:", resp.data);
       autoTreeStore.assignAutoTree(resp.data);
+      autoTreeStore.hasReceivedAutoTree = true;
       break;
     case "SSMData":
       console.log("SSM Data received", resp.data);
       origFullGraphStore.ssmColormapCreate(resp.data);
+      origFullGraphStore.hasReceivedSSM = true;
       break;
     case "IMData":
       console.log("IM received:", resp.data);
       origFullGraphStore.imColormapCreate(resp.data, true, true);
+      origFullGraphStore.hasReceivedIM = true;
       break;
     case "customizedIMData":
       console.log("customized IM received:", resp.data);
@@ -74,13 +63,13 @@ const handleData = (resp) => {
       break;
   }
 };
-const concurrentDataListener = async (edges) => {
+const concurrentDataListener = async (fileStream) => {
   //console.log("listening to data concurrently...");
 
   const response = await fetch("http://localhost:4000/upload", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(edges),
+    body: JSON.stringify(fileStream),
   });
 
   if (response.status === 200) {
@@ -89,11 +78,12 @@ const concurrentDataListener = async (edges) => {
     //console.log("Response Error:", response);
   }
 
+  await new Promise(resolve => setTimeout(resolve, 6000));
   longPolling();
 };
 
 // add
-/* Deprecated EventSource functions
+/* Deprecated EventSource functions for Redis pub/sub
 var source;
 const concurrentDataListener =  async (edges) => {
   //console.log("listening to data concurrently...");

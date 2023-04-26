@@ -11,6 +11,10 @@
 </script>
 
 <style>
+/* handle skeleton loader height override */
+.v-skeleton-loader__image {
+  height: 100vh!important;
+}
 #app {
   width: 100%;
   height: 100%;

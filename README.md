@@ -28,7 +28,7 @@ python3 ./flask/app.py
 2. SSM graph analyzer:
     1. Basic color mapping: Done
     2. Metrics report: Not yet
-    3. Modified node-wise operations: Not yet
+    3. Modified node-wise operations: TODO: bidirectional at node focus
 3. AutoTree Analyzer:
     1. AutoTree graph rendering: Done
     2. Metrics report: Not yet
@@ -36,7 +36,7 @@ python3 ./flask/app.py
 4. IM graph analyzer:
    1. Basic color mapping: Done
    2. Metrics report: Not yet
-   3. Modified node-wise operations: Not yet
+   3. Modified node-wise operations: TODO: recursive. If enough time then do
    4. Step-by-step visualization: Done
    5. K-neighbor visualization: Done
    6. Customizable seed set & prob: Done

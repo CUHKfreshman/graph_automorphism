@@ -376,8 +376,8 @@ def enumerate_all(nodenum, AutoTree, Graph):
 def ssm_generator(filename, raw_seed_list):
     nodenum=0
     Graph,nodenum,edgenum = read_graph(filename)
-    AutoTree, SubTree, max_depth = read_AT("at.txt")
-    color = read_color("color.txt")
+    AutoTree, SubTree, max_depth = read_AT("./at.txt")
+    color = read_color("./color.txt")
     if len(raw_seed_list) > 0:
         seed,is_seed = read_seed(raw_seed_list, nodenum)
         # print(seed,is_seed)
