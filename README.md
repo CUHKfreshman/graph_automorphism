@@ -1,6 +1,7 @@
 # AutoViz
 The project is run on Vue 3 + Flask + Redis. The recommended package manager is *yarn* which has better support for Vue.\\
 You may need the following commands to run the application:
+**For current version, Redis is replaced by long polling. Related code can be safely removed (setup & app.py).**
 ```
 yarn
 pip install -r requirement.txt
@@ -16,30 +17,28 @@ redis-server
 yarn dev
 python3 ./flask/app.py
 ```
-
 ## Project development
 
 ### Current status
-1. Basic graph analyzer:
+1. General Purpose:
     1. Graph rendering: Done
-    2. Metrics report: Not yet
+    2. Metrics report: Done
     3. Layout Options: Done
-    4. Modular Self-Assembling UI: Done 
-2. SSM graph analyzer:
+    4. Modular Self-Assembling UI: Done
+2. Symmetric Subgraph Matching:
     1. Basic color mapping: Done
-    2. Metrics report: Not yet
-    3. Modified node-wise operations: TODO: bidirectional at node focus
+    2. Metrics report: Done
+    3. Modified node-wise operations: Done
 3. AutoTree Analyzer:
     1. AutoTree graph rendering: Done
-    2. Metrics report: Not yet
-    3. Modified node-wise operations: Partial (lack destroy asteroid)
-4. IM graph analyzer:
+    2. Metrics report: Done (In SSM)
+    3. Modified node-wise operations: Done
+4. Influence Maximization:
    1. Basic color mapping: Done
    2. Metrics report: Not yet
-   3. Modified node-wise operations: TODO: recursive. If enough time then do
-   4. Step-by-step visualization: Done
-   5. K-neighbor visualization: Done
-   6. Customizable seed set & prob: Done
+   3. Step-by-step visualization: Done
+   4. K-neighbor visualization: Done
+   5. Customizable seed set & prob: Done
 
 ### Remark
 For different node-wise operations, should use different entries rather than overriding.
