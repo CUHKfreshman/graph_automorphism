@@ -11,6 +11,7 @@ export const useOrigFullGraphStore = defineStore("origFullGraphStore", {
     kNeighborStore: useKNeighborStore(),
     autoTreeStore: useAutoTreeStore(),
     graphologyStore: useGraphologyStore(),
+    customizedIMStore: useCustomizedIMStore(),
     expandFullgraph: false,
     // has analyzed
     hasAnalyzedSSM: false,
@@ -310,13 +311,13 @@ export const useOrigFullGraphStore = defineStore("origFullGraphStore", {
     },
     imColormapCreate(data, isNewData, isGradient) {
       if (isNewData) {
-        this.hasAnalyzedSSM = false;
+        this.hasAnalyzedIM = false;
         this.imAllDict = data;
         this.imDistributionDict = Object.values(this.imAllDict).map(array => array.length);
         //console.log("imDistributionDict", this.imDistributionDict);
-        this.imRoundColorDict = {};
-        this.imColormap = [];
       }
+      this.imRoundColorDict = {};
+      this.imColormap = [];
       // from red to yellow, we only modify the middle content in hex color environment
       //let start_color = 0; //ff0000
       //let endColor = parseInt('ff', 16); // ff'dd'00
@@ -337,7 +338,15 @@ export const useOrigFullGraphStore = defineStore("origFullGraphStore", {
             //color = colorarray[round];
           }
           else {
-            color = "#" + (Math.random() * 1145141919810).toString(16).substring(0, 6);
+            if(Object.prototype.hasOwnProperty.call(this.customizedIMStore.imRoundColorDict, round)){
+
+
+             color = this.customizedIMStore.imRoundColorDict[round];
+            }
+             else{
+              color = "#" + (Math.random() * 1145141919810).toString(16).substring(0, 6);
+
+             }
             //color = colorarray[round]; // 3rd round % colorarray.length
           }
           this.imRoundColorDict[round] = color;
@@ -777,7 +786,7 @@ export const useCustomizedIMStore = defineStore("customizedIMStore", {
           linkDistance: 1,
           linkSpring: 0.3,
           repulsion: 1,
-          gravity: 0.25,
+          gravity: 0.5,
           friction: 0.85,
         },
         events: {
@@ -818,10 +827,10 @@ export const useCustomizedIMStore = defineStore("customizedIMStore", {
       if (isNewData) {
         this.imAllDict = data;
         this.imDistributionDict = Object.values(this.imAllDict).map(array => array.length);
-        this.imRoundColorDict = {};
-        this.imColormap = [];
 
       }
+      this.imRoundColorDict = {};
+      this.imColormap = [];
       let maxRoundNum = Object.keys(this.imAllDict).length;
       Object.entries(this.imAllDict).forEach(([round, value]) => {
         let colorLR = ["#ff0000", "#ffffcc"];

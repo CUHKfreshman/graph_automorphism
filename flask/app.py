@@ -110,8 +110,8 @@ def send_SSMData_raw():
 def send_IMData():
     #with app.app_context():
         #sse.publish(json.dumps({'data': 'response 3CCCA'}), type='IMData')
-    #pruned = [107,3437,0,686,348,1684,1912,3980,698,21]
-    pruned = [0]
+    pruned = [107,3437,0,686,348,1684,1912,3980,698,21]
+    #pruned = [0]
     prob = 20
     im_all_dict = ssm.get_IM(pruned, prob / 100)
     data = {'type': 'IMData', 'data': im_all_dict}
