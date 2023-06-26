@@ -126,11 +126,11 @@
                 append-icon="mdi-palette"
                 >Render Basic</v-btn
               >
-              <v-table class="w-100 h-100 text-no-wrap " density="compact" hover>
+              <v-table class="w-100 h-100 text-no-wrap" density="compact" hover>
                 <thead>
-                  <tr class="bg-grey-darken-4">
+                  <tr class="">
                     <th class="w-50">METRIC</th>
-                    <th class=" ">VALUE</th>
+                    <th class="">VALUE</th>
                   </tr>
                 </thead>
                 <tbody class="">
@@ -166,7 +166,6 @@
                       {{ graphologyStore.density.toString().substring(0, 12) }}
                     </td>
                   </tr>
-
                 </tbody>
               </v-table>
             </v-expansion-panel-text>
@@ -190,47 +189,55 @@
                   </v-icon>
                 </template>
               </v-text-field>
-              <v-table class="w-100 h-100 text-no-wrap " density="compact" hover>
+              <v-table class="w-100 h-100 text-no-wrap" density="compact" hover>
                 <thead>
-                  <tr class="bg-grey-darken-4">
+                  <tr class="">
                     <th class="w-50">METRIC</th>
-                    <th class=" ">VALUE</th>
+                    <th class="">VALUE</th>
                   </tr>
                 </thead>
                 <tbody class="">
                   <tr>
                     <td class="w-50">Node ID</td>
-                    <td>{{
-                      origFullGraphStore.selectedNode === undefined
-                      ? ''
-                      : origFullGraphStore.selectedNode}}</td>
+                    <td>
+                      {{
+                        origFullGraphStore.selectedNode === undefined
+                          ? ""
+                          : origFullGraphStore.selectedNode
+                      }}
+                    </td>
                   </tr>
                   <tr>
                     <td class="w-50">K-Neighbor Num</td>
-                    <td>{{
+                    <td>
+                      {{
                         kNeighborStore.kNeighborNum === 0
-                        ? ''
-                        : kNeighborStore.kNeighborNum - 1
-                      }}</td>
+                          ? ""
+                          : kNeighborStore.kNeighborNum - 1
+                      }}
+                    </td>
                   </tr>
                   <tr>
                     <td class="w-50">Degree</td>
-                    <td>{{
-                        Object.keys(origFullGraphStore.selectedNodeStats).length === 0
-                        ? ''
-                        : origFullGraphStore.selectedNodeStats.degree
-                            .toString()
-                      }}</td>
+                    <td>
+                      {{
+                        Object.keys(origFullGraphStore.selectedNodeStats)
+                          .length === 0
+                          ? ""
+                          : origFullGraphStore.selectedNodeStats.degree.toString()
+                      }}
+                    </td>
                   </tr>
                   <tr>
                     <td class="w-50">Degree Centrality</td>
                     <td>
                       {{
-                        Object.keys(origFullGraphStore.selectedNodeStats).length === 0
-                        ? ''
-                        : origFullGraphStore.selectedNodeStats.degreeCentrality
-                            .toString()
-                            .substring(0, 12)
+                        Object.keys(origFullGraphStore.selectedNodeStats)
+                          .length === 0
+                          ? ""
+                          : origFullGraphStore.selectedNodeStats.degreeCentrality
+                              .toString()
+                              .substring(0, 12)
                       }}
                     </td>
                   </tr>
@@ -238,15 +245,15 @@
                     <td class="w-50">Pagerank</td>
                     <td>
                       {{
-                        Object.keys(origFullGraphStore.selectedNodeStats).length === 0
-                        ? ''
-                        : origFullGraphStore.selectedNodeStats.pagerank
-                            .toString()
-                            .substring(0, 12)
+                        Object.keys(origFullGraphStore.selectedNodeStats)
+                          .length === 0
+                          ? ""
+                          : origFullGraphStore.selectedNodeStats.pagerank
+                              .toString()
+                              .substring(0, 12)
                       }}
                     </td>
                   </tr>
-
                 </tbody>
               </v-table>
               <v-snackbar v-model="kNeighborValueSnackbar">
@@ -277,7 +284,11 @@
                 >Generate AutoTree</v-btn
               >
               <v-divider
-              v-show="autoTreeCreated" :thickness="2" class="mt-2 mb-2" color="white"></v-divider>
+                v-show="autoTreeCreated"
+                :thickness="2"
+                class="mt-2 mb-2"
+                color="white"
+              ></v-divider>
               <v-scroll-x-transition>
                 <v-btn
                   ref="atDestroyBtn"
@@ -320,43 +331,51 @@
                 >Render SSM</v-btn
               >
 
-      <v-table class="w-100 h-100 text-no-wrap " density="compact" hover>
-        <thead>
-          <tr class="bg-grey-darken-4">
-            <th class="w-50">METRIC</th>
-            <th class=" ">VALUE</th>
-          </tr>
-        </thead>
-        <tbody class="">
-          <!--ssm stats-->
-          <tr>
-            <td class="w-50">
-              Non-Singular Count
-            </td>
-            <td>
-              {{ origFullGraphStore.ssmNonSingularCount === 0 ? '' : origFullGraphStore.ssmNonSingularCount }}
-            </td>
-          </tr>
-          <tr>
-            <td class="w-50">
-              Avg Degree
-            </td>
-            <td>
-              {{ origFullGraphStore.ssmAvgDegree === 0 ? '' : origFullGraphStore.ssmAvgDegree.toFixed(12).toString().substring(0,6) }}
-            </td>
-          </tr>
-          <tr>
-            <td class="w-50">
-              Max Degree
-            </td>
-            <td>
-              {{ origFullGraphStore.ssmMaxDegree === 0 ? '' : origFullGraphStore.ssmMaxDegree }}
-            </td>
-          </tr>
-        </tbody>
-      </v-table>
-              </v-expansion-panel-text
-            >
+              <v-table class="w-100 h-100 text-no-wrap" density="compact" hover>
+                <thead>
+                  <tr class="">
+                    <th class="w-50">METRIC</th>
+                    <th class="">VALUE</th>
+                  </tr>
+                </thead>
+                <tbody class="">
+                  <!--ssm stats-->
+                  <tr>
+                    <td class="w-50">Non-Singular Count</td>
+                    <td>
+                      {{
+                        origFullGraphStore.ssmNonSingularCount === 0
+                          ? ""
+                          : origFullGraphStore.ssmNonSingularCount
+                      }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="w-50">Avg Degree</td>
+                    <td>
+                      {{
+                        origFullGraphStore.ssmAvgDegree === 0
+                          ? ""
+                          : origFullGraphStore.ssmAvgDegree
+                              .toFixed(12)
+                              .toString()
+                              .substring(0, 6)
+                      }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="w-50">Max Degree</td>
+                    <td>
+                      {{
+                        origFullGraphStore.ssmMaxDegree === 0
+                          ? ""
+                          : origFullGraphStore.ssmMaxDegree
+                      }}
+                    </td>
+                  </tr>
+                </tbody>
+              </v-table>
+            </v-expansion-panel-text>
           </v-expansion-panel>
           <!--im-->
           <v-expansion-panel :disabled="!origFullGraphStore.hasReceivedIM">
@@ -371,6 +390,272 @@
                   append-icon="mdi-palette"
                   >Render IM</v-btn
                 >
+                <v-expansion-panel elevation="19">
+                  <v-expansion-panel-title>
+                    Integrated Methods
+                  </v-expansion-panel-title>
+                  <v-expansion-panel-text>
+                    <v-form @submit.prevent="methodSubmit">
+                      <v-select
+                        label="Select Method"
+                        :items="methodTypeList"
+                        v-model="methodType"
+                        variant="outlined"
+                        hide-details
+                      ></v-select>
+                      <v-text-field
+                        append-icon="mdi-counter"
+                        label="Seed Size"
+                        v-model="methodSeedSize"
+                        type="number"
+                        hide-details
+                      ></v-text-field>
+                      <v-text-field
+                        append-icon="mdi-map-marker-path"
+                        label="Decay"
+                        v-show="methodType == 'PMC'"
+                        v-model="pmcDecay"
+                        hide-details
+                        type="number"
+                      ></v-text-field>
+                      <v-text-field
+                        append-icon="mdi-percent-outline"
+                        v-show="methodType == 'PMC'"
+                        label="Spread Probability (%)"
+                        v-model="spreadProbability"
+                        type="number"
+                      ></v-text-field>
+                      <v-text-field
+                        v-show="methodType == 'SSA' || methodType == 'DSSA'"
+                        label="Epsilon"
+                        v-model="ssaEpsilon"
+                        type="number"
+                      ></v-text-field>
+                      <v-text-field
+                        v-show="methodType == 'SSA' || methodType == 'DSSA'"
+                        label="Delta"
+                        v-model="ssaDelta"
+                        type="number"
+                      ></v-text-field>
+                      <v-select
+                        v-show="methodType == 'Subsim'"
+                        label="Probability Distribution"
+                        :items="subsimPdistList"
+                        v-model="subsimPdist"
+                      ></v-select>
+                      <v-select
+                        v-show="methodType == 'SSA' || methodType == 'DSSA'"
+                        label="Diffusion Model"
+                        :items="ssaModelList"
+                        v-model="ssaModel"
+                      ></v-select>
+                      <v-btn
+                        type="submit"
+                        block
+                        class="mt-2"
+                        append-icon="mdi-send"
+                        >Submit</v-btn
+                      >
+                      <v-table
+                        class="w-100 h-100 text-no-wrap"
+                        density="compact"
+                        hover
+                      >
+                        <thead>
+                          <tr class="">
+                            <th class="w-50">METRIC</th>
+                            <th class="">VALUE</th>
+                          </tr>
+                        </thead>
+                        <tbody class="">
+                          <tr>
+                            <td class="w-50">Metric 1</td>
+                            <td>{{}}</td>
+                          </tr>
+                          <tr>
+                            <td class="w-50">Metric 2</td>
+                            <td>{{}}</td>
+                          </tr>
+                          <tr>
+                            <td class="w-50">Metric 3</td>
+                            <td>{{}}</td>
+                          </tr>
+                        </tbody>
+                      </v-table>
+                      <v-divider></v-divider>
+                      <v-combobox
+                        v-model="selectedNodesFromMethod"
+                        multiple
+                        chips
+                        label="Unpruned Result"
+                        hide-details
+                      ></v-combobox>
+                      <v-divider></v-divider>
+                      <v-btn
+                        block
+                        class="mt-2 bg-info"
+                        append-icon="mdi-magnify-expand"
+                        @click="highlightCustomizedNodesFromMethod"
+                        >Highlight</v-btn
+                      >
+                      <v-btn
+                        block
+                        class="mt-2 bg-amber"
+                        append-icon="mdi-content-cut"
+                        @click="ipSubmit"
+                        >Prune</v-btn
+                      >
+
+                      <v-table
+                        class="w-100 h-100 text-no-wrap"
+                        density="compact"
+                        hover
+                        hide-details
+                      >
+                        <thead>
+                          <tr class="">
+                            <th class="w-50">METRIC</th>
+                            <th class="">VALUE</th>
+                          </tr>
+                        </thead>
+                        <tbody class="">
+                          <tr>
+                            <td class="w-50">Metric 1</td>
+                            <td>{{}}</td>
+                          </tr>
+                          <tr>
+                            <td class="w-50">Metric 2</td>
+                            <td>{{}}</td>
+                          </tr>
+                          <tr>
+                            <td class="w-50">Metric 3</td>
+                            <td>{{}}</td>
+                          </tr>
+                        </tbody>
+                      </v-table>
+                      <v-divider></v-divider>
+                      <v-combobox
+                        v-model="selectedNodesFromIP"
+                        multiple
+                        chips
+                        label="Pruned Result"
+                        hide-details
+                      ></v-combobox>
+                      <v-combobox
+                        v-model="prunedNodesFromIP"
+                        multiple
+                        chips
+                        label="Replaced Nodes"
+                        hide-details
+                      ></v-combobox>
+                      <v-combobox
+                        v-model="newNodesFromIP"
+                        multiple
+                        chips
+                        label="Introduced Nodes"
+                        hide-details
+                      ></v-combobox>
+
+                      <v-divider></v-divider>
+                      <v-btn
+                        block
+                        class="mt-2 bg-info"
+                        append-icon="mdi-magnify-expand"
+                        @click="highlightCustomizedNodesFromIP"
+                        >Highlight</v-btn
+                      >
+                      <v-btn
+                        block
+                        class="mt-2 bg-success"
+                        append-icon="mdi-send"
+                        @click="transferIPResultToRender"
+                        >Retrieve Data</v-btn
+                      >
+                    </v-form>
+
+                    <v-snackbar v-model="hasRetrievedDataSnackbar">
+                      Retrieve successfully. Please check the input box in
+                      "Customized Rendering"!
+
+                      <template v-slot:actions>
+                        <v-btn
+                          color="pink"
+                          variant="text"
+                          @click="methodSeedHasReturnedSnackbar = false"
+                        >
+                          Close
+                        </v-btn>
+                      </template>
+                    </v-snackbar>
+                    <v-snackbar v-model="methodSeedHasReturnedSnackbar">
+                      Result has returned successfully. Please check the
+                      input box in "Customized Rendering"!
+
+                      <template v-slot:actions>
+                        <v-btn
+                          color="pink"
+                          variant="text"
+                          @click="methodSeedHasReturnedSnackbar = false"
+                        >
+                          Close
+                        </v-btn>
+                      </template>
+                    </v-snackbar>
+                    <v-snackbar v-model="methodSeedFailedToReturnSnackbar">
+                      Result failed to return. Please check error log!
+
+                      <template v-slot:actions>
+                        <v-btn
+                          color="pink"
+                          variant="text"
+                          @click="methodSeedFailedToReturnSnackbar = false"
+                        >
+                          Close
+                        </v-btn>
+                      </template>
+                    </v-snackbar>
+
+                    <v-snackbar v-model="selectedNodesFromIPFallbackSnackbar">
+                      Invalid Input for IP!
+
+                      <template v-slot:actions>
+                        <v-btn
+                          color="pink"
+                          variant="text"
+                          @click="selectedNodesForIMFallbackSnackbar = false"
+                        >
+                          Close
+                        </v-btn>
+                      </template>
+                    </v-snackbar>
+                    <v-snackbar v-model="ipSeedHasReturnedSnackbar">
+                      IP result has returned successfully.
+
+                      <template v-slot:actions>
+                        <v-btn
+                          color="pink"
+                          variant="text"
+                          @click="ipSeedHasReturnedSnackbar = false"
+                        >
+                          Close
+                        </v-btn>
+                      </template>
+                    </v-snackbar>
+                    <v-snackbar v-model="ipSeedFailedToReturnSnackbar">
+                      IP result failed to return. Please check error log!
+
+                      <template v-slot:actions>
+                        <v-btn
+                          color="pink"
+                          variant="text"
+                          @click="ipSeedFailedToReturnSnackbar = false"
+                        >
+                          Close
+                        </v-btn>
+                      </template>
+                    </v-snackbar>
+                  </v-expansion-panel-text>
+                </v-expansion-panel>
                 <v-expansion-panel elevation="19">
                   <v-expansion-panel-title>
                     Customized Rendering
@@ -391,6 +676,13 @@
                         v-model="spreadProbability"
                         type="number"
                       ></v-text-field>
+                      <v-btn
+                        block
+                        class="mt-2 bg-info"
+                        append-icon="mdi-magnify-expand"
+                        @click="highlightCustomizedNodes"
+                        >Highlight</v-btn
+                      >
                       <v-btn
                         type="submit"
                         block
@@ -475,6 +767,21 @@
                     <v-col
                       class="d-flex flex-column justify-center align-start"
                     >
+                      <v-row class="w-100 d-flex flex-column">
+                        <div class="text-caption">Visible IM Range</div>
+                        <v-range-slider
+                          v-model="visibleIMRange"
+                          :min="0"
+                          :max="MaxRound"
+                          step="1"
+                          thumb-label
+                        ></v-range-slider>
+                      </v-row>
+                      <v-row class="w-100">
+                        <v-btn @click="clearShowRounds" color="red" block>
+                          Clear Selections
+                        </v-btn>
+                      </v-row>
                       <v-row
                         v-for="(color, round) in currentimRoundColorDict"
                         :key="round"
@@ -531,10 +838,12 @@
                           sm="2"
                           class="pa-0 text-center d-flex justify-center align-center text-body-1"
                           ><span>{{
-                            Object.keys(customizedIMStore.imDistributionDict).length == 0 ? '' :
-                            Object.values(
-                              customizedIMStore.imDistributionDict
-                            ).reduce((a, b) => a + b, 0)
+                            Object.keys(customizedIMStore.imDistributionDict)
+                              .length == 0
+                              ? ""
+                              : Object.values(
+                                  customizedIMStore.imDistributionDict
+                                ).reduce((a, b) => a + b, 0)
                           }}</span></v-col
                         >
                       </v-row>
@@ -548,9 +857,15 @@
                           sm="4"
                           class="pa-0 text-center d-flex justify-center align-center text-body-1"
                           ><span>{{
-                            (Object.values(
-                              origFullGraphStore.imDistributionDict
-                            ).reduce((a, b) => a + b, 0) / Object.keys(origFullGraphStore.imDistributionDict).length).toString().substring(0,5)
+                            (
+                              Object.values(
+                                origFullGraphStore.imDistributionDict
+                              ).reduce((a, b) => a + b, 0) /
+                              Object.keys(origFullGraphStore.imDistributionDict)
+                                .length
+                            )
+                              .toString()
+                              .substring(0, 5)
                           }}</span></v-col
                         >
                         <v-col
@@ -558,10 +873,19 @@
                           sm="2"
                           class="pa-0 text-center d-flex justify-center align-center text-body-1"
                           ><span>{{
-                            Object.keys(customizedIMStore.imDistributionDict).length == 0 ? '' :
-                            (Object.values(
-                              customizedIMStore.imDistributionDict
-                            ).reduce((a, b) => a + b, 0) / Object.keys(customizedIMStore.imDistributionDict).length).toString().substring(0,5)
+                            Object.keys(customizedIMStore.imDistributionDict)
+                              .length == 0
+                              ? ""
+                              : (
+                                  Object.values(
+                                    customizedIMStore.imDistributionDict
+                                  ).reduce((a, b) => a + b, 0) /
+                                  Object.keys(
+                                    customizedIMStore.imDistributionDict
+                                  ).length
+                                )
+                                  .toString()
+                                  .substring(0, 5)
                           }}</span></v-col
                         >
                       </v-row>
@@ -575,9 +899,12 @@
                           sm="4"
                           class="pa-0 text-center d-flex justify-center align-center text-body-1"
                           ><span>{{
-                            formatPercentage(Object.values(
-                              origFullGraphStore.imDistributionDict
-                            ).reduce((a, b) => a + b, 0) / origFullGraphStore.nodeNum)
+                            formatPercentage(
+                              Object.values(
+                                origFullGraphStore.imDistributionDict
+                              ).reduce((a, b) => a + b, 0) /
+                                origFullGraphStore.nodeNum
+                            )
                           }}</span></v-col
                         >
                         <v-col
@@ -585,17 +912,17 @@
                           sm="2"
                           class="pa-0 text-center d-flex justify-center align-center text-body-1"
                           ><span>{{
-                            Object.keys(customizedIMStore.imDistributionDict).length == 0 ? '' :
-                            formatPercentage(Object.values(
-                              customizedIMStore.imDistributionDict
-                            ).reduce((a, b) => a + b, 0) / origFullGraphStore.nodeNum)
+                            Object.keys(customizedIMStore.imDistributionDict)
+                              .length == 0
+                              ? ""
+                              : formatPercentage(
+                                  Object.values(
+                                    customizedIMStore.imDistributionDict
+                                  ).reduce((a, b) => a + b, 0) /
+                                    origFullGraphStore.nodeNum
+                                )
                           }}</span></v-col
                         >
-                      </v-row>
-                      <v-row class="w-100">
-                        <v-btn @click="clearShowRounds" color="red" block>
-                          Clear Selections
-                        </v-btn>
                       </v-row>
                     </v-col>
                   </v-expansion-panel-text>
@@ -731,13 +1058,13 @@ import {
   useGraphologyStore,
 } from "@/store/store.js";
 //handle leading zeros
- const formatPercentage = (number) => {
-      const percentage = Number(number.toFixed(5).toString().substring(2, 4));
-      if (percentage === 0) {
-      return '0%';
-    }
-      return percentage.toString().replace(/^0+/, '') + '%';
-    }
+const formatPercentage = (number) => {
+  const percentage = Number(number.toFixed(5).toString().substring(2, 4));
+  if (percentage === 0) {
+    return "0%";
+  }
+  return percentage.toString().replace(/^0+/, "") + "%";
+};
 //handle collapse toolbar
 const showRightClickTooltip = ref(false);
 const collapsed = ref(false);
@@ -755,7 +1082,10 @@ const addComponentEmit = () => {
     hasWindowSnackbar.value = true;
   } else {
     addedWindowNameList.value.push(windowSelected.value);
-    if ((windowSelected.value !== "Degree Distribution") && (windowSelected.value !== "Metrics Report")) {
+    if (
+      windowSelected.value !== "Degree Distribution" &&
+      windowSelected.value !== "Metrics Report"
+    ) {
       addedConfigs[windowSelected.value] = true;
       configItems.value = Object.keys(addedConfigs);
     }
@@ -775,7 +1105,10 @@ const removeComponentEmit = () => {
   if (index > -1) {
     addedWindowNameList.value.splice(index, 1);
 
-    if ((windowSelected.value !== "Degree Distribution") && (windowSelected.value !== "Metrics Report")) {
+    if (
+      windowSelected.value !== "Degree Distribution" &&
+      windowSelected.value !== "Metrics Report"
+    ) {
       delete addedConfigs[windowSelected.value];
       configItems.value = Object.keys(addedConfigs);
     }
@@ -803,6 +1136,11 @@ const customizedIMSnackbar = ref(false);
 const kNeighborValueSnackbar = ref(false);
 const hasWindowSnackbar = ref(false);
 const noWindowSnackbar = ref(false);
+const methodSeedHasReturnedSnackbar = ref(false);
+const methodSeedFailedToReturnSnackbar = ref(false);
+const ipSeedHasReturnedSnackbar = ref(false);
+const ipSeedFailedToReturnSnackbar = ref(false);
+
 //// dragging
 const draggingElement = ref(null);
 const buttonDragging = ref(false);
@@ -1046,6 +1384,20 @@ watch(
 );
 
 //// im round shower helper
+const visibleIMRange = ref([0, 1]);
+watch(
+  () => visibleIMRange.value,
+  (newVal) => {
+    let i = newVal[0];
+    let j = newVal[1];
+    for (let k = i; k <= j; k++) {
+      showRounds.value[k] = true;
+      showRoundHandler(k);
+    }
+  },
+  { deep: true }
+);
+//// im round shower
 const selectedIMGraph = ref(["Original"]);
 const showRounds = ref({});
 const clearShowRounds = () => {
@@ -1062,10 +1414,10 @@ const clearShowRounds = () => {
 };
 const showRoundHandler = (round) => {
   if (selectedIMGraph.value.includes("Original")) {
-    origFullGraphStore.imColormapRoundRender(round, showRounds.value[round]);
+    origFullGraphStore.imColormapRoundSelect(round, showRounds.value[round]);
   }
   if (selectedIMGraph.value.includes("Competitor")) {
-    customizedIMStore.imColormapRoundRender(round, showRounds.value[round]);
+    customizedIMStore.imColormapRoundSelect(round, showRounds.value[round]);
   }
 };
 const randomColorGenerator = () => {
@@ -1089,6 +1441,9 @@ const currentimRoundColorDict = computed(() => {
   // Return the dictionary with the larger max key
   return customMaxKey > origMaxKey ? customDict : origDict;
 });
+const MaxRound = computed(() => {
+  return Math.max(...Object.keys(currentimRoundColorDict.value).map(Number));
+});
 watch(
   currentimRoundColorDict,
   (newDict) => {
@@ -1106,7 +1461,11 @@ console.log();
 const selectedNodesForIM = ref([]);
 const selectedNodesForIMFallbackSnackbar = ref(false);
 const spreadProbability = ref(20);
-//// check node validaty (rely on bug to perform input twice for deletion. Actually a tricky case but I don have the time to check logic)
+// highlight selected nodes TODO: highlight on orig or customized
+const highlightCustomizedNodes = () => {
+  origFullGraphStore.origFullGraph.selectNodesByIds(selectedNodesForIM.value);
+};
+//// check node validaty (rely on bug to perform "input twice for deletion". Actually a tricky case but I don have time to check logic)
 watch(selectedNodesForIM, (newVal, oldVal) => {
   // if delete
   if (oldVal.length > newVal.length) {
@@ -1143,8 +1502,8 @@ watch(selectedNodesForIM, (newVal, oldVal) => {
 watch(
   () => origFullGraphStore.selectedNode,
   (newVal) => {
-    if (newVal!==undefined) {
-      if(selectedNodesForIM.value.includes(newVal)){
+    if (newVal !== undefined) {
+      if (selectedNodesForIM.value.includes(newVal)) {
         return;
       }
       selectedNodesForIM.value.push(newVal);
@@ -1154,25 +1513,229 @@ watch(
 //// deal with server im result check
 const customizedIMSubmit = async () => {
   customizedIMStore.hasReceived = false;
-  if (selectedNodesForIM.value.length < 1 || spreadProbability.value <= 0 || spreadProbability.value > 100) {
+  if (
+    selectedNodesForIM.value.length < 1 ||
+    spreadProbability.value <= 0 ||
+    spreadProbability.value > 100
+  ) {
     selectedNodesForIMFallbackSnackbar.value = true;
     return;
   }
-  const customizedIMResponse = await fetch(
-    "http://localhost:4000/customizedIM",
-    {
+  try {
+    const customizedIMResponse = await fetch(
+      "http://localhost:4000/customizedIM",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nodes: selectedNodesForIM.value,
+          spreadProbability: spreadProbability.value,
+        }),
+      }
+    );
+    console.log(
+      "CustomizedIM server responded with ",
+      customizedIMResponse.data
+    );
+  } catch (error) {
+    console.error(error);
+  }
+};
+//// deal with IM methods client-server exchange
+const methodTypeList = ref(['PMC', 'Subsim', 'Game', 'SSA', 'DSSA']);
+const methodType = ref("PMC");
+const methodSeedSize = ref(10);
+const pmcDecay = ref(100);
+const subsimPdistList = ref(["wc", "uniform", "skewed"]);
+const subsimPdist = ref("wc");
+const ssaEpsilon = ref(0.1);
+const ssaDelta = ref(0.01);
+const ssaModelList = ref(["LT", "IC"]);
+const ssaModel = ref("LT");
+const selectedNodesFromMethod = ref([]);
+const highlightCustomizedNodesFromMethod = () => {
+  origFullGraphStore.origFullGraph.selectNodesByIds(
+    selectedNodesFromMethod.value
+  );
+};
+const methodSubmit = async () => {
+  if (methodType.value == "PMC") {
+    pmcSubmit();
+  } else if (methodType.value == "Subsim") {
+    subsimSubmit();
+  } else if (methodType.value == "Game") {
+    gameSubmit();
+  } else if (methodType.value == "SSA" || methodType.value == "DSSA") {
+    ssaSubmit(methodType.value);
+  }
+};
+const pmcSubmit = async () => {
+  if (
+    pmcDecay.value <= 0 ||
+    methodSeedSize.value <= 0 ||
+    methodSeedSize.value > origFullGraphStore.nodeNum ||
+    spreadProbability.value > 100 ||
+    spreadProbability.value < 0
+  ) {
+    selectedNodesForIMFallbackSnackbar.value = true;
+    return;
+  }
+  try {
+    console.log("Asking for PMC...");
+    const pmcResponse = await fetch("http://localhost:4000/pmc", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        nodes: selectedNodesForIM.value,
+        size: methodSeedSize.value,
+        decay: pmcDecay.value,
         spreadProbability: spreadProbability.value,
       }),
-    }
-  );
-  console.log(
-    "CustomizedIM server responded with ",
-    customizedIMResponse.status
-  );
+    });
+    // here we directly exchange between one thread.
+    const pmcSeedsJson = await pmcResponse.json();
+    console.log("pmc seed", pmcSeedsJson.data);
+    selectedNodesFromMethod.value = pmcSeedsJson.data;
+    selectedNodesForIM.value = pmcSeedsJson.data;
+    methodSeedHasReturnedSnackbar.value = true;
+  } catch (error) {
+    methodSeedFailedToReturnSnackbar.value = true;
+    console.error(error);
+  }
+};
+const subsimSubmit = async () => {
+  if (
+    methodSeedSize.value <= 0 ||
+    methodSeedSize.value > origFullGraphStore.nodeNum
+  ) {
+    selectedNodesForIMFallbackSnackbar.value = true;
+    return;
+  }
+  try {
+    console.log("Asking for Subsim...");
+    const subsimResponse = await fetch("http://localhost:4000/subsim", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        size: methodSeedSize.value,
+        pdist: subsimPdist.value,
+      }),
+    });
+    // here we directly exchange between one thread.
+    const subsimSeedsJson = await subsimResponse.json();
+    console.log("subsim seed", subsimSeedsJson.data);
+    selectedNodesFromMethod.value = subsimSeedsJson.data;
+    selectedNodesForIM.value = subsimSeedsJson.data;
+    methodSeedHasReturnedSnackbar.value = true;
+  } catch (error) {
+    methodSeedFailedToReturnSnackbar.value = true;
+    console.error(error);
+  }
+};
+
+const gameSubmit = async () => {
+  if (
+    methodSeedSize.value <= 0 ||
+    methodSeedSize.value > origFullGraphStore.nodeNum
+  ) {
+    selectedNodesForIMFallbackSnackbar.value = true;
+    return;
+  }
+  try {
+    console.log("Asking for Game...");
+    const gameResponse = await fetch("http://localhost:4000/game", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        size: methodSeedSize.value,
+      }),
+    });
+    // here we directly exchange between one thread.
+    const gameSeedsJson = await gameResponse.json();
+    console.log("pmc seed", gameSeedsJson.data);
+    selectedNodesFromMethod.value = gameSeedsJson.data;
+    selectedNodesForIM.value = gameSeedsJson.data;
+    methodSeedHasReturnedSnackbar.value = true;
+  } catch (error) {
+    methodSeedFailedToReturnSnackbar.value = true;
+    console.error(error);
+  }
+};
+// seedsize, epsilon, delta, model, isDSSA
+const ssaSubmit = async (ssaType) => {
+  if (
+    pmcDecay.value <= 0 ||
+    methodSeedSize.value <= 0 ||
+    methodSeedSize.value > origFullGraphStore.nodeNum
+  ) {
+    selectedNodesForIMFallbackSnackbar.value = true;
+    return;
+  }
+  try {
+    console.log("Asking for PMC...");
+    const ssaResponse = await fetch("http://localhost:4000/ssa", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        size: methodSeedSize.value,
+        epsilon: ssaEpsilon.value,
+        delta: ssaDelta.value,
+        model: ssaModel.value,
+        isDSSA: ssaType, //got from parameter
+      }),
+    });
+    // here we directly exchange between one thread.
+    const ssaSeedsJson = await ssaResponse.json();
+    console.log("pmc seed", ssaSeedsJson.data);
+    selectedNodesFromMethod.value = ssaSeedsJson.data;
+    selectedNodesForIM.value = ssaSeedsJson.data;
+    methodSeedHasReturnedSnackbar.value = true;
+  } catch (error) {
+    methodSeedFailedToReturnSnackbar.value = true;
+    console.error(error);
+  }
+};
+//// deal with ip client-server exchange
+const selectedNodesFromIP = ref([]);
+const selectedNodesFromIPFallbackSnackbar = ref(false);
+const prunedNodesFromIP = ref([]);
+const newNodesFromIP = ref([]);
+const highlightCustomizedNodesFromIP = () => {
+  origFullGraphStore.origFullGraph.selectNodesByIds(selectedNodesFromIP.value);
+};
+const ipSubmit = async () => {
+  if (selectedNodesFromMethod.value.length < 1) {
+    selectedNodesForIMFallbackSnackbar.value = true;
+    return;
+  }
+  try {
+    console.log("Asking for IP...");
+    const ipResponse = await fetch("http://localhost:4000/ip", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nodes: selectedNodesFromMethod.value,
+      }),
+    });
+    // here we directly exchange between one thread.
+    const ipSeedsJson = await ipResponse.json();
+    console.log("ip seed", ipSeedsJson.data);
+    selectedNodesFromIP.value = ipSeedsJson.data;
+    prunedNodesFromIP.value = selectedNodesFromMethod.value.filter(
+      (x) => selectedNodesFromIP.value.indexOf(x) === -1
+    );
+    newNodesFromIP.value = selectedNodesFromIP.value.filter(
+      (x) => selectedNodesFromMethod.value.indexOf(x) === -1
+    );
+    ipSeedHasReturnedSnackbar.value = true;
+  } catch (error) {
+    ipSeedFailedToReturnSnackbar.value = true;
+    console.error(error);
+  }
+};
+const hasRetrievedDataSnackbar = ref(false);
+const transferIPResultToRender = () => {
+  selectedNodesForIM.value = selectedNodesFromIP.value;
+  hasRetrievedDataSnackbar.value = true;
 };
 onMounted(() => {
   makeToolBarDraggable();

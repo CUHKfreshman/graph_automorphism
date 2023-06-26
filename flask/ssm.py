@@ -323,7 +323,7 @@ def IC(Networkx_Graph,Seed_Set,Probability,Num_of_Simulations):
             targets = Neighbour_finder(Networkx_Graph,Probability,new_active)
     
             #Calculating if any nodes of those neighbours can be activated, if yes add them to new_ones.
-            np.random.seed(i)
+            #np.random.seed(i)
             #print(len(targets))
             #print("111")
             success = np.random.uniform(0,1,len(targets)) < Probability

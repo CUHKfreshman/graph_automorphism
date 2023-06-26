@@ -12,18 +12,19 @@
         transform: translate(0%, -50%);
         background-color: transparent !important;
       "
+      elevation="0"
       @click="expandFullgraphTransition"
     >
-      <v-icon icon="mdi-chevron-double-left" style="font-size: 1rem" v-if="store.expandFullgraph"
+      <v-icon icon="mdi-chevron-double-left" style="font-size: 1.25rem" v-if="store.expandFullgraph"
         ></v-icon
       >
 
-      <v-icon icon="mdi-chevron-double-right" style="font-size: 1rem" v-else></v-icon>
+      <v-icon icon="mdi-chevron-double-right" style="font-size: 1.25rem" v-else></v-icon>
     </v-btn>
   </div>
 </template>
 <script setup>
-import { ref, watch, onMounted, nextTick } from "vue";
+import { ref,  onMounted, nextTick } from "vue";
 import { useOrigFullGraphStore } from "@/store/store.js";
 const store = useOrigFullGraphStore();
 //console.log("store");

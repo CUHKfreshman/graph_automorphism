@@ -16,7 +16,15 @@ import * as labs from 'vuetify/labs/components'
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
   theme: {
-    defaultTheme: "dark",
+    defaultTheme: "light",
+    themes: {
+      light: {
+        dark: false,
+      },
+      dark: {
+        dark: true,
+      },
+    },
   },
   components: {
     ...labs,

@@ -1,4 +1,4 @@
-/* If use TypeScript, then cannot access to Graph private variables */
+/* If use TypeScript, then cannot access to Cosmograph Graph private variables */
 // Utilities
 import { defineStore } from "pinia";
 import { Graph } from "@cosmograph/cosmos";
@@ -7,6 +7,8 @@ import * as graphologyMetrics from 'graphology-library/metrics';
 
 export const useOrigFullGraphStore = defineStore("origFullGraphStore", {
   state: () => ({
+    // theme
+    isDarkTheme: false,
     // graph container css effect
     kNeighborStore: useKNeighborStore(),
     autoTreeStore: useAutoTreeStore(),
@@ -116,16 +118,17 @@ export const useOrigFullGraphStore = defineStore("origFullGraphStore", {
 
       //console.log("creating full graph");
       const initconfig = {
-        //backgroundColor: "#FFFFFF",
+        backgroundColor: "#FFFFFF",
         nodeSize: 4,            //4
         nodeColor: "#4B5BBF",
-        nodeGreyoutOpacity: 0.1,
-        linkWidth: 0.1,
-        linkColor: "#666666", //#5F74C2 is default Cosmos color. #666666 is black theme, #e0e0e0 is white theme
+        nodeGreyoutOpacity: 0.08,
+        linkGreyoutOpacity: 0.08,
+        linkWidth: 0.8,
+        linkColor: "#b6b6b6", //#5F74C2 is default Cosmos color. #666666 is black theme, #e0e0e0 is white theme
         linkArrows: false,
-        linkGreyoutOpacity: 0,
+        linkVisibilityDistanceRange: [0, 150],
         simulation: {
-          linkDistance: 1,
+          linkDistance: 11,
           linkSpring: 0.3,
           repulsion: 1,
           gravity: 0.25,
@@ -188,8 +191,13 @@ export const useOrigFullGraphStore = defineStore("origFullGraphStore", {
           },
         },
       };
+      if (this.isDarkTheme) {
+        initconfig.backgroundColor = "#222222";
+        initconfig.linkColor = "#666666";
+      }
       // create graph
-      this.origFullGraph = new Graph(OrigFullGraphCanvas, initconfig);
+      this.origFullGraphConfig = initconfig;
+      this.origFullGraph = new Graph(OrigFullGraphCanvas, this.origFullGraphConfig);
       //console.log("Init graph...");
       //console.log(this.origFullGraph);
       //For testing
@@ -245,7 +253,7 @@ export const useOrigFullGraphStore = defineStore("origFullGraphStore", {
       this.origFullGraphConfig.nodeColor = (node) => {
         return this.origColormap[parseInt(node.id)];
       };
-      this.origFullGraphConfig.linkColor = "#666666"; //isblack? #666666 : #e0e0e0
+      this.origFullGraphConfig.linkColor = this.isDarkTheme ? "#666666" : "#b6b6b6"; //isblack? #666666 : #e0e0e0
       // 2. Implement theorigFullGraphConfig.nodeSize function
       this.toggleView("orig");
     },
@@ -305,7 +313,7 @@ export const useOrigFullGraphStore = defineStore("origFullGraphStore", {
                 orig_fullgraph.setNodeAttribute(node, 'size', 3)//orig_fullgraph.degree(node)
             }*/
       };
-      this.origFullGraphConfig.linkColor = "#666666"; //#666666
+      this.origFullGraphConfig.linkColor = this.isDarkTheme ? "#666666" : "#b6b6b6"; //isblack? #666666 : #e0e0e0
       //this.origFullGraphConfig.linkVisibilityDistanceRange = [0, 100000];
       this.toggleView("ssm");
     },
@@ -338,15 +346,15 @@ export const useOrigFullGraphStore = defineStore("origFullGraphStore", {
             //color = colorarray[round];
           }
           else {
-            if(Object.prototype.hasOwnProperty.call(this.customizedIMStore.imRoundColorDict, round)){
+            if (Object.prototype.hasOwnProperty.call(this.customizedIMStore.imRoundColorDict, round)) {
 
 
-             color = this.customizedIMStore.imRoundColorDict[round];
+              color = this.customizedIMStore.imRoundColorDict[round];
             }
-             else{
+            else {
               color = "#" + (Math.random() * 1145141919810).toString(16).substring(0, 6);
 
-             }
+            }
             //color = colorarray[round]; // 3rd round % colorarray.length
           }
           this.imRoundColorDict[round] = color;
@@ -409,17 +417,20 @@ export const useOrigFullGraphStore = defineStore("origFullGraphStore", {
         let tar = parseInt(link.target);
         if (Object.prototype.hasOwnProperty.call(this.imColormap, src) && Object.prototype.hasOwnProperty.call(this.imColormap, tar)) {
           let result = roundDiffCalculator(this.imColormap[src], this.imColormap[tar]);
-          return result === "Same" ? "#666666" : result;
+          if (result == "Same" || result == "None") {
+            return this.isDarkTheme ? "#666666" : "#b6b6b6";
+          }
+          else return result;
         }
         else {
-          return "#666666";
+          return this.isDarkTheme ? "#666666" : "#b6b6b6";
         }
       };
       //this.origFullGraphConfig.linkColor = "#bcbcbc";
       //this.origFullGraphConfig.linkVisibilityDistanceRange = [0, 100000];
       this.toggleView("im");
     },
-    imColormapRoundRender(roundNum, isAdd) {
+    imColormapRoundSelect(roundNum, isAdd) {
       //// no , change to select ids using selectids(imAllDict[round])
       this.imSelectedRounds = isAdd ? [...this.imSelectedRounds, roundNum] : this.imSelectedRounds.filter((item) => item !== roundNum);
       let allNodesToBeSelected = [];
@@ -486,17 +497,17 @@ export const useKNeighborStore = defineStore("kNeighborStore", {
 
       //console.log("creating kNeighbor");
       const initconfig = {
-        //backgroundColor: "#FFFFFF",
+        backgroundColor: "#FFFFFF",
         nodeSize: 4,            //4
         nodeColor: "#4B5BBF",
         nodeGreyoutOpacity: 0.1,
-        linkWidth: 0.1,
-        linkColor: "#666666", //#5F74C2 is default Cosmos color. #666666 is black theme, #e0e0e0 is white theme
+        linkWidth: 0.8,
+        linkColor: "#b6b6b6", //#5F74C2 is default Cosmos color. #666666 is black theme, #e0e0e0 is white theme
         linkArrows: false,
-        linkGreyoutOpacity: 0,
+        linkVisibilityDistanceRange: [0, 150],
         simulation: {
-          linkDistance: 4,
-          linkSpring: 0.3,
+          linkDistance: 18,
+          linkSpring: 0.2,
           repulsion: 2,
           gravity: 0.5,
           center: 0.5,
@@ -515,6 +526,10 @@ export const useKNeighborStore = defineStore("kNeighborStore", {
           },
         },
       };
+      if (this.origFullGraphStore.isDarkTheme) {
+        initconfig.backgroundColor = "#222222";
+        initconfig.linkColor = "#666666";
+      }
       // create graph
       this.kNeighborConfig = initconfig;
       this.kNeighbor = new Graph(this.kNeighborCanvas, this.kNeighborConfig);
@@ -681,16 +696,16 @@ export const useAutoTreeStore = defineStore("autoTreeStore", {
 
       //console.log("creating kNeighbor");
       const initconfig = {
-        //backgroundColor: "#FFFFFF",
+        backgroundColor: "#FFFFFF",
         nodeSize: (node) => {
           return Math.min(6, this.autoTreeRawList[parseInt(node.id) + 1].size + 1);
         },            //4
         nodeColor: "#4B5BBF",
         nodeGreyoutOpacity: 0.1,
-        linkWidth: 0.1,
-        linkColor: "#666666", //#5F74C2 is default Cosmos color. #666666 is black theme, #e0e0e0 is white theme
+        linkWidth: 0.8,
+        linkColor: "#b6b6b6", //#5F74C2 is default Cosmos color. #666666 is black theme, #e0e0e0 is white theme
         linkArrows: false,
-        linkGreyoutOpacity: 0,
+        linkVisibilityDistanceRange: [0, 150],
         simulation: {
           linkDistance: 4,
           linkSpring: 0.3,
@@ -717,6 +732,10 @@ export const useAutoTreeStore = defineStore("autoTreeStore", {
           },
         },
       };
+      if (this.origFullGraphStore.isDarkTheme) {
+        initconfig.backgroundColor = "#222222";
+        initconfig.linkColor = "#666666";
+      }
       // create graph
       this.autoTreeConfig = initconfig;
       if (this.hasDestoryedAsteroid) {
@@ -774,14 +793,14 @@ export const useCustomizedIMStore = defineStore("customizedIMStore", {
       }
       //console.log("creating full graph");
       const initconfig = {
-        //backgroundColor: "#FFFFFF",
+        backgroundColor: "#FFFFFF",
         nodeSize: 4,            //4
         nodeColor: "#4B5BBF",
         nodeGreyoutOpacity: 0.1,
-        linkWidth: 0.1,
-        linkColor: "#666666", //#5F74C2 is default Cosmos color. #666666 is black theme, #e0e0e0 is white theme
+        linkWidth: 0.8,
+        linkColor: "#b6b6b6", //#5F74C2 is default Cosmos color. #666666 is black theme, #e0e0e0 is white theme
         linkArrows: false,
-        linkGreyoutOpacity: 0,
+        linkVisibilityDistanceRange: [0, 150],
         simulation: {
           linkDistance: 1,
           linkSpring: 0.3,
@@ -802,6 +821,10 @@ export const useCustomizedIMStore = defineStore("customizedIMStore", {
           },
         },
       };
+      if (this.origFullGraphStore.isDarkTheme) {
+        initconfig.backgroundColor = "#222222";
+        initconfig.linkColor = "#666666";
+      }
       // create graph
       this.customizedIMConfig = initconfig;
       this.customizedIM = new Graph(this.customizedIMCanvas, this.customizedIMConfig);
@@ -889,15 +912,18 @@ export const useCustomizedIMStore = defineStore("customizedIMStore", {
         let tar = parseInt(link.target);
         if (Object.prototype.hasOwnProperty.call(this.imColormap, src) && Object.prototype.hasOwnProperty.call(this.imColormap, tar)) {
           let result = roundDiffCalculator(this.imColormap[src], this.imColormap[tar]);
-          return result === "Same" ? "#666666" : result;
+          if (result == "Same" || result == "None") {
+            return this.origFullGraphStore.isDarkTheme ? "#666666" : "#b6b6b6";
+          }
+          else return result;
         }
         else {
-          return "#666666";
+          return this.origFullGraphStore.isDarkTheme ? "#666666" : "#b6b6b6";
         }
       };
       //this.toggleView("im");
     },
-    imColormapRoundRender(roundNum, isAdd) {
+    imColormapRoundSelect(roundNum, isAdd) {
       //// no , change to select ids using selectids(imAllDict[round])
       this.imSelectedRounds = isAdd ? [...this.imSelectedRounds, roundNum] : this.imSelectedRounds.filter((item) => item !== roundNum);
       let allNodesToBeSelected = [];

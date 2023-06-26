@@ -8,7 +8,7 @@
     >
       <v-table class="w-100 h-100 text-no-wrap " density="compact" hover>
         <thead>
-          <tr class="bg-grey-darken-4">
+          <tr class="">
             <th class="w-50">METRIC</th>
             <th class=" ">VALUE</th>
           </tr>

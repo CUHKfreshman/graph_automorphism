@@ -2,7 +2,11 @@
 import { ref } from "vue";
 import welcomePage from "../components/welcomePage.vue";
 import vizPage from "../components/vizPage.vue";
-import { useOrigFullGraphStore, useAutoTreeStore, useCustomizedIMStore } from "@/store/store";
+import {
+  useOrigFullGraphStore,
+  useAutoTreeStore,
+  useCustomizedIMStore,
+} from "@/store/store";
 const origFullGraphStore = useOrigFullGraphStore();
 const autoTreeStore = useAutoTreeStore();
 const customizedIMStore = useCustomizedIMStore();
@@ -17,9 +21,11 @@ const toggleChild = () => {
 const longPolling = async () => {
   try {
     //console.log("Long polling...");
-    const response = await fetch("http://localhost:4000/poll");
+    const response = await fetch("http://localhost:4000/poll",{
+      method: "GET"
+    });
     const data = await response.json();
-    handleData(data);    // Wait for seconds before making the next request
+    handleData(data); // Wait for seconds before making the next request
     //await new Promise(resolve => setTimeout(resolve, 6000));
     longPolling();
   } catch (error) {
@@ -50,10 +56,9 @@ const handleData = (resp) => {
     case "customizedIMData":
       console.log("customized IM received:", resp.data);
       customizedIMStore.hasReceived = true;
-      if(customizedIMStore.useOrig){
+      if (customizedIMStore.useOrig) {
         origFullGraphStore.imColormapCreate(resp.data, true, true);
-      }
-      else{
+      } else {
         customizedIMStore.imColormapCreate(resp.data, true, true);
       }
 
@@ -78,7 +83,7 @@ const concurrentDataListener = async (fileStream) => {
     //console.log("Response Error:", response);
   }
 
-  await new Promise(resolve => setTimeout(resolve, 6000));
+  await new Promise((resolve) => setTimeout(resolve, 6000));
   longPolling();
 };
 

@@ -1,0 +1,55 @@
+==13596== Massif, a heap profiler
+==13596== Copyright (C) 2003-2012, and GNU GPL'd, by Nicholas Nethercote
+==13596== Using Valgrind-3.8.1 and LibVEX; rerun with -h for copyright info
+==13596== Command: ./bliss /home/lucan/data/ud-LiveJournal.txt
+==13596== 
+==13634== Massif, a heap profiler
+==13634== Copyright (C) 2003-2012, and GNU GPL'd, by Nicholas Nethercote
+==13634== Using Valgrind-3.8.1 and LibVEX; rerun with -h for copyright info
+==13634== Command: ./bliss /home/lucan/data/ud-Pokec.txt
+==13634== 
+==13671== Massif, a heap profiler
+==13671== Copyright (C) 2003-2012, and GNU GPL'd, by Nicholas Nethercote
+==13671== Using Valgrind-3.8.1 and LibVEX; rerun with -h for copyright info
+==13671== Command: ./bliss /home/lucan/data/ud-Orkut.txt
+==13671== 
+Total time:	68.39 seconds
+number of structural equivalent pruned 45732
+number of structural equivalent classes 23700
+number of unique vertices 1585371
+number of singleton leaf 1632803
+number of non-singleton leaf 0
+max depth 3
+DTN 1633602
+DecTree nodes 1633602
+Max level 3
+Tree nodes 1633602
+ave size -nan
+==13634== 
+Total time:	189.97 seconds
+number of structural equivalent pruned 289121
+number of structural equivalent classes 153964
+number of unique vertices 3672390
+number of singleton leaf 4036533
+number of non-singleton leaf 1
+max depth 3
+DTN 4064750
+DecTree nodes 4064750
+Max level 3
+Tree nodes 4064755
+ave size 5
+==13596== 
+Total time:	279.72 seconds
+number of structural equivalent pruned 28805
+number of structural equivalent classes 13172
+number of unique vertices 3042127
+number of singleton leaf 3072627
+number of non-singleton leaf 0
+max depth 3
+DTN 3073414
+DecTree nodes 3073414
+Max level 3
+Tree nodes 3073414
+ave size -nan
+==13671== 
+max clique number589824

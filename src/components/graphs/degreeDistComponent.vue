@@ -45,6 +45,14 @@ const degreeDistCreate = () => {
     console.log("destroying chart");
     chart.value.destroy();
   }
+  let legendBackgroundColor = '#fff';
+  let legendFontColor = '#000';
+  let buttonBackgroundColor = '#e5e5e5';
+  if(origFullGraphStore.isDarkTheme){
+    legendBackgroundColor = '#212121';
+    legendFontColor = '#f5f5f5';
+    buttonBackgroundColor = '#a0a0a0';
+  }
   chart.value = Highcharts.chart("degreeDistContainer", {
     credits: {
       enabled: false,
@@ -104,9 +112,9 @@ const degreeDistCreate = () => {
     },
     legend: {
       floating: false,
-      backgroundColor: "#212121",
+      backgroundColor: legendBackgroundColor,
       itemStyle: {
-        color: "#f5f5f5",
+        color: legendFontColor,
       },
     },
     series: [
@@ -133,7 +141,7 @@ const degreeDistCreate = () => {
           y: -7, // move the button 10 pixels down
           symbol: "menu",
           theme: {
-            fill: "#a0a0a0",
+            fill: buttonBackgroundColor,
           },
         },
       },

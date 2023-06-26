@@ -1,9 +1,10 @@
 <template>
   <v-container
     fluid
-    class="ma-0"
+    class="pt-1 pb-1"
+    :class="origFullGraphStore.isDarkTheme ?  'ma-0':'ma-0 bg-grey-lighten-4'"
     style="height: 100vh; overflow: hidden"
-    no-padding
+
   >
     <toolbar @addComponent="addComponent" @removeComponent="removeComponent" />
     <v-container
@@ -17,8 +18,9 @@
           ref="fullgraphExtendableDiv"
         >
           <v-card
-            class="h-100 border-secondary"
-            style="overflow: hidden; border-width: 0.08rem !important"
+            class="h-100"
+            style="overflow: hidden;"
+            flat
           >
             <origFullGraphComponent />
           </v-card>
@@ -55,6 +57,7 @@
           <v-card
             style="border: 0.1rem #6c757d"
             class="h-100 w-100 pa-0 ma-0"
+            flat
             v-else
           >
             <v-skeleton-loader type="image"></v-skeleton-loader>

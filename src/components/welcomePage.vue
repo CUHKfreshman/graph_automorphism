@@ -15,7 +15,10 @@
       <!--posts container-->
       <v-card-title class="fs-4 fw-bold">HISTORY DATA</v-card-title>
       <v-card-text class="h-100 w-100">
-        <p class="text  text-grey-darken-1"> History data is saved under flask folder.</p>
+        <p class="text text-grey-darken-1">
+          History data is saved under flask folder.
+        </p>
+        <!--
         <v-list
           class="col border-0 list-group list-group-flush d-flex flex-column card w-100"
         >
@@ -27,8 +30,8 @@
               border-bottom-width: 1px;
               border-bottom-style: solid;
             "
-          >
-            <!--post panel-->
+          >-->
+        <!--post panel
             <v-card
               class="card-body p-0"
               style="
@@ -42,8 +45,8 @@
               >
                 {{ post.filename }}
               </p>
-              <v-divider class="m-0"></v-divider>
-              <!--enable wrap by user input-->
+              <v-divider class="m-0"></v-divider>-->
+        <!--enable wrap by user input
               <p class="card-text text-start mb-0 ms-1">
                 > Node Count: {{ post.nodenum }}
               </p>
@@ -53,13 +56,13 @@
               <p class="mb-0 me-1 text-start ms-1">
                 > Created at: {{ post.time }}
               </p>
-            </v-card>
-            <!--footer containing buttons-->
+            </v-card>-->
+        <!--footer containing buttons
             <v-card-actions
               class="p-0 border-0 w-25 align-items-center justify-content-center d-flex w-100"
             >
-              <div class="m-0 p-0 w-100 d-flex flex-row justify-space-between">
-                <!--show list button-->
+              <div class="m-0 p-0 w-100 d-flex flex-row justify-space-between">-->
+        <!--show list button
                 <v-btn class="btn btn-lg border border-1" color="success" dark>
                   <v-icon size="x-large" icon="mdi-open-in-new"></v-icon>
                 </v-btn>
@@ -76,7 +79,7 @@
               </div>
             </v-card-actions>
           </v-list-item>
-        </v-list>
+        </v-list>-->
       </v-card-text>
     </v-card>
     <v-card
@@ -84,26 +87,67 @@
     >
       <v-card-title primary-title> AutoViz </v-card-title>
       <v-card-subtitle>A Massive Graph Visualization System</v-card-subtitle>
+      <v-tooltip text="Tooltip">
+        <template v-slot:activator="{ props }">
+          <v-btn
+            v-bind="props"
+            class="btn btn-lg border border-1 rounded-be-xl"
+            color="light"
+            style="
+              position: absolute;
+              left: 0%;
+              top: 5%;
+              text-align: center;
+              transform: translate(0%, -50%);
+              border-left: 0 !important;
+            "
+            dark
+            @click="toggleTheme"
+          >
+            <v-icon
+              icon="mdi-brightness-2"
+              style="font-size: 1rem"
+              v-if="isDarkTheme"
+            ></v-icon>
+
+            <v-icon
+              icon="mdi-brightness-7"
+              style="font-size: 1rem"
+              v-else
+            ></v-icon>
+          </v-btn>
+        </template>
+        <span>Change Theme</span>
+      </v-tooltip>
       <v-list lines="one" class="text-left text-large-overline">
         <v-list-item> </v-list-item>
         <v-list-item class="text-body-1">
           <p>
-            This is the <a href="https://cosmograph.app/" class="text-decoration-underline">Cosmos</a> branch V1.0 of AutoViz, offering full feature support.
+            This is the
+            <a href="https://cosmograph.app/" class="text-decoration-underline"
+              >Cosmos</a
+            >
+            branch V1.0 of AutoViz, offering full feature support.
           </p>
           <p>
-            Autoviz is an advanced graph visualization system for massive network visualization and analytics.
-
+            Autoviz is an advanced graph visualization system for massive
+            network visualization and analytics.
           </p>
           <p>
-            In addition to basic graph analysis, AutoViz also integrates specialized modules dedicated to AutoTree, Symmetric
-            Subgraph Matching, and Influence Maximization.
+            In addition to basic graph analysis, AutoViz also integrates
+            specialized modules dedicated to AutoTree, Symmetric Subgraph
+            Matching, and Influence Maximization.
           </p>
           <p>
-            This application is the culmination of the FTEC undergraduate final year project, <span class="font-italic"> Graph Automorphism over Social Network</span>, conducted at The Chinese University of Hong Kong.
+            This application is the culmination of the FTEC undergraduate final
+            year project,
+            <span class="font-italic">
+              Graph Automorphism over Social Network</span
+            >, conducted at The Chinese University of Hong Kong.
           </p>
           <p>
-            It is developed by GENG Yihan, WANG Kunyu, and LIU Ziqi, under the supervision of Prof. YU Xu Jeffrey.
-
+            It is developed by GENG Yihan, WANG Kunyu, and LIU Ziqi, under the
+            supervision of Prof. YU Xu Jeffrey.
           </p>
           <v-divider class="mt-2"></v-divider>
           <br />
@@ -139,7 +183,16 @@
 
 <script setup>
 import { ref } from "vue";
+
 import { useOrigFullGraphStore } from "@/store/store.js";
+import { useTheme } from "vuetify";
+const theme = useTheme();
+const isDarkTheme = ref(false);
+const toggleTheme = () => {
+  theme.global.name.value = theme.global.current.value.dark ? "light" : "dark";
+  isDarkTheme.value = !isDarkTheme.value;
+  origFullGraphStore.isDarkTheme = isDarkTheme.value;
+};
 
 const origFullGraphStore = useOrigFullGraphStore();
 // emit
@@ -155,7 +208,7 @@ defineProps({
     default: true,
   },
 });
-const posts=ref({})
+//const posts = ref({});
 /*
 const posts = ref({
   0: {
@@ -213,6 +266,7 @@ const uploadNewFile = async (name, fileList, fileLen) => {
 
   reader.readAsText(file);
 };
+
 /*
     async addUser(user){
       UserService.addUser(user).then(resp=>
