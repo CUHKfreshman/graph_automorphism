@@ -147,6 +147,11 @@ def customizedIM():
 @app.route('/pmc', methods=['POST'])
 def getPMC():
     jsdata = json.loads(request.get_data().decode('utf-8'))
+    isDIYParameters = jsdata['isDIYParameters'] #bool
+    if isDIYParameters:
+        diyParameters = jsdata['diyParameters']
+        pmc_output = pmc.run_pmc_raw(diyParameters)
+        return jsonify(data=pmc_output)
     seedsize = int(jsdata['size'])
     decay = int(jsdata['decay'])
     prob = float(jsdata['spreadProbability']) / 100
@@ -156,9 +161,8 @@ def getPMC():
 @app.route('/subsim', methods=['POST'])
 def getSubsim():
     jsdata = json.loads(request.get_data().decode('utf-8'))
-    seedsize = jsdata['size']
-    pdist = jsdata['pdist']
-    subsim_output = subsim.get_subsim_result(seedsize, pdist)
+    seedsize, pdist, isDIYParameters, diyParameters, wcvariant, pedge, skew, eps, delta, vanilla, hist = jsdata.values()
+    subsim_output = subsim.get_subsim_result(seedsize, pdist, wcvariant, pedge, skew, eps, delta, vanilla, hist)
     return jsonify(data=subsim_output)
 
 @app.route('/game', methods=['POST'])

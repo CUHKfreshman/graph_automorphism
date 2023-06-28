@@ -9,7 +9,7 @@ def convert_to_pmc(file_name, prob):
     df['prob'] = prob
     df.to_csv('./flask/test.tsv',index=False,header=False,sep='\t')
 
-def run_benchmark(seedsize, decay):
+def run_pmc(seedsize, decay):
     #seedsize = 10
     #path = 100
 
@@ -17,12 +17,18 @@ def run_benchmark(seedsize, decay):
     result = subprocess.run(command,  text=True, capture_output=True)
 
     output = result.stdout.split(',')[:-1]
-    
+    return output
+
+def run_pmc_raw(params):
+    command = "./flask/methods/pmc/benchmark" + " ./flask/test.tsv " + params
+    result = subprocess.run(command,  text=True, capture_output=True, shell=True)
+    output = result.stdout.split(',')[:-1]
+    print("pmc:", output)
     return output
 
 def get_pmc_result(seedsize, decay, prob):
     convert_to_pmc('./flask/usrfile.txt', prob)
-    output = run_benchmark(seedsize, decay)
+    output = run_pmc(seedsize, decay)
     print("pmc:",output)
     return output
 

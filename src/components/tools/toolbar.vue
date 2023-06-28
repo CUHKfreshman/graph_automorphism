@@ -378,7 +378,7 @@
             </v-expansion-panel-text>
           </v-expansion-panel>
           <!--im-->
-          <v-expansion-panel :disabled="!origFullGraphStore.hasReceivedIM">
+          <v-expansion-panel ><!--:disabled="!origFullGraphStore.hasReceivedIM"-->
             <v-expansion-panel-title>IM</v-expansion-panel-title>
             <v-expansion-panel-text>
               <v-expansion-panels variant="accordion">
@@ -402,8 +402,13 @@
                         v-model="methodType"
                         variant="outlined"
                         hide-details
-                      ></v-select>
-                      <v-text-field
+                      ></v-select><!--
+                      <v-switch inset label="DIY Parameters" v-model="isDIYParameters" hide-details></v-switch>
+                      <template v-if="isDIYParameters">
+                        <v-text-field clearable label="Input your own parameters..." v-model="diyParameters"></v-text-field>
+                      </template>
+                      <template v-else>-->
+                        <v-text-field
                         append-icon="mdi-counter"
                         label="Seed Size"
                         v-model="methodSeedSize"
@@ -429,19 +434,70 @@
                         v-show="methodType == 'SSA' || methodType == 'DSSA'"
                         label="Epsilon"
                         v-model="ssaEpsilon"
+                        hide-details
                         type="number"
                       ></v-text-field>
                       <v-text-field
                         v-show="methodType == 'SSA' || methodType == 'DSSA'"
                         label="Delta"
                         v-model="ssaDelta"
+                        hide-details
                         type="number"
                       ></v-text-field>
                       <v-select
                         v-show="methodType == 'Subsim'"
                         label="Probability Distribution"
+                        hide-details
                         :items="subsimPdistList"
                         v-model="subsimPdist"
+                      ></v-select>
+                      <v-text-field
+                        v-show="methodType == 'Subsim' && subsimPdist == 'wc'"
+                        label="WC Variant"
+                        v-model="subsimWCVariant"
+                        hide-details
+                        type="number"
+                      ></v-text-field>
+                      <v-text-field
+                        v-show="methodType == 'Subsim' && subsimPdist == 'uniform'"
+                        label="Pedge"
+                        v-model="subsimPedge"
+                        hide-details
+                        type="number"
+                      ></v-text-field>
+                      <v-select
+                        v-show="methodType == 'Subsim' && subsimPdist == 'skewed'"
+                        :items="['exp','weibull']"
+                        label="Skewed Distribution"
+                        v-model="subsimSkewedDist"
+                        hide-details
+                      ></v-select>
+                      <v-text-field
+                        v-show="methodType == 'Subsim'"
+                        label="Eps"
+                        v-model="subsimEps"
+                        hide-details
+                        type="number"
+                      ></v-text-field>
+                      <v-text-field
+                        v-show="methodType == 'Subsim'"
+                        label="Delta"
+                        v-model="subsimDelta"
+                        hide-details
+                        type="number"
+                      ></v-text-field>
+                      <v-select
+                        v-show="methodType == 'Subsim'"
+                        label="RR Set Generation Method"
+                        :items="['Subsim','Vanilla']"
+                        v-model="subsimVanilla"
+                        hide-details
+                      ></v-select>
+                      <v-select
+                        v-show="methodType == 'Subsim'"
+                        label="Invoke HIST Algorithm"
+                        :items="['False','True']"
+                        v-model="subsimHist"
                       ></v-select>
                       <v-select
                         v-show="methodType == 'SSA' || methodType == 'DSSA'"
@@ -609,6 +665,19 @@
                           color="pink"
                           variant="text"
                           @click="methodSeedFailedToReturnSnackbar = false"
+                        >
+                          Close
+                        </v-btn>
+                      </template>
+                    </v-snackbar>
+                    <v-snackbar v-model="methodInputInvalidSnackbar">
+                      Invalid input! Please check again.
+
+                      <template v-slot:actions>
+                        <v-btn
+                          color="pink"
+                          variant="text"
+                          @click="methodInputInvalidSnackbar = false"
                         >
                           Close
                         </v-btn>
@@ -1542,12 +1611,22 @@ const customizedIMSubmit = async () => {
   }
 };
 //// deal with IM methods client-server exchange
+const methodInputInvalidSnackbar = ref(false);
+const isDIYParameters = ref(false);
+const diyParameters = ref("");
 const methodTypeList = ref(['PMC', 'Subsim', 'Game', 'SSA', 'DSSA']);
 const methodType = ref("PMC");
 const methodSeedSize = ref(10);
 const pmcDecay = ref(100);
 const subsimPdistList = ref(["wc", "uniform", "skewed"]);
 const subsimPdist = ref("wc");
+const subsimWCVariant = ref(1.2);
+const subsimPedge = ref(0.1);
+const subsimSkewedDist = ref("exp");
+const subsimEps = ref(0.1);
+const subsimDelta = ref(0.0002);
+const subsimVanilla = ref("Subsim");
+const subsimHist = ref("False");
 const ssaEpsilon = ref(0.1);
 const ssaDelta = ref(0.01);
 const ssaModelList = ref(["LT", "IC"]);
@@ -1570,16 +1649,17 @@ const methodSubmit = async () => {
   }
 };
 const pmcSubmit = async () => {
-  if (
-    pmcDecay.value <= 0 ||
-    methodSeedSize.value <= 0 ||
-    methodSeedSize.value > origFullGraphStore.nodeNum ||
-    spreadProbability.value > 100 ||
-    spreadProbability.value < 0
-  ) {
-    selectedNodesForIMFallbackSnackbar.value = true;
-    return;
-  }
+  //if(!isDIYParameters.value)
+    if (
+      pmcDecay.value <= 0 ||
+      parseInt(methodSeedSize.value) <= 0 ||
+      parseInt(methodSeedSize.value) > parseInt(origFullGraphStore.nodeNum) ||
+      spreadProbability.value > 100 ||
+      spreadProbability.value < 0
+    ) {
+      methodInputInvalidSnackbar.value = true;
+      return;
+    }
   try {
     console.log("Asking for PMC...");
     const pmcResponse = await fetch("http://localhost:4000/pmc", {
@@ -1589,6 +1669,8 @@ const pmcSubmit = async () => {
         size: methodSeedSize.value,
         decay: pmcDecay.value,
         spreadProbability: spreadProbability.value,
+        isDIYParameters: isDIYParameters.value,
+        diyParameters: diyParameters.value,
       }),
     });
     // here we directly exchange between one thread.
@@ -1603,13 +1685,15 @@ const pmcSubmit = async () => {
   }
 };
 const subsimSubmit = async () => {
-  if (
-    methodSeedSize.value <= 0 ||
-    methodSeedSize.value > origFullGraphStore.nodeNum
-  ) {
-    selectedNodesForIMFallbackSnackbar.value = true;
-    return;
-  }
+
+  //if(!isDIYParameters.value)
+    if (
+      parseInt(methodSeedSize.value) <= 0 ||
+      parseInt(methodSeedSize.value) > parseInt(origFullGraphStore.nodeNum)
+    ) {
+      methodInputInvalidSnackbar.value = true;
+      return;
+    }
   try {
     console.log("Asking for Subsim...");
     const subsimResponse = await fetch("http://localhost:4000/subsim", {
@@ -1618,6 +1702,15 @@ const subsimSubmit = async () => {
       body: JSON.stringify({
         size: methodSeedSize.value,
         pdist: subsimPdist.value,
+        isDIYParameters: isDIYParameters.value,
+        diyParameters: diyParameters.value,
+        wcvariant: subsimWCVariant.value,
+        pedge: subsimPedge.value,
+        skew: subsimSkewedDist.value,
+        eps: subsimEps.value,
+        delta: subsimDelta.value,
+        vanilla: Number(subsimVanilla.value == "Vanilla"),
+        hist: Number(subsimHist.value == "True")
       }),
     });
     // here we directly exchange between one thread.
@@ -1633,13 +1726,14 @@ const subsimSubmit = async () => {
 };
 
 const gameSubmit = async () => {
-  if (
-    methodSeedSize.value <= 0 ||
-    methodSeedSize.value > origFullGraphStore.nodeNum
-  ) {
-    selectedNodesForIMFallbackSnackbar.value = true;
-    return;
-  }
+  //if(!isDIYParameters.value)
+    if (
+      parseInt(methodSeedSize.value) <= 0 ||
+      parseInt(methodSeedSize.value) > parseInt(origFullGraphStore.nodeNum)
+    ) {
+      methodInputInvalidSnackbar.value = true;
+      return;
+    }
   try {
     console.log("Asking for Game...");
     const gameResponse = await fetch("http://localhost:4000/game", {
@@ -1647,6 +1741,8 @@ const gameSubmit = async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         size: methodSeedSize.value,
+        isDIYParameters: isDIYParameters.value,
+        diyParameters: diyParameters.value,
       }),
     });
     // here we directly exchange between one thread.
@@ -1662,16 +1758,18 @@ const gameSubmit = async () => {
 };
 // seedsize, epsilon, delta, model, isDSSA
 const ssaSubmit = async (ssaType) => {
-  if (
-    pmcDecay.value <= 0 ||
-    methodSeedSize.value <= 0 ||
-    methodSeedSize.value > origFullGraphStore.nodeNum
-  ) {
-    selectedNodesForIMFallbackSnackbar.value = true;
-    return;
-  }
+
+  //if(!isDIYParameters.value)
+    if (
+      pmcDecay.value <= 0 ||
+      parseInt(methodSeedSize.value) <= 0 ||
+      parseInt(methodSeedSize.value) > parseInt(origFullGraphStore.nodeNum)
+    ) {
+      methodInputInvalidSnackbar.value = true;
+      return;
+    }
   try {
-    console.log("Asking for PMC...");
+    console.log("Asking for SSA...");
     const ssaResponse = await fetch("http://localhost:4000/ssa", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -1681,6 +1779,8 @@ const ssaSubmit = async (ssaType) => {
         delta: ssaDelta.value,
         model: ssaModel.value,
         isDSSA: ssaType, //got from parameter
+        isDIYParameters: isDIYParameters.value,
+        diyParameters: diyParameters.value,
       }),
     });
     // here we directly exchange between one thread.
@@ -1704,7 +1804,7 @@ const highlightCustomizedNodesFromIP = () => {
 };
 const ipSubmit = async () => {
   if (selectedNodesFromMethod.value.length < 1) {
-    selectedNodesForIMFallbackSnackbar.value = true;
+    methodInputInvalidSnackbar.value = true;
     return;
   }
   try {
