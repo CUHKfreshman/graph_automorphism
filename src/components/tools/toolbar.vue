@@ -378,7 +378,8 @@
             </v-expansion-panel-text>
           </v-expansion-panel>
           <!--im-->
-          <v-expansion-panel ><!--:disabled="!origFullGraphStore.hasReceivedIM"-->
+          <v-expansion-panel
+            ><!--:disabled="!origFullGraphStore.hasReceivedIM"-->
             <v-expansion-panel-title>IM</v-expansion-panel-title>
             <v-expansion-panel-text>
               <v-expansion-panels variant="accordion">
@@ -402,13 +403,14 @@
                         v-model="methodType"
                         variant="outlined"
                         hide-details
-                      ></v-select><!--
+                      ></v-select
+                      ><!--
                       <v-switch inset label="DIY Parameters" v-model="isDIYParameters" hide-details></v-switch>
                       <template v-if="isDIYParameters">
                         <v-text-field clearable label="Input your own parameters..." v-model="diyParameters"></v-text-field>
                       </template>
                       <template v-else>-->
-                        <v-text-field
+                      <v-text-field
                         append-icon="mdi-counter"
                         label="Seed Size"
                         v-model="methodSeedSize"
@@ -459,22 +461,26 @@
                         type="number"
                       ></v-text-field>
                       <v-text-field
-                        v-show="methodType == 'Subsim' && subsimPdist == 'uniform'"
+                        v-show="
+                          methodType == 'Subsim' && subsimPdist == 'uniform'
+                        "
                         label="Pedge"
                         v-model="subsimPedge"
                         hide-details
                         type="number"
                       ></v-text-field>
                       <v-select
-                        v-show="methodType == 'Subsim' && subsimPdist == 'skewed'"
-                        :items="['exp','weibull']"
+                        v-show="
+                          methodType == 'Subsim' && subsimPdist == 'skewed'
+                        "
+                        :items="['exp', 'weibull']"
                         label="Skewed Distribution"
                         v-model="subsimSkewedDist"
                         hide-details
                       ></v-select>
                       <v-text-field
                         v-show="methodType == 'Subsim'"
-                        label="Eps"
+                        label="Epsilon"
                         v-model="subsimEps"
                         hide-details
                         type="number"
@@ -489,14 +495,14 @@
                       <v-select
                         v-show="methodType == 'Subsim'"
                         label="RR Set Generation Method"
-                        :items="['Subsim','Vanilla']"
+                        :items="['Subsim', 'Vanilla']"
                         v-model="subsimVanilla"
                         hide-details
                       ></v-select>
                       <v-select
                         v-show="methodType == 'Subsim'"
                         label="Invoke HIST Algorithm"
-                        :items="['False','True']"
+                        :items="['False', 'True']"
                         v-model="subsimHist"
                       ></v-select>
                       <v-select
@@ -644,8 +650,8 @@
                       </template>
                     </v-snackbar>
                     <v-snackbar v-model="methodSeedHasReturnedSnackbar">
-                      Result has returned successfully. Please check the
-                      input box in "Customized Rendering"!
+                      Result has returned successfully. Please check the input
+                      box in "Customized Rendering"!
 
                       <template v-slot:actions>
                         <v-btn
@@ -760,8 +766,9 @@
                         >Submit</v-btn
                       >
                       <v-checkbox
-                        label="Use Original Graph"
-                        v-model="customizedIMStore.useOrig"
+                        label="Use a New Container"
+                        v-model="useNewContainer"
+                        hide-details
                       ></v-checkbox>
                       <v-btn
                         ref="customizedIMRenderBtn"
@@ -811,31 +818,107 @@
                     Stepwise Visualization
                   </v-expansion-panel-title>
                   <v-expansion-panel-text>
-                    <v-btn
-                      ref="imRenderBtn"
-                      realCol="1"
-                      realRow="1"
-                      block
-                      color="primary"
-                      append-icon="mdi-palette-swatch-variant"
-                      @click="randomColorGenerator()"
-                      >Random Color</v-btn
-                    >
-                    <v-row>
-                      <v-checkbox
-                        v-model="selectedIMGraph"
-                        label="Original"
-                        value="Original"
-                      ></v-checkbox>
-                      <v-checkbox
-                        v-model="selectedIMGraph"
-                        label="Competitor"
-                        value="Competitor"
-                      ></v-checkbox>
-                    </v-row>
-                    <v-col
-                      class="d-flex flex-column justify-center align-start"
-                    >
+                    <v-col class="d-flex flex-column justify-center pa-0">
+                      <v-btn
+                        block
+                        class="pa-0"
+                        color="primary"
+                        append-icon="mdi-palette-swatch-variant"
+                        @click="randomColorGenerator()"
+                        >Random Color</v-btn
+                      >
+
+                      <v-row
+                        class="w-100 d-flex flex-row pa-0 ma-0 justify-start align-start"
+                      >
+                        <v-col col="12" sm="4" class="ps-0 pe-0 text-subtitle-2"
+                          >Algorithm</v-col
+                        >
+                        <v-col
+                          col="12"
+                          sm="4"
+                          class="ps-0 pe-0 text-center"
+                          style="white-space: pre-wrap"
+                        >
+                          {{ leftMethodName }}
+                        </v-col>
+                        <v-col
+                          col="12"
+                          sm="4"
+                          class="ps-0 pe-0 text-center"
+                          style="white-space: pre-wrap"
+                        >
+                          {{ rightMethodName }}
+                        </v-col>
+                      </v-row>
+
+                      <v-row
+                        class="w-100 d-flex flex-row pa-0 ma-0 justify-start align-start"
+                      >
+                        <v-col col="12" sm="4" class="ps-0 pe-0 text-subtitle-2"
+                          >Params</v-col
+                        >
+                        <v-col
+                          col="12"
+                          sm="4"
+                          class="ps-0 pe-0 justify-center d-flex"
+                        >
+                          <v-btn
+                            variant="none"
+                            density="compact"
+                            class="text-body-2 text-decoration-underline font-weight-regular"
+                          >
+                            View Here
+                            <v-tooltip activator="parent" location="bottom" style="white-space:pre-wrap"
+                              >{{leftMethodParameters}}</v-tooltip
+                            >
+                          </v-btn>
+                        </v-col>
+                        <v-col
+                          col="12"
+                          sm="4"
+                          class="ps-0 pe-0 justify-center d-flex"
+                        >
+                          <v-btn
+                            variant="text"
+                            density="compact"
+                            class="text-body-2 text-decoration-underline font-weight-regular"
+                          >
+                            View Here
+                            <v-tooltip activator="parent" location="bottom" style="white-space:pre-wrap"
+                              >{{rightMethodParameters}}</v-tooltip
+                            >
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+
+                      <v-row
+                        class="w-100 d-flex flex-row pa-0 ma-0 justify-start align-start"
+                      >
+                        <v-col col="12" sm="4" class="ps-0 pe-0 text-subtitle-2"
+                          >Stepwise View</v-col
+                        >
+                        <v-col col="12" sm="4" class="ps-0 pe-0">
+                          <v-checkbox
+                            v-model="selectedIMGraph"
+                            value="Original"
+                            density="compact"
+                            class="center-checkbox"
+                            hide-details
+                          ></v-checkbox>
+                        </v-col>
+                        <v-col col="12" sm="4" class="ps-0 pe-0">
+                          <v-checkbox
+                            v-model="selectedIMGraph"
+                            value="Competitor"
+                            density="compact"
+                            class="center-checkbox"
+                            hide-details
+                          ></v-checkbox>
+                        </v-col>
+                      </v-row>
+
+                      <!--
                       <v-row class="w-100 d-flex flex-column">
                         <div class="text-caption">Visible IM Range</div>
                         <v-range-slider
@@ -845,154 +928,178 @@
                           step="1"
                           thumb-label
                         ></v-range-slider>
-                      </v-row>
-                      <v-row class="w-100">
-                        <v-btn @click="clearShowRounds" color="red" block>
-                          Clear Selections
-                        </v-btn>
-                      </v-row>
-                      <v-row
-                        v-for="(color, round) in currentimRoundColorDict"
-                        :key="round"
-                        :style="{ color: color }"
-                        class="w-100"
-                      >
-                        <v-divider></v-divider>
-                        <v-col col="12" sm="6" class="pa-0"
-                          ><v-switch
-                            v-model="showRounds[round]"
-                            :label="'Round ' + round"
-                            :color="color"
-                            hide-details
-                            inset
-                            @change="showRoundHandler(round)"
-                          ></v-switch
-                        ></v-col>
-                        <v-col
-                          col="12"
-                          sm="4"
-                          class="pa-0 text-center d-flex justify-center align-center text-body-1"
-                          ><span>{{
-                            origFullGraphStore.imDistributionDict[round]
-                          }}</span></v-col
+                      </v-row>-->
+                      <v-col class="ps-0 pe-0">
+                        <v-row class="w-100 ma-0">
+                          <v-btn @click="clearShowRounds" color="red" block>
+                            Clear Selections
+                          </v-btn>
+                        </v-row>
+                        <!--position LHS/RHS-->
+                        <v-row class="w-100 ma-0">
+                          <v-divider></v-divider>
+                          <v-col col="12" sm="6" class="pa-0 text-overline">
+                            <span>Position</span>
+                          </v-col>
+                          <v-col
+                            col="12"
+                            sm="4"
+                            class="pa-0 text-center d-flex justify-center align-center text-overline"
+                            ><span>{{ "LHS" }}</span></v-col
+                          >
+                          <v-col
+                            col="12"
+                            sm="2"
+                            class="pa-0 text-center d-flex justify-center align-center text-overline"
+                            v-if="customizedIMStore.imDistributionDict !== null"
+                          >
+                            <span>{{ "RHS" }}</span>
+                          </v-col>
+                        </v-row>
+                        <v-row
+                          v-for="(color, round) in currentimRoundColorDict"
+                          :key="round"
+                          :style="{ color: color }"
+                          class="w-100 ma-0"
                         >
-                        <v-col
-                          col="12"
-                          sm="2"
-                          class="pa-0 text-center d-flex justify-center align-center text-body-1"
-                          v-if="customizedIMStore.imDistributionDict !== null"
-                        >
-                          <span>{{
-                            customizedIMStore.imDistributionDict[round]
-                          }}</span>
-                        </v-col>
-                      </v-row>
-                      <v-row class="w-100">
-                        <v-divider></v-divider>
-                        <v-col col="12" sm="6" class="pa-2 text-subtitle-1">
-                          SUM
-                        </v-col>
-                        <v-col
-                          col="12"
-                          sm="4"
-                          class="pa-0 text-center d-flex justify-center align-center text-body-1"
-                          ><span>{{
-                            Object.values(
-                              origFullGraphStore.imDistributionDict
-                            ).reduce((a, b) => a + b, 0)
-                          }}</span></v-col
-                        >
-                        <v-col
-                          col="12"
-                          sm="2"
-                          class="pa-0 text-center d-flex justify-center align-center text-body-1"
-                          ><span>{{
-                            Object.keys(customizedIMStore.imDistributionDict)
-                              .length == 0
-                              ? ""
-                              : Object.values(
-                                  customizedIMStore.imDistributionDict
-                                ).reduce((a, b) => a + b, 0)
-                          }}</span></v-col
-                        >
-                      </v-row>
-                      <v-row class="w-100">
-                        <v-divider></v-divider>
-                        <v-col col="12" sm="6" class="pa-2 text-subtitle-1">
-                          EFFICIENCY
-                        </v-col>
-                        <v-col
-                          col="12"
-                          sm="4"
-                          class="pa-0 text-center d-flex justify-center align-center text-body-1"
-                          ><span>{{
-                            (
+                          <v-divider></v-divider>
+                          <v-col col="12" sm="6" class="pa-0"
+                            ><v-switch
+                              v-model="showRounds[round]"
+                              :label="'Round ' + round"
+                              :color="color"
+                              hide-details
+                              inset
+                              @change="showRoundHandler(round)"
+                            ></v-switch
+                          ></v-col>
+                          <v-col
+                            col="12"
+                            sm="4"
+                            class="pa-0 text-center d-flex justify-center align-center text-body-1"
+                            ><span>{{
+                              origFullGraphStore.imDistributionDict[round]
+                            }}</span></v-col
+                          >
+                          <v-col
+                            col="12"
+                            sm="2"
+                            class="pa-0 text-center d-flex justify-center align-center text-body-1"
+                            v-if="customizedIMStore.imDistributionDict !== null"
+                          >
+                            <span>{{
+                              customizedIMStore.imDistributionDict[round]
+                            }}</span>
+                          </v-col>
+                        </v-row>
+                        <v-row class="w-100 ma-0">
+                          <v-divider></v-divider>
+                          <v-col col="12" sm="6" class="pa-2 text-subtitle-1">
+                            SUM
+                          </v-col>
+                          <v-col
+                            col="12"
+                            sm="4"
+                            class="pa-0 text-center d-flex justify-center align-center text-body-1"
+                            ><span>{{
                               Object.values(
                                 origFullGraphStore.imDistributionDict
-                              ).reduce((a, b) => a + b, 0) /
-                              Object.keys(origFullGraphStore.imDistributionDict)
-                                .length
-                            )
-                              .toString()
-                              .substring(0, 5)
-                          }}</span></v-col
-                        >
-                        <v-col
-                          col="12"
-                          sm="2"
-                          class="pa-0 text-center d-flex justify-center align-center text-body-1"
-                          ><span>{{
-                            Object.keys(customizedIMStore.imDistributionDict)
-                              .length == 0
-                              ? ""
-                              : (
-                                  Object.values(
+                              ).reduce((a, b) => a + b, 0)
+                            }}</span></v-col
+                          >
+                          <v-col
+                            col="12"
+                            sm="2"
+                            class="pa-0 text-center d-flex justify-center align-center text-body-1"
+                            ><span>{{
+                              Object.keys(customizedIMStore.imDistributionDict)
+                                .length == 0
+                                ? ""
+                                : Object.values(
                                     customizedIMStore.imDistributionDict
-                                  ).reduce((a, b) => a + b, 0) /
-                                  Object.keys(
-                                    customizedIMStore.imDistributionDict
-                                  ).length
-                                )
-                                  .toString()
-                                  .substring(0, 5)
-                          }}</span></v-col
-                        >
-                      </v-row>
-                      <v-row class="w-100">
-                        <v-divider></v-divider>
-                        <v-col col="12" sm="6" class="pa-2 text-subtitle-1">
-                          COVERAGE
-                        </v-col>
-                        <v-col
-                          col="12"
-                          sm="4"
-                          class="pa-0 text-center d-flex justify-center align-center text-body-1"
-                          ><span>{{
-                            formatPercentage(
-                              Object.values(
-                                origFullGraphStore.imDistributionDict
-                              ).reduce((a, b) => a + b, 0) /
-                                origFullGraphStore.nodeNum
-                            )
-                          }}</span></v-col
-                        >
-                        <v-col
-                          col="12"
-                          sm="2"
-                          class="pa-0 text-center d-flex justify-center align-center text-body-1"
-                          ><span>{{
-                            Object.keys(customizedIMStore.imDistributionDict)
-                              .length == 0
-                              ? ""
-                              : formatPercentage(
-                                  Object.values(
-                                    customizedIMStore.imDistributionDict
-                                  ).reduce((a, b) => a + b, 0) /
-                                    origFullGraphStore.nodeNum
-                                )
-                          }}</span></v-col
-                        >
-                      </v-row>
+                                  ).reduce((a, b) => a + b, 0)
+                            }}</span></v-col
+                          >
+                        </v-row>
+                        <v-row class="w-100 ma-0">
+                          <v-divider></v-divider>
+                          <v-col col="12" sm="6" class="pa-2 text-subtitle-1">
+                            EFFICIENCY
+                          </v-col>
+                          <v-col
+                            col="12"
+                            sm="4"
+                            class="pa-0 text-center d-flex justify-center align-center text-body-1"
+                            ><span>{{
+                              (
+                                Object.values(
+                                  origFullGraphStore.imDistributionDict
+                                ).reduce((a, b) => a + b, 0) /
+                                Object.keys(
+                                  origFullGraphStore.imDistributionDict
+                                ).length
+                              )
+                                .toString()
+                                .substring(0, 5)
+                            }}</span></v-col
+                          >
+                          <v-col
+                            col="12"
+                            sm="2"
+                            class="pa-0 text-center d-flex justify-center align-center text-body-1"
+                            ><span>{{
+                              Object.keys(customizedIMStore.imDistributionDict)
+                                .length == 0
+                                ? ""
+                                : (
+                                    Object.values(
+                                      customizedIMStore.imDistributionDict
+                                    ).reduce((a, b) => a + b, 0) /
+                                    Object.keys(
+                                      customizedIMStore.imDistributionDict
+                                    ).length
+                                  )
+                                    .toString()
+                                    .substring(0, 5)
+                            }}</span></v-col
+                          >
+                        </v-row>
+                        <v-row class="w-100 ma-0">
+                          <v-divider></v-divider>
+                          <v-col col="12" sm="6" class="pa-2 text-subtitle-1">
+                            COVERAGE
+                          </v-col>
+                          <v-col
+                            col="12"
+                            sm="4"
+                            class="pa-0 text-center d-flex justify-center align-center text-body-1"
+                            ><span>{{
+                              formatPercentage(
+                                Object.values(
+                                  origFullGraphStore.imDistributionDict
+                                ).reduce((a, b) => a + b, 0) /
+                                  origFullGraphStore.nodeNum
+                              )
+                            }}</span></v-col
+                          >
+                          <v-col
+                            col="12"
+                            sm="2"
+                            class="pa-0 text-center d-flex justify-center align-center text-body-1"
+                            ><span>{{
+                              Object.keys(customizedIMStore.imDistributionDict)
+                                .length == 0
+                                ? ""
+                                : formatPercentage(
+                                    Object.values(
+                                      customizedIMStore.imDistributionDict
+                                    ).reduce((a, b) => a + b, 0) /
+                                      origFullGraphStore.nodeNum
+                                  )
+                            }}</span></v-col
+                          >
+                        </v-row>
+                      </v-col>
                     </v-col>
                   </v-expansion-panel-text>
                 </v-expansion-panel>
@@ -1319,7 +1426,7 @@ const renderIMColormap = () => {
 };
 const renderCustomizedIMColormap = () => {
   //TODO: check if useOrig
-  if (customizedIMStore.useOrig) {
+  if (!useNewContainer.value) {
     renderIMColormap();
     return;
   }
@@ -1536,36 +1643,28 @@ const highlightCustomizedNodes = () => {
 };
 //// check node validaty (rely on bug to perform "input twice for deletion". Actually a tricky case but I don have time to check logic)
 watch(selectedNodesForIM, (newVal, oldVal) => {
+  if(isMethodInput.value) {
+    isMethodInput.value = false;
+  }
+  else {
+    currentMethodName.value = "N/A";
+    currentMethodParameters.value = "N/A";
+  }
   // if delete
   if (oldVal.length > newVal.length) {
     return;
-  }
-  const newNode = newVal[newVal.length - 1];
-  /*
-  let oldSize = oldVal.length;
-  if (oldSize > 0) {
-    if (oldVal.includes(newNode)) {
-      alert("already selected", selectedNodesForIM.value);
+  } else if (oldVal.length + 1 == newVal.length) {
+    const newNode = newVal[newVal.length - 1];
+    let found = false;
+    const nodeIDs = new Set(origFullGraphStore.nodeList.map((item) => item.id));
+    if (nodeIDs.has(newNode)) {
+      //console.log("found", newNode);
+      found = true;
+    }
+    if (!found) {
       selectedNodesForIMFallbackSnackbar.value = true;
       selectedNodesForIM.value = oldVal;
-      return;
     }
-  }*/
-
-  let found = false;
-  // this method is for [1, 3, 4, 5] kind of array. if [1, 2, 3] then ok just check maximum
-  for (let i = 0; i < origFullGraphStore.nodeList.length; i++) {
-    const item = origFullGraphStore.nodeList[i];
-    //console.log(item);
-    if (item.id === newNode) {
-      found = true;
-      //alert('found');
-      break;
-    }
-  }
-  if (!found) {
-    selectedNodesForIMFallbackSnackbar.value = true;
-    selectedNodesForIM.value = oldVal;
   }
 });
 watch(
@@ -1606,6 +1705,19 @@ const customizedIMSubmit = async () => {
       "CustomizedIM server responded with ",
       customizedIMResponse.data
     );
+    if(useNewContainer.value){
+      rightMethodName.value = currentMethodName.value;
+      rightMethodParameters.value = currentMethodParameters.value;
+      currentMethodParameters.value = "";
+      currentMethodName.value = "";
+      //isMethodInput.value = false;
+    }
+    else{
+      leftMethodName.value = currentMethodName.value;
+      leftMethodParameters.value = currentMethodParameters.value;
+      currentMethodParameters.value = "";
+      currentMethodName.value = "";
+    }
   } catch (error) {
     console.error(error);
   }
@@ -1614,7 +1726,7 @@ const customizedIMSubmit = async () => {
 const methodInputInvalidSnackbar = ref(false);
 const isDIYParameters = ref(false);
 const diyParameters = ref("");
-const methodTypeList = ref(['PMC', 'Subsim', 'Game', 'SSA', 'DSSA']);
+const methodTypeList = ref(["PMC", "Subsim", "Game", "SSA", "DSSA"]);
 const methodType = ref("PMC");
 const methodSeedSize = ref(10);
 const pmcDecay = ref(100);
@@ -1650,33 +1762,37 @@ const methodSubmit = async () => {
 };
 const pmcSubmit = async () => {
   //if(!isDIYParameters.value)
-    if (
-      pmcDecay.value <= 0 ||
-      parseInt(methodSeedSize.value) <= 0 ||
-      parseInt(methodSeedSize.value) > parseInt(origFullGraphStore.nodeNum) ||
-      spreadProbability.value > 100 ||
-      spreadProbability.value < 0
-    ) {
-      methodInputInvalidSnackbar.value = true;
-      return;
-    }
+  if (
+    pmcDecay.value <= 0 ||
+    parseInt(methodSeedSize.value) <= 0 ||
+    parseInt(methodSeedSize.value) > parseInt(origFullGraphStore.nodeNum) ||
+    spreadProbability.value > 100 ||
+    spreadProbability.value < 0
+  ) {
+    methodInputInvalidSnackbar.value = true;
+    return;
+  }
   try {
     console.log("Asking for PMC...");
-    const pmcResponse = await fetch("http://localhost:4000/pmc", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    const params = JSON.stringify({
         size: methodSeedSize.value,
         decay: pmcDecay.value,
         spreadProbability: spreadProbability.value,
         isDIYParameters: isDIYParameters.value,
         diyParameters: diyParameters.value,
-      }),
+      }).replace(/,/g, ',\n');
+    const pmcResponse = await fetch("http://localhost:4000/pmc", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: params,
     });
     // here we directly exchange between one thread.
     const pmcSeedsJson = await pmcResponse.json();
     console.log("pmc seed", pmcSeedsJson.data);
     selectedNodesFromMethod.value = pmcSeedsJson.data;
+    isMethodInput.value = true;
+    currentMethodName.value = "PMC";
+    currentMethodParameters.value = params;
     selectedNodesForIM.value = pmcSeedsJson.data;
     methodSeedHasReturnedSnackbar.value = true;
   } catch (error) {
@@ -1685,21 +1801,17 @@ const pmcSubmit = async () => {
   }
 };
 const subsimSubmit = async () => {
-
   //if(!isDIYParameters.value)
-    if (
-      parseInt(methodSeedSize.value) <= 0 ||
-      parseInt(methodSeedSize.value) > parseInt(origFullGraphStore.nodeNum)
-    ) {
-      methodInputInvalidSnackbar.value = true;
-      return;
-    }
+  if (
+    parseInt(methodSeedSize.value) <= 0 ||
+    parseInt(methodSeedSize.value) > parseInt(origFullGraphStore.nodeNum)
+  ) {
+    methodInputInvalidSnackbar.value = true;
+    return;
+  }
   try {
     console.log("Asking for Subsim...");
-    const subsimResponse = await fetch("http://localhost:4000/subsim", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    const params = JSON.stringify({
         size: methodSeedSize.value,
         pdist: subsimPdist.value,
         isDIYParameters: isDIYParameters.value,
@@ -1710,13 +1822,20 @@ const subsimSubmit = async () => {
         eps: subsimEps.value,
         delta: subsimDelta.value,
         vanilla: Number(subsimVanilla.value == "Vanilla"),
-        hist: Number(subsimHist.value == "True")
-      }),
+        hist: Number(subsimHist.value == "True"),
+      }).replace(/,/g, ',\n');
+    const subsimResponse = await fetch("http://localhost:4000/subsim", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: params,
     });
     // here we directly exchange between one thread.
     const subsimSeedsJson = await subsimResponse.json();
     console.log("subsim seed", subsimSeedsJson.data);
     selectedNodesFromMethod.value = subsimSeedsJson.data;
+    isMethodInput.value = true;
+    currentMethodName.value = "Subsim";
+    currentMethodParameters.value = params;
     selectedNodesForIM.value = subsimSeedsJson.data;
     methodSeedHasReturnedSnackbar.value = true;
   } catch (error) {
@@ -1727,28 +1846,32 @@ const subsimSubmit = async () => {
 
 const gameSubmit = async () => {
   //if(!isDIYParameters.value)
-    if (
-      parseInt(methodSeedSize.value) <= 0 ||
-      parseInt(methodSeedSize.value) > parseInt(origFullGraphStore.nodeNum)
-    ) {
-      methodInputInvalidSnackbar.value = true;
-      return;
-    }
+  if (
+    parseInt(methodSeedSize.value) <= 0 ||
+    parseInt(methodSeedSize.value) > parseInt(origFullGraphStore.nodeNum)
+  ) {
+    methodInputInvalidSnackbar.value = true;
+    return;
+  }
   try {
     console.log("Asking for Game...");
-    const gameResponse = await fetch("http://localhost:4000/game", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    const params = JSON.stringify({
         size: methodSeedSize.value,
         isDIYParameters: isDIYParameters.value,
         diyParameters: diyParameters.value,
-      }),
+      }).replace(/,/g, ',\n');
+    const gameResponse = await fetch("http://localhost:4000/game", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: params,
     });
     // here we directly exchange between one thread.
     const gameSeedsJson = await gameResponse.json();
     console.log("pmc seed", gameSeedsJson.data);
     selectedNodesFromMethod.value = gameSeedsJson.data;
+    isMethodInput.value = true;
+    currentMethodName.value = "Game";
+    currentMethodParameters.value = params;
     selectedNodesForIM.value = gameSeedsJson.data;
     methodSeedHasReturnedSnackbar.value = true;
   } catch (error) {
@@ -1758,22 +1881,18 @@ const gameSubmit = async () => {
 };
 // seedsize, epsilon, delta, model, isDSSA
 const ssaSubmit = async (ssaType) => {
-
   //if(!isDIYParameters.value)
-    if (
-      pmcDecay.value <= 0 ||
-      parseInt(methodSeedSize.value) <= 0 ||
-      parseInt(methodSeedSize.value) > parseInt(origFullGraphStore.nodeNum)
-    ) {
-      methodInputInvalidSnackbar.value = true;
-      return;
-    }
+  if (
+    pmcDecay.value <= 0 ||
+    parseInt(methodSeedSize.value) <= 0 ||
+    parseInt(methodSeedSize.value) > parseInt(origFullGraphStore.nodeNum)
+  ) {
+    methodInputInvalidSnackbar.value = true;
+    return;
+  }
   try {
-    console.log("Asking for SSA...");
-    const ssaResponse = await fetch("http://localhost:4000/ssa", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    console.log("Asking for SSA/DSSA...");
+    const params = JSON.stringify({
         size: methodSeedSize.value,
         epsilon: ssaEpsilon.value,
         delta: ssaDelta.value,
@@ -1781,12 +1900,19 @@ const ssaSubmit = async (ssaType) => {
         isDSSA: ssaType, //got from parameter
         isDIYParameters: isDIYParameters.value,
         diyParameters: diyParameters.value,
-      }),
+      }).replace(/,/g, ',\n');
+    const ssaResponse = await fetch("http://localhost:4000/ssa", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: params,
     });
     // here we directly exchange between one thread.
     const ssaSeedsJson = await ssaResponse.json();
     console.log("pmc seed", ssaSeedsJson.data);
     selectedNodesFromMethod.value = ssaSeedsJson.data;
+    isMethodInput.value = true;
+    currentMethodName.value = ssaType;
+    currentMethodParameters.value = params;
     selectedNodesForIM.value = ssaSeedsJson.data;
     methodSeedHasReturnedSnackbar.value = true;
   } catch (error) {
@@ -1834,14 +1960,40 @@ const ipSubmit = async () => {
 };
 const hasRetrievedDataSnackbar = ref(false);
 const transferIPResultToRender = () => {
+  isMethodInput.value = true;
+  if(currentMethodName.value === ""){
+    currentMethodName.value = "N/A\n+Prune";
+  }
+  else{
+    currentMethodName.value += "\n+Prune";
+  }
+  currentMethodParameters.value = "[Pruned]\n" + currentMethodParameters.value;
   selectedNodesForIM.value = selectedNodesFromIP.value;
   hasRetrievedDataSnackbar.value = true;
 };
+
+//// stepwise table detail
+const leftMethodName = ref("PMC");
+const rightMethodName = ref("");
+const leftMethodParameters = ref("Default");
+const rightMethodParameters = ref("");
+const useNewContainer = ref(false);
+const currentMethodName = ref("");
+const currentMethodParameters = ref("");
+const isMethodInput = ref(false);
 onMounted(() => {
   makeToolBarDraggable();
 });
 </script>
-<style scoped>
+<style>
+.center-checkbox {
+  justify-content: center;
+}
+
+.center-checkbox * {
+  justify-content: center;
+}
+
 .collapsed {
   max-height: none !important;
   width: 64px !important;
