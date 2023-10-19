@@ -56,10 +56,10 @@ const handleData = (resp) => {
     case "customizedIMData":
       console.log("customized IM received:", resp.data);
       customizedIMStore.hasReceived = true;
-      if (customizedIMStore.useOrig) {
-        origFullGraphStore.imColormapCreate(resp.data, true, true);
-      } else {
+      if (customizedIMStore.useNewContainer) {
         customizedIMStore.imColormapCreate(resp.data, true, true);
+      } else {
+        origFullGraphStore.imColormapCreate(resp.data, true, true);
       }
 
       break;

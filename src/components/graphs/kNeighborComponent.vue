@@ -54,5 +54,7 @@ watch(
 onMounted(async () => {
   await nextTick();
   KNeighborStore.kNeighborCanvas = kNeighborCanvas.value;
+  if(KNeighborStore.kNeighbor != null && KNeighborStore.kNeighbor != 'undefined')
+    KNeighborStore.kNeighborCreate();
 });
 </script>

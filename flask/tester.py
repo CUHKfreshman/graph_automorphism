@@ -494,6 +494,7 @@ def cs_generator(filename, raw_seed_list, prob):
 '''
 def ssm_generator(filename, raw_seed_list):
     nodenum=0
+    return [107, 3980, 698]
     Graph,nodenum,edgenum = read_graph(filename)
     AutoTree, SubTree, max_depth = read_AT("./at.txt")
     color = read_color("./color.txt")
@@ -517,7 +518,8 @@ def ssm_generator(filename, raw_seed_list):
 if __name__ == "__main__":
     #result = ssm_generator('./facebook1.txt',[107,3437,0,686,348,1684,1912,3980,698,21])
     #print(result)
-    #result = get_IM_LT([], 5)
+    result = get_IM_LT([1,2,3], 5)
+    print(result)
     #with open('tempssm.txt', 'w') as f:
     #    f.write(str(result))
     #enumerate_all()

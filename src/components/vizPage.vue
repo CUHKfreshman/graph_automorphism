@@ -81,7 +81,7 @@
           ></div>-->
 </template>
 <script setup>
-import { ref } from "vue";
+import { ref, markRaw } from "vue";
 import toolbar from "./tools/toolbar.vue";
 import metricsReportComponent from "./tools/metricsReportComponent.vue";
 import customizedIMComponent from "./graphs/customizedIMComponent.vue";
@@ -89,8 +89,11 @@ import origFullGraphComponent from "./graphs/origFullGraphComponent.vue";
 import degreeDistComponent from "./graphs/degreeDistComponent.vue";
 import autoTreeComponent from "./graphs/autoTreeComponent.vue";
 import kNeighborComponent from "./graphs/kNeighborComponent.vue";
-import { useOrigFullGraphStore } from "@/store/store";
+import { useOrigFullGraphStore, useKNeighborStore, useAutoTreeStore, useCustomizedIMStore } from "@/store/store";
 const origFullGraphStore = useOrigFullGraphStore();
+const kNeighborStore = useKNeighborStore();
+const autoTreeStore = useAutoTreeStore();
+const customizedIMStore = useCustomizedIMStore();
 // frontend effects related
 const fullgraphExtendableDiv = ref(null);
 const hasWindow = ref(false);
@@ -148,7 +151,7 @@ onMounted(() => {});*/
 const components = ref([]);
 const componentMapping = {
   "Metrics Report": metricsReportComponent,
-  AutoTree: autoTreeComponent,
+  "AutoTree": autoTreeComponent,
   "K Neighbor": kNeighborComponent,
   "Degree Distribution": degreeDistComponent,
   "Customized IM": customizedIMComponent,
@@ -158,7 +161,7 @@ const addComponent = (name, rowSpan, colSpan) => {
   hasWindow.value = true;
   console.log("emit received", name);
   components.value.push({
-    component: componentMapping[name],
+    component: markRaw(componentMapping[name]),
     name: name,
     rowSpan: rowSpan,
     colSpan: colSpan,

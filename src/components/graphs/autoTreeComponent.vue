@@ -54,5 +54,8 @@ watch(
 onMounted(async () => {
   await nextTick();
   autoTreeStore.autoTreeCanvas = autoTreeCanvas.value;
+  if (autoTreeStore.autoTree != null && autoTreeStore.autoTree != "undefined") {
+    autoTreeStore.autoTreeCreate();
+  }
 });
 </script>

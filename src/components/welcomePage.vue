@@ -123,11 +123,9 @@
         <v-list-item> </v-list-item>
         <v-list-item class="text-body-1">
           <p>
-            This is the
-            <a href="https://cosmograph.app/" class="text-decoration-underline"
-              >Cosmos</a
-            >
-            branch V1.0 of AutoViz, offering full feature support.
+            This is AutoViz V2.1 Branch <a href="https://cosmograph.app/" class="text-decoration-underline"
+            >Cosmos</a
+          >, offering full feature support.
           </p>
           <p>
             Autoviz is an advanced graph visualization system for massive
@@ -242,7 +240,13 @@ const uploadNewFile = async (name, fileList, fileLen) => {
 
   reader.onload = async (event) => {
     emit("concurrent-data-listener", event.target.result);
-    let [nodeNum, edgeNum, ...edges] = event.target.result.split(/\s|\n/); //array destruction
+    let inputStream = event.target.result;
+    inputStream = inputStream.replace(/\r\n/g, "\n");
+    inputStream = inputStream.replace(/\r/g, "\n");
+    let [nodeNum, edgeNum, ...edges] = inputStream.split(/\s+|\n/); //array destruction
+    if (edges[edges.length - 1] === "") {
+      edges.pop(); // remove empty string at the end of the array
+    }
     //console.log(nodenum, edgenum, edges);
     let nodeList = [...new Set(edges)].map((num) => ({ id: num })); //remove duplicate elements
 

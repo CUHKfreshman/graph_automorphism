@@ -54,5 +54,8 @@ watch(
 onMounted(async () => {
   await nextTick();
   customizedIMStore.customizedIMCanvas = customizedIMCanvas.value;
+  if (customizedIMStore.customizedIM != null && customizedIMStore.customizedIM != "undefined") {
+    customizedIMStore.customizedIMCreate();
+  }
 });
 </script>

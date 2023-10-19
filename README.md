@@ -6,7 +6,7 @@ yarn
 pip install -r requirement.txt
 apt install redis
 ```
-If for general purposes, run
+If for general purposes, run below cmd to start the application
 ```
 ./start.sh
 ```
@@ -20,29 +20,28 @@ python3 ./flask/app.py
 ## Project development
 
 ### Current status
-1. Basic graph analyzer:
+1. Basic graph analyzer: ### Currently Disabled
     1. Graph rendering: Done
-    2. Metrics report: Not yet
+    2. Metrics report: Done
     3. Layout Options: Done
-    4. Modular Self-Assembling UI: Done 
-2. SSM graph analyzer:
+    4. Modular Self-Assembling UI: Done
+2. SSM graph analyzer: ### Currently Disabled
     1. Basic color mapping: Done
-    2. Metrics report: Not yet
-    3. Modified node-wise operations: TODO: bidirectional at node focus
-3. AutoTree Analyzer:
+    2. Metrics report: Done
+    3. Modified node-wise operations: Done
+3. AutoTree Analyzer: ### Currently Disabled
     1. AutoTree graph rendering: Done
-    2. Metrics report: Not yet
-    3. Modified node-wise operations: Partial (lack destroy asteroid)
-4. IM graph analyzer:
+    2. Metrics report: Done
+    3. Modified node-wise operations: Done
+4. IM graph analyzer: ### Currently Disabled
    1. Basic color mapping: Done
    2. Metrics report: Not yet
-   3. Modified node-wise operations: TODO: recursive. If enough time then do
+   3. Modified node-wise operations: Done
    4. Step-by-step visualization: Done
    5. K-neighbor visualization: Done
    6. Customizable seed set & prob: Done
+   7. ***Integrated Pruning Methods: Done
 
-### Remark
-For different node-wise operations, should use different entries rather than overriding.
 
 
 # Default Docs

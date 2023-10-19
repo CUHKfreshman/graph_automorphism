@@ -43,6 +43,7 @@ export const useOrigFullGraphStore = defineStore("origFullGraphStore", {
     ssmColormap: [],
     imColormap: [],
     imRoundColorDict: {},
+    imPercentDict: {},
     imSelectedRounds: [],
     ssmAllDict: {},
     imAllDict: {},
@@ -86,7 +87,9 @@ export const useOrigFullGraphStore = defineStore("origFullGraphStore", {
       this.nodeList = newNodeList;
       this.edgeList = newEdgeList;
       const callbackFlag = this.graphologyStore.initGraphology(newNodeNum, newEdgeNum, newNodeList, newEdgeList);
-      if (callbackFlag) this.hasAnalyzedOrig = true; else console.log("Unhandled Graphology Error");
+      if (callbackFlag)
+      this.hasAnalyzedOrig = true;
+      else console.log("Unhandled Graphology Error");
     },
     curvedColorHex(colorLR, currentVal, minVal, maxVal, curveOption) {
       //const lerp = (a, b, t) => a + (b - a) * t;
@@ -146,8 +149,12 @@ export const useOrigFullGraphStore = defineStore("origFullGraphStore", {
                 this.kNeighborStore.kNeighborCreate();
               }
               console.log("selectedNode", this.selectedNode);
-
-
+              //handle customizedIM comparison
+              if(this.customizedIMStore.customizedIM !== null)
+                {
+                  this.customizedIMStore.customizedIM.selectNodeByIndex(i, true);
+                  this.customizedIMStore.customizedIM.zoomToNodeByIndex(i);
+                }
 
               //handle orig full
               if (this.origEnabled) {
@@ -322,6 +329,15 @@ export const useOrigFullGraphStore = defineStore("origFullGraphStore", {
         this.hasAnalyzedIM = false;
         this.imAllDict = data;
         this.imDistributionDict = Object.values(this.imAllDict).map(array => array.length);
+        this.imPercentDict = {};
+        for (const round in this.imDistributionDict){
+          this.imPercentDict[round] = ( parseInt(this.imDistributionDict[round]) / this.nodeNum * 100);
+          if(round == 0){
+            continue;
+          }
+          this.imPercentDict[round] += this.imPercentDict[parseInt(round) - 1];
+
+        }
         //console.log("imDistributionDict", this.imDistributionDict);
       }
       this.imRoundColorDict = {};
@@ -440,8 +456,8 @@ export const useOrigFullGraphStore = defineStore("origFullGraphStore", {
       }
       this.origFullGraph.unselectNodes();
       this.origFullGraph.selectNodesByIds(allNodesToBeSelected);
-      //console.log("selected nodes", allNodesToBeSelected);
-      //console.log("selected rounds", this.imSelectedRounds);
+      console.log("selected nodes", allNodesToBeSelected);
+      console.log("selected rounds", this.imSelectedRounds);
       //this.origFullGraph.fitView();
       /*
       const getRoundNumByColor = (obj, color) => Object.keys(obj).find(key => obj[key] === color);
@@ -488,6 +504,7 @@ export const useKNeighborStore = defineStore("kNeighborStore", {
       this.hasAnalyzedKNeighbor = false;
       if (typeof this.kNeighbor !== 'undefined') {
         this.kNeighbor.destroy();
+        this.kNeighbor = null;
       }
       //TODO: add a method to check if kneighbor is in the window
       if (typeof this.origFullGraphStore.selectedNode == 'undefined') {
@@ -659,6 +676,7 @@ export const useAutoTreeStore = defineStore("autoTreeStore", {
 
       if (typeof this.autoTree !== 'undefined') {
         this.autoTree.destroy();
+        this.autoTree = null;
       }
       this.hasAnalyzedAutoTree = false;
       console.log("assignAutoTree", newData);
@@ -693,6 +711,10 @@ export const useAutoTreeStore = defineStore("autoTreeStore", {
       this.autoTreeEdgeList = this.autoTreeEdgeList.map(item => Object.assign({}, item));
     },
     autoTreeCreate() {
+      if (typeof this.autoTree !== 'undefined') {
+        this.autoTree.destroy();
+        this. autoTree = null;
+      }
 
       //console.log("creating kNeighbor");
       const initconfig = {
@@ -774,10 +796,12 @@ export const useCustomizedIMStore = defineStore("customizedIMStore", {
   state: () => ({
     origFullGraphStore: useOrigFullGraphStore(),
     hasReceived: false,
-    useOrig: false,
+    //useOrig: false,
+    useNewContainer: false,
     imAllDict: {},
     imDistributionDict: {},
     imRoundColorDict: {},
+    imPercentDict: {},
     imSelectedRounds: [],
     imColormap: [],
     customizedIM: null,
@@ -790,8 +814,9 @@ export const useCustomizedIMStore = defineStore("customizedIMStore", {
     customizedIMCreate() {
       if (this.customizedIM !== null) {
         this.customizedIM.destroy();
+        this.customizedIM = null;
       }
-      //console.log("creating full graph");
+      console.log("creating full graph for customizedIM");
       const initconfig = {
         backgroundColor: "#FFFFFF",
         nodeSize: 4,            //4
@@ -814,6 +839,8 @@ export const useCustomizedIMStore = defineStore("customizedIMStore", {
             if (node && i !== undefined) {
               this.customizedIM.selectNodeByIndex(i, true);
               this.customizedIM.zoomToNodeByIndex(i);
+              this.origFullGraphStore.origFullGraph.selectNodeByIndex(i, true);
+              this.origFullGraphStore.origFullGraph.zoomToNodeByIndex(i);
             } else {
               this.customizedIM.unselectNodes();
             }
@@ -850,6 +877,14 @@ export const useCustomizedIMStore = defineStore("customizedIMStore", {
       if (isNewData) {
         this.imAllDict = data;
         this.imDistributionDict = Object.values(this.imAllDict).map(array => array.length);
+        this.imPercentDict = {};
+        for (const round in this.imDistributionDict){
+          this.imPercentDict[round] = ( parseInt(this.imDistributionDict[round]) / this.origFullGraphStore.nodeNum * 100);
+          if(round == 0){
+            continue;
+          }
+          this.imPercentDict[round] += this.imPercentDict[parseInt(round) - 1];
+        }
 
       }
       this.imRoundColorDict = {};
@@ -925,6 +960,7 @@ export const useCustomizedIMStore = defineStore("customizedIMStore", {
     },
     imColormapRoundSelect(roundNum, isAdd) {
       //// no , change to select ids using selectids(imAllDict[round])
+      console.log("imColormapRoundSelect", roundNum, isAdd)
       this.imSelectedRounds = isAdd ? [...this.imSelectedRounds, roundNum] : this.imSelectedRounds.filter((item) => item !== roundNum);
       let allNodesToBeSelected = [];
       for (const round of this.imSelectedRounds) {
@@ -963,8 +999,17 @@ export const useGraphologyStore = defineStore("graphologyStore", {
       this.origFullGraphology.import({ nodes: this.nodeList, edges: this.edgeList });
       this.density = graphologyMetrics.graph.undirectedDensity(this.origFullGraphology);
       graphologyMetrics.centrality.degree.assign(this.origFullGraphology);
+      console.log("ok", this.origFullGraphology.getNodeAttributes('1'));
       graphologyMetrics.centrality.pagerank.assign(this.origFullGraphology);
-      //console.log(this.origFullGraphology);
+      console.log("ok", this.origFullGraphology.getNodeAttributes('1'));
+      //graphologyMetrics.centrality.betweenness.assign(this.origFullGraphology);
+      //console.log("ok", this.origFullGraphology.getNodeAttributes('1'));
+      //graphologyMetrics.centrality.closeness.assign(this.origFullGraphology);
+      //console.log("ok", this.origFullGraphology.getNodeAttributes('1'));
+      graphologyMetrics.centrality.eigenvector.assign(this.origFullGraphology);
+      console.log("ok", this.origFullGraphology.getNodeAttributes('1'));
+      //graphologyMetrics.centrality.hits.assign(this.origFullGraphology);
+      //console.log("ok", this.origFullGraphology.getNodeAttributes('1'));
       return true;
 
     },
@@ -978,6 +1023,14 @@ export const useGraphologyStore = defineStore("graphologyStore", {
       }
       console.log(stat);
       return stat;
+    },
+    getNodeListAttr(nodeList, attr){
+      let attrList = [];
+      for(const node of Object.values(nodeList)){
+        attrList.push(this.origFullGraphology.getNodeAttribute(node, attr));
+      }
+      return attrList.sort((a,b)=>Number(b) - Number(a));
     }
-  }
+  },
+
 })
