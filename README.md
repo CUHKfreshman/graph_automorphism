@@ -1,5 +1,9 @@
 # AutoViz
-The project is run on Vue 3 + Flask + Redis. The recommended package manager is *yarn* which has better support for Vue.\\
+The project is run on Vue 3 + Flask + Redis. The recommended package manager is *yarn* which has better support for Vue.
+## Links
+Demo of [version 1 (without newest IM features)](https://fintech.se.cuhk.edu.hk/wp-content/uploads/2023/06/FTEC-FYP-Graph-Automorphism-over-Social-Network-2023-Outstanding-Final-Year-Project-Award.mp4).\
+You can also view our paper [here](https://dl.acm.org/doi/abs/10.1007/978-3-031-47843-7_25).
+## How to start
 You may need the following commands to run the application:
 ```
 yarn
@@ -21,26 +25,26 @@ python3 ./flask/app.py
 
 ### Current status
 1. Basic graph analyzer: ### Currently Disabled
-    1. Graph rendering: Done
-    2. Metrics report: Done
-    3. Layout Options: Done
-    4. Modular Self-Assembling UI: Done
+    1. Graph rendering
+    2. Metrics report
+    3. Layout Options
+    4. Modular Self-Assembling UI
 2. SSM graph analyzer: ### Currently Disabled
-    1. Basic color mapping: Done
-    2. Metrics report: Done
-    3. Modified node-wise operations: Done
+    1. Basic color mapping
+    2. Metrics report
+    3. Modified node-wise operations
 3. AutoTree Analyzer: ### Currently Disabled
-    1. AutoTree graph rendering: Done
-    2. Metrics report: Done
-    3. Modified node-wise operations: Done
+    1. AutoTree graph rendering
+    2. Metrics report
+    3. Modified node-wise operations
 4. IM graph analyzer: ### Currently Disabled
-   1. Basic color mapping: Done
-   2. Metrics report: Not yet
-   3. Modified node-wise operations: Done
-   4. Step-by-step visualization: Done
-   5. K-neighbor visualization: Done
-   6. Customizable seed set & prob: Done
-   7. ***Integrated Pruning Methods: Done
+   1. Basic color mapping
+   2. Metrics report
+   3. Modified node-wise operations
+   4. Step-by-step visualization:
+   5. K-neighbor visualization
+   6. Customizable seed set & config
+   7. Integrated Pruning Methods
 
 
 
